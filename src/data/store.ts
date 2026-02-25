@@ -1,4 +1,4 @@
-import { AVAILABLE_STATUSES, type Status } from "../models/Status";
+import { INITIAL_STATUSES, type Status } from "../models/Status";
 import type { TeamMember } from "../models/TeamMember";
 import type { ToDo } from "../models/ToDo";
 
@@ -7,9 +7,10 @@ let nextToDoId = 1;
 
 const teamMembers: TeamMember[] = [];
 const todos: ToDo[] = [];
+const statuses: Status[] = INITIAL_STATUSES.map((s) => ({ ...s }));
 
 export function getStatuses(): Status[] {
-  return AVAILABLE_STATUSES;
+  return statuses;
 }
 
 export function getTeamMembers(): TeamMember[] {
@@ -22,6 +23,74 @@ export function addTeamMember(name: string): TeamMember {
   return member;
 }
 
+export function renameTeamMember(id: number, name: string): TeamMember {
+  const member = teamMembers.find((m) => m.id === id);
+  if (!member) {
+    throw new Error("Team member not found");
+  }
+  member.name = name;
+  return member;
+}
+
+export function deleteTeamMember(id: number): void {
+  const hasTodos = todos.some((t) => t.teamMember && t.teamMember.id === id);
+  if (hasTodos) {
+    throw new Error("Cannot delete team member with assigned todos");
+  }
+
+  const index = teamMembers.findIndex((m) => m.id === id);
+  if (index !== -1) {
+    teamMembers.splice(index, 1);
+  }
+}
+
+export function addStatus(name: string): Status {
+  if (statuses.some((s) => s.name === name)) {
+    throw new Error("Status with this name already exists");
+  }
+  const rank = statuses.length ? Math.max(...statuses.map((s) => s.rank)) + 1 : 1;
+  const status: Status = {
+    name,
+    rank,
+    color: "blue",
+    isActive: true
+  };
+  statuses.push(status);
+  return status;
+}
+
+export function renameStatus(oldName: string, newName: string): Status {
+  const status = statuses.find((s) => s.name === oldName);
+  if (!status) {
+    throw new Error("Status not found");
+  }
+  if (statuses.some((s) => s.name === newName && s !== status)) {
+    throw new Error("Status with this name already exists");
+  }
+
+  todos.forEach((t) => {
+    if (t.status.name === oldName) {
+      t.status = status;
+    }
+  });
+
+  status.name = newName;
+
+  return status;
+}
+
+export function deleteStatus(name: string): void {
+  const hasTodos = todos.some((t) => t.status.name === name);
+  if (hasTodos) {
+    throw new Error("Cannot delete status with assigned todos");
+  }
+
+  const index = statuses.findIndex((s) => s.name === name);
+  if (index !== -1) {
+    statuses.splice(index, 1);
+  }
+}
+
 export function getToDos(): ToDo[] {
   return todos;
 }
@@ -29,16 +98,19 @@ export function getToDos(): ToDo[] {
 export function addToDo(input: {
   title: string;
   description: string;
-  teamMemberId: number;
+  teamMemberId?: number | null;
   statusName: string;
   dueDate: string;
 }): ToDo {
-  const teamMember = teamMembers.find((m) => m.id === input.teamMemberId);
-  if (!teamMember) {
-    throw new Error("Team member not found");
+  let teamMember: TeamMember | null = null;
+  if (input.teamMemberId != null) {
+    teamMember = teamMembers.find((m) => m.id === input.teamMemberId) ?? null;
+    if (!teamMember) {
+      throw new Error("Team member not found");
+    }
   }
 
-  const status = AVAILABLE_STATUSES.find((s) => s.name === input.statusName);
+  const status = statuses.find((s) => s.name === input.statusName);
   if (!status) {
     throw new Error("Status not found");
   }
@@ -61,7 +133,7 @@ export function updateToDo(
   updates: Partial<{
     title: string;
     description: string;
-    teamMemberId: number;
+    teamMemberId: number | null;
     statusName: string;
     dueDate: string;
   }>
@@ -78,14 +150,18 @@ export function updateToDo(
     todo.description = updates.description;
   }
   if (updates.teamMemberId !== undefined) {
-    const tm = teamMembers.find((m) => m.id === updates.teamMemberId);
-    if (!tm) {
-      throw new Error("Team member not found");
+    if (updates.teamMemberId === null) {
+      todo.teamMember = null;
+    } else {
+      const tm = teamMembers.find((m) => m.id === updates.teamMemberId);
+      if (!tm) {
+        throw new Error("Team member not found");
+      }
+      todo.teamMember = tm;
     }
-    todo.teamMember = tm;
   }
   if (updates.statusName !== undefined) {
-    const status = AVAILABLE_STATUSES.find((s) => s.name === updates.statusName);
+    const status = statuses.find((s) => s.name === updates.statusName);
     if (!status) {
       throw new Error("Status not found");
     }

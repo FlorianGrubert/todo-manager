@@ -5,7 +5,7 @@ export interface ToDo {
   id: number;
   title: string;
   description: string;
-  teamMember: TeamMember;
+  teamMember: TeamMember | null;
   status: Status;
   dueDate: string; // ISO DateTime string
 }
