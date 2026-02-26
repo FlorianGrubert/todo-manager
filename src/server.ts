@@ -23,6 +23,9 @@ app.use(cors());
 app.use(express.json());
 
 const publicDir = path.join(__dirname, "..", "public");
+const distDir = path.join(__dirname, "..", "frontend", "dist");
+
+app.use(express.static(distDir));
 app.use(express.static(publicDir));
 
 app.get("/api/statuses", (_req, res) => {
