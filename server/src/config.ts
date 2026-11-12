@@ -38,6 +38,8 @@ const schema = z
     /** Interval of the reminder check in minutes; 0 disables it. */
     REMINDER_INTERVAL_MINUTES: z.coerce.number().int().min(0).default(60),
     WEB_DIST: z.string().optional(),
+    /** Maximum size of a tenant import file in MB. */
+    IMPORT_MAX_MB: z.coerce.number().int().positive().default(50),
   })
   .superRefine((v, ctx) => {
     if (v.DB_CLIENT === 'pg' && !v.DATABASE_URL) {

@@ -2,7 +2,16 @@
 
 Mandantenfähige To-Do-Verwaltung mit Kanban-Oberfläche für Einzelpersonen und Teams. Web-Anwendung für Desktop, Tablet und Smartphone (installierbar als Progressive Web App). Oberfläche auf Deutsch und Englisch.
 
-> **Stand: Version 0.5.0 (Ausbaustufe 5 von 6).** Enthalten sind Anmeldung, Einladungen, Mandantenwechsel, Systemverwaltung, Projekte mit Projektrollen, Kanban-Board (nach Status, Personen, Tags und als Raster) mit Drag and Drop, Filtern und Sortierung, Kommentare, Änderungsverlauf, Teilen per Link, Export als Excel/CSV, Live-Aktualisierung, E-Mail-Benachrichtigungen, die installierbare Smartphone-App (PWA) mit Offline-Schnellerfassung sowie die Mandanten-Administration. Mandanten-Export/-Import und das Migrationsskript SQLite → PostgreSQL folgen in der letzten Ausbaustufe.
+Version 1.0.0. Funktionsumfang:
+
+- Kanban-Board nach Status, Personen oder Tags sowie Raster-Ansicht (Status × Personen), Drag and Drop, Filter, gespeicherte Filter und Sortierung
+- Projekte mit Projektrollen (Bearbeiter, eingeschränkter Bearbeiter, Leser), Archivieren und Wiederherstellen
+- To-Dos mit Priorität, Fälligkeit, Tags, Links, Kommentaren und vollständigem Änderungsverlauf
+- Live-Aktualisierung, E-Mail-Benachrichtigungen und Fälligkeitserinnerungen
+- Teilen per Link, Export der Ansicht als Excel/CSV
+- Installierbare Smartphone-App (PWA) mit Offline-Schnellerfassung
+- Mehrere Mandanten mit strikter Datentrennung, Systemverwaltung mit Export/Import je Mandant
+- SQLite oder PostgreSQL, Migrationsskript von SQLite nach PostgreSQL
 
 ## Voraussetzungen
 
@@ -85,13 +94,27 @@ Die Konfiguration erfolgt über Umgebungsvariablen oder die Datei `.env` im Prog
 | `DEFAULT_LOCALE` | `de` | Standardsprache (`de` oder `en`) |
 | `APP_TIMEZONE` | `Europe/Berlin` | Zeitzone für Fälligkeitsdaten und Erinnerungen |
 | `REMINDER_INTERVAL_MINUTES` | `60` | Wie oft Fälligkeitserinnerungen geprüft werden (Minuten); `0` schaltet sie ab |
+| `IMPORT_MAX_MB` | `50` | Maximale Größe einer Mandanten-Importdatei in MB |
 
 ## Datenbank
 
 - **SQLite** ist ideal für kleine Installationen: keine zusätzliche Software, die Datenbank ist eine einzelne Datei.
 - **PostgreSQL** empfiehlt sich für größere Teams. Datenbank und Benutzer anlegen, `DB_CLIENT=pg` und `DATABASE_URL` setzen, dann `npm run setup` ausführen.
 
-Ein Wechsel von SQLite zu PostgreSQL ist vorgesehen (Migrationsskript folgt mit Version 1.0); der umgekehrte Weg wird nicht unterstützt.
+### Wechsel von SQLite zu PostgreSQL
+
+Der Wechsel ist jederzeit möglich; der umgekehrte Weg wird nicht unterstützt.
+
+1. Leere PostgreSQL-Datenbank mit Benutzer anlegen.
+2. Anwendung stoppen (`sudo systemctl stop todo-manager`) und die SQLite-Datei sichern.
+3. Migration ausführen:
+
+   ```bash
+   npm run migrate:sqlite-to-pg -- --from ./data/todo-manager.db --to postgres://user:pass@localhost:5432/todo
+   ```
+
+   Ohne Angaben werden `SQLITE_FILE` und `DATABASE_URL` aus der Konfiguration verwendet. Das Skript legt das Schema an, kopiert alle Daten in einer Transaktion und prüft anschließend die Anzahl der Datensätze je Tabelle. Ist die Zieldatenbank nicht leer, bricht es ohne Änderungen ab. Die SQLite-Datei bleibt unverändert.
+4. In `.env` `DB_CLIENT=pg` und `DATABASE_URL` setzen und die Anwendung starten. Angemeldete Benutzer bleiben angemeldet.
 
 ## Betrieb hinter einem Reverse Proxy
 
@@ -151,6 +174,16 @@ npm run setup -- --migrate-only
 sudo systemctl restart todo-manager
 ```
 
+## Export und Import einzelner Mandanten
+
+Unter **Systemverwaltung** kann der Systemadministrator je Mandant:
+
+- **Exportieren:** lädt alle Daten des Mandanten (Mitglieder, Projekte, To-Dos, Kommentare, Verlauf, Status, Prioritäten, Tags, gespeicherte Filter) als JSON-Datei herunter. Passwörter sind nicht enthalten; pseudonymisierte Personen werden ohne persönliche Daten exportiert.
+- **Importieren:** legt aus einer Export-Datei einen **neuen** Mandanten an (auch in einer anderen Installation). Alle internen IDs werden neu vergeben. Personen werden anhand der E-Mail-Adresse einem vorhandenen Konto zugeordnet; für unbekannte Adressen wird ein Konto ohne Passwort angelegt, das Passwort setzt die Person über „Passwort vergessen“.
+- **Ersetzen:** ersetzt einen bestehenden Mandanten vollständig durch den Inhalt einer Export-Datei. Dazu muss der Name des Mandanten zur Bestätigung eingegeben werden. Vorher unbedingt einen Export erstellen.
+
+Andere Mandanten werden dabei nicht verändert.
+
 ## Datensicherung
 
 Die regelmäßige Datensicherung erfolgt außerhalb der Anwendung:
@@ -163,5 +196,5 @@ Die regelmäßige Datensicherung erfolgt außerhalb der Anwendung:
 - Passwörter werden mit Argon2id gehasht gespeichert.
 - Sitzungen liegen serverseitig; das Sitzungs-Cookie ist `HttpOnly`, bei HTTPS zusätzlich `Secure`.
 - Anmeldung, Passwort-vergessen und Einladungen sind gegen Massenversuche begrenzt.
-- Benutzer und To-Dos werden nie physisch gelöscht, sondern nur deaktiviert bzw. pseudonymisiert.
+- Benutzer und To-Dos werden nie physisch gelöscht, sondern nur deaktiviert bzw. pseudonymisiert (Ausnahme: „Mandant ersetzen“ in der Systemverwaltung).
 - Jede Anfrage wird serverseitig auf Anmeldung, Mandant, Rolle und Objektzugriff geprüft; Mandanten sind vollständig voneinander getrennt.

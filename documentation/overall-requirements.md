@@ -297,6 +297,14 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - Beim Abmelden werden alle auf dem Gerät gespeicherten Daten gelöscht (das Gerät kann geteilt sein); nicht übertragene To-Dos werden vorher mit Rückfrage angezeigt
 - Installation und Offline-Betrieb setzen HTTPS voraus (Service Worker)
 
+### Export/Import von Mandanten und Datenbankwechsel
+
+- Der Mandanten-Export ist eine JSON-Datei mit allen Daten des Mandanten inkl. Kommentaren, Verlauf und gespeicherten Filtern. Passwörter, Sitzungen und offene Einladungen sind nicht enthalten; pseudonymisierte Personen werden ohne Name und E-Mail exportiert
+- Beim Import werden alle IDs neu vergeben (auch Verweise im Verlauf und in gespeicherten Filtern), sodass ein Mandant neben seinem Original oder in einer anderen Installation importiert werden kann. Personen werden über die E-Mail-Adresse einem vorhandenen Konto zugeordnet, bestehende Konten werden nicht verändert; neue Konten haben kein Passwort und werden über „Passwort vergessen“ aktiviert
+- „Passwort vergessen“ funktioniert daher für alle aktiven Konten, auch ohne bisheriges Passwort
+- Ersetzen eines Mandanten erfordert die Eingabe des exakten Mandantennamens; die bisherigen Daten des Mandanten werden dabei entfernt. Ungültige oder in sich widersprüchliche Dateien werden vollständig abgelehnt, ohne etwas zu ändern
+- Die Migration SQLite → PostgreSQL kopiert alle Tabellen in einer Transaktion in eine leere Zieldatenbank und prüft die Anzahl der Datensätze je Tabelle; Sitzungen bleiben erhalten
+
 ### Technik
 
 - Backend: Node.js mit Fastify und TypeScript; Datenzugriff über den Query-Builder Knex

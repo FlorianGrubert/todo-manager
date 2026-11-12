@@ -13,7 +13,7 @@ import { createDb, migrateLatest, now, type Db } from '../src/db/knex.js';
 import type { Mailer, MailMessage } from '../src/mail/mailer.js';
 
 export const TEST_DB = (process.env.TEST_DB ?? 'sqlite') as 'sqlite' | 'pg';
-const PG_URL = process.env.TEST_DATABASE_URL ?? 'postgres://todo:todo@localhost:15432/todo_test';
+export const PG_URL = process.env.TEST_DATABASE_URL ?? 'postgres://todo:todo@localhost:15432/todo_test';
 export const TEST_PASSWORD = 'correct-horse-battery';
 
 export interface TestEnv {
@@ -24,10 +24,13 @@ export interface TestEnv {
 }
 
 /** Creates an isolated database (temp SQLite file or own PostgreSQL schema) plus app instance. */
-export async function createTestEnv(overrides: Record<string, string> = {}): Promise<TestEnv> {
+export async function createTestEnv(
+  overrides: Record<string, string> = {},
+  client: 'sqlite' | 'pg' = TEST_DB,
+): Promise<TestEnv> {
   let db: Db;
   let cleanup: () => Promise<void>;
-  if (TEST_DB === 'pg') {
+  if (client === 'pg') {
     const schema = `t_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const admin = knexFactory({ client: 'pg', connection: PG_URL });
     await admin.raw(`create schema ${schema}`);

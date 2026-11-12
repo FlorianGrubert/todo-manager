@@ -1258,3 +1258,14 @@ input[type='color'] {
     flex: 1 1 140px;
   }
 }
+
+/* ---------- milestone 6 ---------- */
+.section-gap {
+  margin-top: 1.5rem;
+}
+
+a.button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}

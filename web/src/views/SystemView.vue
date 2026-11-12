@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { LOCALES, type Locale, type SystemTenant } from '@fg/shared';
 import { get, patch, post } from '../api/client';
+import AppModal from '../components/AppModal.vue';
 import { errorKey } from '../i18n';
 
 const { t, d, locale } = useI18n();
@@ -53,6 +54,77 @@ async function toggle(tenant: SystemTenant): Promise<void> {
   }
 }
 
+// ---------------- export / import (§11) ----------------
+const importFile = ref<unknown>(null);
+const importName = ref('');
+const replacing = ref<SystemTenant | null>(null);
+const replaceFile = ref<unknown>(null);
+const replaceConfirm = ref('');
+
+/** Reads a chosen JSON export file; invalid files are reported immediately. */
+async function readFile(event: Event): Promise<unknown> {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return null;
+  try {
+    return JSON.parse(await file.text()) as unknown;
+  } catch {
+    error.value = t('system.invalidFile');
+    return null;
+  }
+}
+
+async function onImportFile(event: Event): Promise<void> {
+  error.value = '';
+  importFile.value = await readFile(event);
+}
+
+async function onReplaceFile(event: Event): Promise<void> {
+  error.value = '';
+  replaceFile.value = await readFile(event);
+}
+
+async function runImport(): Promise<void> {
+  if (!importFile.value) return;
+  error.value = '';
+  message.value = '';
+  busy.value = true;
+  try {
+    const name = importName.value.trim();
+    await post('/api/system/tenants/import', { data: importFile.value, ...(name ? { name } : {}) });
+    message.value = t('system.imported');
+    importName.value = '';
+    await load();
+  } catch (err) {
+    error.value = t(errorKey(err));
+  } finally {
+    busy.value = false;
+  }
+}
+
+async function runReplace(): Promise<void> {
+  const tenant = replacing.value;
+  if (!tenant || !replaceFile.value || replaceConfirm.value !== tenant.name) return;
+  error.value = '';
+  message.value = '';
+  busy.value = true;
+  try {
+    await post(`/api/system/tenants/${tenant.id}/replace`, { confirmName: replaceConfirm.value, data: replaceFile.value });
+    message.value = t('system.replaced', { name: tenant.name });
+    replacing.value = null;
+    await load();
+  } catch (err) {
+    error.value = t(errorKey(err));
+  } finally {
+    busy.value = false;
+  }
+}
+
+function openReplace(tenant: SystemTenant): void {
+  replacing.value = tenant;
+  replaceFile.value = null;
+  replaceConfirm.value = '';
+}
+
 onMounted(load);
 </script>
 
@@ -89,6 +161,8 @@ onMounted(load);
                   </span>
                 </td>
                 <td class="actions">
+                  <a class="button small" :href="`/api/system/tenants/${tenant.id}/export`" download>{{ t('system.export') }}</a>
+                  <button type="button" class="button small" @click="openReplace(tenant)">{{ t('system.replace') }}</button>
                   <button type="button" class="button small" @click="toggle(tenant)">
                     {{ tenant.isActive ? t('system.deactivate') : t('system.activate') }}
                   </button>
@@ -122,7 +196,47 @@ onMounted(load);
           </label>
           <button class="button primary" type="submit" :disabled="busy">{{ t('common.create') }}</button>
         </form>
+
+        <h2 class="section-gap">{{ t('system.importTitle') }}</h2>
+        <form class="form" @submit.prevent="runImport">
+          <p class="muted small">{{ t('system.importHint') }}</p>
+          <label class="field">
+            <span>{{ t('system.file') }}</span>
+            <input type="file" accept="application/json,.json" required @change="onImportFile" />
+          </label>
+          <label class="field">
+            <span>{{ t('system.importName') }}</span>
+            <input v-model="importName" type="text" maxlength="200" />
+          </label>
+          <button class="button primary" type="submit" :disabled="busy || !importFile">{{ t('system.import') }}</button>
+        </form>
       </section>
     </div>
+
+    <AppModal v-if="replacing" :title="t('system.replaceTitle', { name: replacing.name })" @close="replacing = null">
+      <form id="replace-tenant" class="form" @submit.prevent="runReplace">
+        <p class="alert alert-error">{{ t('system.replaceWarning', { name: replacing.name }) }}</p>
+        <label class="field">
+          <span>{{ t('system.file') }}</span>
+          <input type="file" accept="application/json,.json" required @change="onReplaceFile" />
+        </label>
+        <label class="field">
+          <span>{{ t('system.replaceConfirm', { name: replacing.name }) }}</span>
+          <input v-model="replaceConfirm" type="text" autocomplete="off" required />
+        </label>
+      </form>
+      <template #footer>
+        <span class="spacer" />
+        <button type="button" class="button" @click="replacing = null">{{ t('common.cancel') }}</button>
+        <button
+          type="submit"
+          form="replace-tenant"
+          class="button primary"
+          :disabled="busy || !replaceFile || replaceConfirm !== replacing.name"
+        >
+          {{ t('system.replace') }}
+        </button>
+      </template>
+    </AppModal>
   </section>
 </template>

@@ -112,7 +112,8 @@ export function authRoutes(app: FastifyInstance): void {
     const body = parse(z.object({ email: z.string().max(320) }), req.body);
     const { db, config, mailer } = deps();
     const user = await findUserByEmail(db, body.email);
-    if (user && toBool(user.is_active) && user.password_hash) {
+    // Also for active accounts without password (e.g. persons created by a tenant import).
+    if (user && toBool(user.is_active)) {
       const token = randomToken();
       await db('password_resets').insert({
         id: randomUUID(),

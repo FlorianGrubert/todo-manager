@@ -87,7 +87,20 @@
     "deactivate": "Deaktivieren",
     "createdAt": "Angelegt am",
     "empty": "Noch keine Mandanten vorhanden.",
-    "confirmDeactivate": "Mandant „{name}“ wirklich deaktivieren? Seine Benutzer können ihn dann nicht mehr öffnen."
+    "confirmDeactivate": "Mandant „{name}“ wirklich deaktivieren? Seine Benutzer können ihn dann nicht mehr öffnen.",
+    "export": "Exportieren",
+    "replace": "Ersetzen …",
+    "importTitle": "Mandant importieren",
+    "importHint": "Importiert eine Export-Datei (JSON) als neuen Mandanten. Personen werden anhand ihrer E-Mail-Adresse zugeordnet; neue Personen legen ihr Passwort über „Passwort vergessen“ fest.",
+    "file": "Export-Datei (JSON)",
+    "importName": "Name des neuen Mandanten (optional)",
+    "import": "Importieren",
+    "imported": "Der Mandant wurde importiert.",
+    "invalidFile": "Die Datei ist keine gültige Export-Datei.",
+    "replaceTitle": "Mandant „{name}“ ersetzen",
+    "replaceWarning": "Achtung: Alle Daten des Mandanten „{name}“ (To-Dos, Projekte, Mitgliedschaften, Einstellungen, Verlauf) werden gelöscht und durch den Inhalt der Datei ersetzt. Das kann nicht rückgängig gemacht werden. Erstellen Sie vorher einen Export.",
+    "replaceConfirm": "Zur Bestätigung den Namen „{name}“ eingeben",
+    "replaced": "Der Mandant „{name}“ wurde ersetzt."
   },
   "settings": {
     "title": "Einstellungen",

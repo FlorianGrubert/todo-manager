@@ -5,10 +5,11 @@ import { LOCALES, type SystemTenant } from '@fg/shared';
 import { inviteMember } from '../../auth/invitations.js';
 import { seedTenantDefaults } from '../../db/defaults.js';
 import { now } from '../../db/knex.js';
-import { notFound } from '../../lib/errors.js';
+import { badRequest, notFound } from '../../lib/errors.js';
 import { fromBool, toBool } from '../../lib/flags.js';
 import { parse } from '../../lib/validate.js';
 import { getAuth, requireSystemAdmin } from '../../tenancy/context.js';
+import { exportTenant, importTenant } from './transfer.js';
 
 const idParam = z.object({ id: z.string().max(64) });
 
@@ -82,6 +83,36 @@ export function systemRoutes(app: FastifyInstance): void {
     if (body.isActive !== undefined) update.is_active = fromBool(body.isActive);
     const count = await app.deps.db('tenants').where({ id }).update(update);
     if (count !== 1) throw notFound();
+    return reply.code(204).send();
+  });
+
+  // ---------------- export / import of a tenant ----------------
+  const importLimit = () => app.deps.config.IMPORT_MAX_MB * 1024 * 1024;
+
+  app.get('/api/system/tenants/:id/export', opts, async (req, reply) => {
+    const { id } = parse(idParam, req.params);
+    const data = await exportTenant(app.deps.db, id, app.deps.config.version);
+    const safeName = data.tenant.name.replace(/[^\p{L}\p{N}_-]+/gu, '-').replace(/^-+|-+$/g, '') || 'tenant';
+    reply.header('content-disposition', `attachment; filename="${encodeURIComponent(safeName)}-${data.exportedAt.slice(0, 10)}.json"`);
+    reply.header('cache-control', 'no-store');
+    return data;
+  });
+
+  /** Imports an export as a new tenant (all IDs are re-generated). */
+  app.post('/api/system/tenants/import', { ...opts, bodyLimit: importLimit() }, async (req, reply) => {
+    const body = parse(z.object({ name: z.string().trim().max(200).optional(), data: z.unknown() }), req.body);
+    const { tenantId } = await importTenant(app.deps.db, body.data, { name: body.name });
+    return reply.code(201).send({ id: tenantId });
+  });
+
+  /** Replaces an existing tenant by an export. Requires the exact tenant name as confirmation. */
+  app.post('/api/system/tenants/:id/replace', { ...opts, bodyLimit: importLimit() }, async (req, reply) => {
+    const { id } = parse(idParam, req.params);
+    const body = parse(z.object({ confirmName: z.string().max(200), data: z.unknown() }), req.body);
+    const tenant = (await app.deps.db('tenants').where({ id }).first('name')) as { name: string } | undefined;
+    if (!tenant) throw notFound();
+    if (body.confirmName !== tenant.name) throw badRequest();
+    await importTenant(app.deps.db, body.data, { replaceTenantId: id });
     return reply.code(204).send();
   });
 }

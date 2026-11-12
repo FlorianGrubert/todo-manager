@@ -87,7 +87,20 @@
     "deactivate": "Deactivate",
     "createdAt": "Created on",
     "empty": "No tenants yet.",
-    "confirmDeactivate": "Really deactivate tenant “{name}”? Its users will no longer be able to open it."
+    "confirmDeactivate": "Really deactivate tenant “{name}”? Its users will no longer be able to open it.",
+    "export": "Export",
+    "replace": "Replace …",
+    "importTitle": "Import tenant",
+    "importHint": "Imports an export file (JSON) as a new tenant. Persons are matched by their e-mail address; new persons set their password via “Forgot password”.",
+    "file": "Export file (JSON)",
+    "importName": "Name of the new tenant (optional)",
+    "import": "Import",
+    "imported": "The tenant has been imported.",
+    "invalidFile": "The file is not a valid export file.",
+    "replaceTitle": "Replace tenant “{name}”",
+    "replaceWarning": "Attention: all data of the tenant “{name}” (to-dos, projects, memberships, settings, history) is deleted and replaced by the content of the file. This cannot be undone. Create an export first.",
+    "replaceConfirm": "Type the name “{name}” to confirm",
+    "replaced": "The tenant “{name}” has been replaced."
   },
   "settings": {
     "title": "Settings",
