@@ -278,6 +278,15 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - Passwörter haben mindestens 10 Zeichen; Links zum Zurücksetzen des Passworts sind 1 Stunde gültig
 - Nach dem Zurücksetzen des Passworts werden alle Sitzungen des Benutzers beendet
 
+### Live-Aktualisierung und Benachrichtigungen
+
+- Ereignisse an Clients enthalten nur IDs. Eine To-Do-ID erhält nur, wer das To-Do sehen darf; alle anderen Mitglieder des Mandanten erfahren nur, dass sich To-Dos geändert haben, und laden ihre Ansicht neu. Nach Abmelden oder Deaktivieren werden keine Ereignisse mehr zugestellt
+- Ist ein To-Do im Dialog geöffnet und wird es woanders geändert, lädt der Dialog die neuen Werte, sofern keine ungespeicherten Eingaben vorliegen; andernfalls erscheint ein Hinweis und die Eingaben bleiben erhalten
+- Zuweisungs-E-Mails gehen an die neu zugewiesene Person (nicht bei Selbstzuweisung), in ihrer Sprache
+- Erinnerungen und Überfälligkeitsmeldungen werden je To-Do, Person und Fälligkeitsdatum genau einmal versendet; ändert sich das Fälligkeitsdatum, wird erneut erinnert. Alle fälligen To-Dos einer Person werden in einer E-Mail zusammengefasst
+- Berücksichtigt werden nur offene To-Dos mit aktiver Zuweisung außerhalb archivierter Projekte. „0 Tage vorher“ bedeutet Erinnerung am Fälligkeitstag
+- Die Prüfung läuft periodisch (Standard: stündlich) in der Zeitzone der Installation (Standard: Europe/Berlin)
+
 ### Technik
 
 - Backend: Node.js mit Fastify und TypeScript; Datenzugriff über den Query-Builder Knex

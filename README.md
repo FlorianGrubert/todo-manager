@@ -2,7 +2,7 @@
 
 Mandantenfähige To-Do-Verwaltung mit Kanban-Oberfläche für Einzelpersonen und Teams. Web-Anwendung für Desktop, Tablet und Smartphone (installierbar als Progressive Web App). Oberfläche auf Deutsch und Englisch.
 
-> **Stand: Version 0.3.0 (Ausbaustufe 3 von 6).** Enthalten sind Anmeldung, Einladungen, Mandantenwechsel, Systemverwaltung, Projekte mit Projektrollen, Kanban-Board (nach Status, Personen, Tags und als Raster) mit Drag and Drop, Filtern, gespeicherten Filtern und Sortierung, Kommentare, Änderungsverlauf, Teilen per Link sowie Export als Excel/CSV und die Mandanten-Administration. Live-Aktualisierung, E-Mail-Benachrichtigungen, Offline-Erfassung und Mandanten-Export folgen in den nächsten Ausbaustufen.
+> **Stand: Version 0.4.0 (Ausbaustufe 4 von 6).** Enthalten sind Anmeldung, Einladungen, Mandantenwechsel, Systemverwaltung, Projekte mit Projektrollen, Kanban-Board (nach Status, Personen, Tags und als Raster) mit Drag and Drop, Filtern und Sortierung, Kommentare, Änderungsverlauf, Teilen per Link, Export als Excel/CSV, Live-Aktualisierung, E-Mail-Benachrichtigungen mit Fälligkeitserinnerungen sowie die Mandanten-Administration. Offline-Erfassung (PWA) und Mandanten-Export/-Import folgen in den nächsten Ausbaustufen.
 
 ## Voraussetzungen
 
@@ -55,6 +55,8 @@ Jeder neue Mandant startet mit den Standard-Status (Backlog, In Arbeit, Under Re
 
 Der Mandanten-Administrator lädt unter **Administration → Benutzer** weitere Personen ein und legt dort Mandantenrolle und Standardrolle (für To-Dos ohne Projekt) fest. Projekte und die Rollen der Personen in Projekten (Bearbeiter, eingeschränkter Bearbeiter, Leser) werden unter **Projekte** verwaltet. Status, Prioritäten und Tags werden unter **Administration** angepasst.
 
+Jeder Benutzer legt unter **Einstellungen → Benachrichtigungen** fest, ob er E-Mails bei neuen Zuweisungen, Erinnerungen vor Fälligkeit (Anzahl Tage) und Meldungen bei Überfälligkeit erhalten möchte; die Einstellungen gelten für alle seine Mandanten. Für den Versand muss `MAIL_TRANSPORT=smtp` konfiguriert sein.
+
 Links zu einzelnen To-Dos (Teilen-Button) öffnen das To-Do nach der Anmeldung direkt – auch in einem anderen Mandanten, sofern die Person dort Zugriff hat. Die aktuelle Board-Ansicht inklusive Filter lässt sich über **Exportieren** als Excel- oder CSV-Datei herunterladen.
 
 Personen, die bereits ein Konto in einem anderen Mandanten haben, nehmen Einladungen mit ihrem bestehenden Login an. Nach der Anmeldung öffnet sich der zuletzt genutzte Mandant; über den Umschalter in der Kopfzeile wird zwischen Mandanten gewechselt.
@@ -79,6 +81,8 @@ Die Konfiguration erfolgt über Umgebungsvariablen oder die Datei `.env` im Prog
 | `MAIL_FROM` | – | Absenderadresse |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` | – | SMTP-Zugangsdaten |
 | `DEFAULT_LOCALE` | `de` | Standardsprache (`de` oder `en`) |
+| `APP_TIMEZONE` | `Europe/Berlin` | Zeitzone für Fälligkeitsdaten und Erinnerungen |
+| `REMINDER_INTERVAL_MINUTES` | `60` | Wie oft Fälligkeitserinnerungen geprüft werden (Minuten); `0` schaltet sie ab |
 
 ## Datenbank
 
@@ -98,6 +102,18 @@ todo.example.com {
 ```
 
 Dazu in `.env`: `BASE_URL=https://todo.example.com` und `TRUST_PROXY=true`.
+
+Die Live-Aktualisierung nutzt eine dauerhaft offene Verbindung (Server-Sent Events unter `/api/events`). Caddy unterstützt das ohne weitere Einstellungen. Bei **nginx** für diesen Pfad die Pufferung abschalten:
+
+```
+location /api/events {
+    proxy_pass http://localhost:3000;
+    proxy_buffering off;
+    proxy_read_timeout 1h;
+}
+```
+
+Die Anwendung ist für den Betrieb als **ein** Prozess ausgelegt (Live-Aktualisierung und Erinnerungen laufen im Prozess).
 
 ## Als Dienst einrichten (systemd)
 

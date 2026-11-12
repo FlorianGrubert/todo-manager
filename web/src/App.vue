@@ -2,6 +2,7 @@
 import { computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import AppHeader from './components/AppHeader.vue';
+import { connectLive, onLive } from './live';
 import { useReferenceStore } from './stores/reference';
 import { useSessionStore } from './stores/session';
 
@@ -16,9 +17,14 @@ watch(
   (id) => {
     reference.reset();
     if (id) void reference.load(id).catch(() => undefined);
+    connectLive(Boolean(id));
   },
   { immediate: true },
 );
+
+onLive('reference', () => {
+  if (session.activeTenant) void reference.load(session.activeTenant.id, true).catch(() => undefined);
+});
 </script>
 
 <template>

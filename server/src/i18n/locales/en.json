@@ -13,7 +13,23 @@
     "passwordReset": {
       "subject": "Reset password – FG To-Do-Manager",
       "body": "A password reset was requested for your account.\n\nUse the following link to set a new password:\n{link}\n\nThe link is valid for 1 hour. If you did not request this, you can ignore this e-mail."
-    }
+    },
+    "assigned": {
+      "subject": "New to-do for you: {title}",
+      "body": "{by} assigned a to-do to you in the tenant “{tenant}”:\n\n{title}\n{details}\n{link}"
+    },
+    "digest": {
+      "subject": "Reminder about your to-dos",
+      "intro": "here is an overview of your to-dos that are due soon or overdue.",
+      "dueSoon": "Due soon",
+      "overdue": "Overdue"
+    },
+    "labels": {
+      "project": "Project",
+      "due": "Due date",
+      "tenant": "Tenant"
+    },
+    "settingsHint": "You can change your notifications here: {link}"
   },
   "export": {
     "sheet": "To-dos",

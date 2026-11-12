@@ -61,12 +61,22 @@ export function authRoutes(app: FastifyInstance): void {
   app.patch('/api/auth/me', { preHandler: requireAuth }, async (req) => {
     const auth = getAuth(req);
     const body = parse(
-      z.object({ locale: z.enum(LOCALES).optional(), name: z.string().trim().min(1).max(200).optional() }),
+      z.object({
+        locale: z.enum(LOCALES).optional(),
+        name: z.string().trim().min(1).max(200).optional(),
+        // Notification settings are user-level and apply to all tenants (§9).
+        notifyAssign: z.boolean().optional(),
+        remindDaysBefore: z.number().int().min(0).max(60).nullable().optional(),
+        notifyOverdue: z.boolean().optional(),
+      }),
       req.body,
     );
     const update: Record<string, unknown> = { updated_at: now() };
     if (body.locale) update.locale = body.locale;
     if (body.name) update.name = body.name;
+    if (body.notifyAssign !== undefined) update.notify_assign = body.notifyAssign ? 1 : 0;
+    if (body.remindDaysBefore !== undefined) update.remind_days_before = body.remindDaysBefore;
+    if (body.notifyOverdue !== undefined) update.notify_overdue = body.notifyOverdue ? 1 : 0;
     await deps().db('users').where({ id: auth.userId }).update(update);
     return buildMe(deps(), auth);
   });

@@ -9,8 +9,11 @@ import fastifyStatic from '@fastify/static';
 import { authRoutes } from './auth/routes.js';
 import type { Config } from './config.js';
 import type { Db } from './db/knex.js';
+import { EventBus } from './events/bus.js';
 import { ApiError } from './lib/errors.js';
+import { TaskQueue } from './lib/queue.js';
 import { createMailer, type Mailer } from './mail/mailer.js';
+import { eventRoutes, publishReferenceChanges } from './modules/events/routes.js';
 import { memberRoutes } from './modules/members/routes.js';
 import { projectRoutes } from './modules/projects/routes.js';
 import { referenceRoutes } from './modules/reference/routes.js';
@@ -38,7 +41,12 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   });
 
   const mailer = options.mailer ?? createMailer(config, app.log);
-  app.decorate('deps', { config, db, mailer });
+  const events = new EventBus();
+  const queue = new TaskQueue(app.log);
+  app.decorate('deps', { config, db, mailer, events, queue });
+  app.addHook('onClose', async () => {
+    await queue.idle();
+  });
 
   // Only JSON bodies are accepted; plain text/form posts from foreign sites are rejected.
   app.removeContentTypeParser('text/plain');
@@ -84,6 +92,8 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   memberRoutes(app);
   todoExtraRoutes(app);
   todoRoutes(app);
+  eventRoutes(app);
+  publishReferenceChanges(app);
 
   const webDist = resolve(config.WEB_DIST ?? defaultWebDist);
   const serveWeb = existsSync(resolve(webDist, 'index.html'));

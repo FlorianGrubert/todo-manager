@@ -95,7 +95,13 @@
     "changePassword": "Change password",
     "currentPassword": "Current password",
     "newPassword": "New password",
-    "passwordChanged": "Your password has been changed."
+    "passwordChanged": "Your password has been changed.",
+    "notifications": "Notifications",
+    "notificationsHint": "These settings apply to all your tenants.",
+    "notifyAssign": "E-mail when a to-do is assigned to me",
+    "remind": "Remind me of due to-dos",
+    "remindDays": "Days before the due date (0 = on the due date)",
+    "notifyOverdue": "E-mail when a to-do becomes overdue"
   },
   "role": {
     "admin": "Administrator",
@@ -176,7 +182,8 @@
     "updatedMeta": "Last changed by {name} on {date}",
     "tabDetails": "Details",
     "tabComments": "Comments",
-    "tabHistory": "History"
+    "tabHistory": "History",
+    "changedElsewhere": "This to-do has been changed by someone else in the meantime. Your input is kept; saving overwrites the changed fields."
   },
   "comments": {
     "empty": "No comments yet.",

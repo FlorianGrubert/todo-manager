@@ -15,6 +15,7 @@ import {
   loadProjectRoles,
 } from '../../permissions/index.js';
 import { getTenant, requireTenant, scoped } from '../../tenancy/context.js';
+import { queueAssignmentMail } from '../notifications/service.js';
 import { toPriorityDto, toStatusDto, type PriorityRow, type StatusRow } from '../reference/mappers.js';
 import { recordHistory, type HistoryChange } from './history.js';
 import { listTodoRows } from './query.js';
@@ -115,6 +116,8 @@ export function todoRoutes(app: FastifyInstance): void {
       await replaceLinks(trx, ctx, todoId, (input.links ?? []).map((l) => ({ url: l.url, label: l.label ?? null })));
       await recordHistory(trx, ctx, todoId, [{ field: 'created', oldValue: null, newValue: input.title ?? null }], ts);
     });
+    app.deps.events.publish(ctx.tenantId, { type: 'todos', todoId });
+    if (assigneeId) queueAssignmentMail(app.deps, ctx, todoId, assigneeId);
     const row = await loadVisibleTodo(db(), ctx, roles, todoId).catch(() => undefined);
     // A restricted editor may create a To-Do that is no longer "own" (cannot happen with assignment rules, but be safe).
     if (!row) return reply.code(201).send({ id: todoId });
@@ -202,6 +205,8 @@ export function todoRoutes(app: FastifyInstance): void {
         .update({ ...update, updated_at: ts, updated_by: ctx.membershipId });
       await recordHistory(trx, ctx, id, changes, ts);
     });
+    if (changes.length) app.deps.events.publish(ctx.tenantId, { type: 'todos', todoId: id });
+    if (assigneeId && assigneeId !== row.assignee_id) queueAssignmentMail(app.deps, ctx, id, assigneeId);
 
     const fresh = (await todoQuery(db(), ctx).where('t.id', id).first(TODO_COLUMNS)) as TodoRow;
     return (await toTodoDtos(db(), ctx, roles, [fresh]))[0]!;
@@ -226,6 +231,7 @@ export function todoRoutes(app: FastifyInstance): void {
           .update({ status_id: target.id, updated_at: ts, updated_by: ctx.membershipId });
         await recordHistory(trx, ctx, id, [{ field: 'status', oldValue: row.status_id, newValue: target.id }], ts);
       });
+      app.deps.events.publish(ctx.tenantId, { type: 'todos', todoId: id });
     }
     const fresh = (await todoQuery(db(), ctx).where('t.id', id).first(TODO_COLUMNS)) as TodoRow;
     return (await toTodoDtos(db(), ctx, roles, [fresh]))[0]!;
@@ -276,6 +282,7 @@ export function todoRoutes(app: FastifyInstance): void {
       body,
       created_at: comment.createdAt,
     });
+    app.deps.events.publish(ctx.tenantId, { type: 'todos', todoId: id });
     return reply.code(201).send(comment);
   });
 

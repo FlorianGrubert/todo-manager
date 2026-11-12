@@ -33,11 +33,20 @@ const schema = z
     SMTP_PASSWORD: z.string().optional(),
 
     DEFAULT_LOCALE: z.enum(LOCALES).default('de'),
+    /** Time zone for due dates and reminders. */
+    APP_TIMEZONE: z.string().default('Europe/Berlin'),
+    /** Interval of the reminder check in minutes; 0 disables it. */
+    REMINDER_INTERVAL_MINUTES: z.coerce.number().int().min(0).default(60),
     WEB_DIST: z.string().optional(),
   })
   .superRefine((v, ctx) => {
     if (v.DB_CLIENT === 'pg' && !v.DATABASE_URL) {
       ctx.addIssue({ code: 'custom', path: ['DATABASE_URL'], message: 'required when DB_CLIENT=pg' });
+    }
+    try {
+      new Intl.DateTimeFormat('en', { timeZone: v.APP_TIMEZONE });
+    } catch {
+      ctx.addIssue({ code: 'custom', path: ['APP_TIMEZONE'], message: 'unknown time zone' });
     }
     if (v.MAIL_TRANSPORT === 'smtp' && !v.SMTP_HOST) {
       ctx.addIssue({ code: 'custom', path: ['SMTP_HOST'], message: 'required when MAIL_TRANSPORT=smtp' });

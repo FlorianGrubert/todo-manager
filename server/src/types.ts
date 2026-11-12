@@ -1,12 +1,16 @@
 import type { DefaultRole, Locale, TenantRole } from '@fg/shared';
 import type { Config } from './config.js';
 import type { Db } from './db/knex.js';
+import type { EventBus } from './events/bus.js';
+import type { TaskQueue } from './lib/queue.js';
 import type { Mailer } from './mail/mailer.js';
 
 export interface AppDeps {
   config: Config;
   db: Db;
   mailer: Mailer;
+  events: EventBus;
+  queue: TaskQueue;
 }
 
 /** Authenticated session (set by the auth hook). */

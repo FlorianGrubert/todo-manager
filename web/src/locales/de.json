@@ -95,7 +95,13 @@
     "changePassword": "Passwort ändern",
     "currentPassword": "Aktuelles Passwort",
     "newPassword": "Neues Passwort",
-    "passwordChanged": "Ihr Passwort wurde geändert."
+    "passwordChanged": "Ihr Passwort wurde geändert.",
+    "notifications": "Benachrichtigungen",
+    "notificationsHint": "Diese Einstellungen gelten für alle Ihre Mandanten.",
+    "notifyAssign": "E-Mail, wenn mir ein To-Do zugewiesen wird",
+    "remind": "An fällige To-Dos erinnern",
+    "remindDays": "Tage vor dem Fälligkeitsdatum (0 = am Fälligkeitstag)",
+    "notifyOverdue": "E-Mail, wenn ein To-Do überfällig wird"
   },
   "role": {
     "admin": "Administrator",
@@ -176,7 +182,8 @@
     "updatedMeta": "Zuletzt geändert von {name} am {date}",
     "tabDetails": "Details",
     "tabComments": "Kommentare",
-    "tabHistory": "Verlauf"
+    "tabHistory": "Verlauf",
+    "changedElsewhere": "Dieses To-Do wurde inzwischen von jemand anderem geändert. Ihre Eingaben bleiben erhalten; beim Speichern überschreiben Sie die geänderten Felder."
   },
   "comments": {
     "empty": "Noch keine Kommentare.",

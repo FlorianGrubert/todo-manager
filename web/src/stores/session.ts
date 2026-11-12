@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import type { Locale, MeResponse } from '@fg/shared';
 import { ApiError, get, patch, post, setCsrfToken } from '../api/client';
 import { applyLocale } from '../i18n';
+import { connectLive } from '../live';
 
 export const useSessionStore = defineStore('session', () => {
   const me = ref<MeResponse | null>(null);
@@ -36,6 +37,7 @@ export const useSessionStore = defineStore('session', () => {
 
   async function logout(): Promise<void> {
     await post('/api/auth/logout').catch(() => undefined);
+    connectLive(false);
     apply(null);
   }
 
@@ -43,7 +45,13 @@ export const useSessionStore = defineStore('session', () => {
     apply(await post<MeResponse>('/api/auth/switch-tenant', { tenantId }));
   }
 
-  async function updateProfile(changes: { locale?: Locale; name?: string }): Promise<void> {
+  async function updateProfile(changes: {
+    locale?: Locale;
+    name?: string;
+    notifyAssign?: boolean;
+    remindDaysBefore?: number | null;
+    notifyOverdue?: boolean;
+  }): Promise<void> {
     if (!me.value) {
       if (changes.locale) applyLocale(changes.locale);
       return;

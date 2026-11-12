@@ -18,6 +18,7 @@ import BoardToolbar from '../components/board/BoardToolbar.vue';
 import KanbanBoard, { type Lane } from '../components/board/KanbanBoard.vue';
 import TodoDialog from '../components/TodoDialog.vue';
 import { errorKey } from '../i18n';
+import { debounce, onLive } from '../live';
 import { refLabel, useReferenceStore } from '../stores/reference';
 import { useSessionStore } from '../stores/session';
 
@@ -175,6 +176,11 @@ onMounted(async () => {
   if (openTodoId.value) await resolveDeepLink(openTodoId.value);
   await load();
 });
+
+// Live updates: reload the current view when To-Dos (or reference data) change elsewhere.
+const reloadSoon = debounce(() => void load());
+onLive('todos', reloadSoon);
+onLive('reference', reloadSoon);
 </script>
 
 <template>

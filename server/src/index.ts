@@ -1,6 +1,7 @@
 import { buildApp } from './app.js';
 import { loadConfig, loadEnvFile } from './config.js';
 import { createDb, migrateLatest } from './db/knex.js';
+import { startReminderScheduler } from './modules/notifications/service.js';
 
 loadEnvFile();
 const config = loadConfig();
@@ -8,8 +9,10 @@ const db = createDb({ client: config.DB_CLIENT, sqliteFile: config.SQLITE_FILE, 
 await migrateLatest(db);
 
 const app = await buildApp({ config, db });
+const stopReminders = startReminderScheduler(app.deps, app.log);
 
 const shutdown = async () => {
+  stopReminders();
   await app.close();
   await db.destroy();
   process.exit(0);

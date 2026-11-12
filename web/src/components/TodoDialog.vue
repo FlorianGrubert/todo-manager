@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import type { CommentDto, HistoryResponse, MemberDto, TagDto, TodoDto, TodoInput, TodoLinkDto } from '@fg/shared';
 import { get, patch, post } from '../api/client';
 import { errorKey } from '../i18n';
+import { onLive } from '../live';
 import { refLabel, useReferenceStore } from '../stores/reference';
 import { useSessionStore } from '../stores/session';
 import AppModal from './AppModal.vue';
@@ -26,6 +27,9 @@ const assignable = ref<MemberDto[]>([]);
 const comments = ref<CommentDto[]>([]);
 const newComment = ref('');
 const history = ref<HistoryResponse | null>(null);
+/** Snapshot of the form after loading – used to detect unsaved edits. */
+const pristine = ref('');
+const changedElsewhere = ref(false);
 
 const form = reactive({
   title: '',
@@ -95,6 +99,7 @@ onMounted(async () => {
     if (props.todoId) {
       todo.value = await get<TodoDto>(`/api/todos/${props.todoId}`);
       fillForm(todo.value);
+      pristine.value = JSON.stringify(payload());
     } else {
       fillForm((props.defaults ?? {}) as FormSource);
       if (!form.projectId && !mayUseNoProject.value) form.projectId = projectOptions.value[0]?.id ?? null;
@@ -120,6 +125,29 @@ watch(tab, async (value) => {
     if (value === 'history') await loadHistory();
   } catch (err) {
     error.value = t(errorKey(err));
+  }
+});
+
+/**
+ * Live update: someone else changed this To-Do. Without unsaved edits the dialog
+ * reloads silently; otherwise a hint is shown and the user's input is kept.
+ */
+onLive('todos', async (event) => {
+  if (!props.todoId || event.todoId !== props.todoId || busy.value) return;
+  try {
+    if (tab.value === 'comments') await loadComments();
+    if (tab.value === 'history') await loadHistory();
+    const fresh = await get<TodoDto>(`/api/todos/${props.todoId}`);
+    if (JSON.stringify(payload()) === pristine.value) {
+      todo.value = fresh;
+      fillForm(fresh);
+      pristine.value = JSON.stringify(payload());
+    } else if (fresh.updatedAt !== todo.value?.updatedAt) {
+      todo.value = { ...fresh };
+      changedElsewhere.value = true;
+    }
+  } catch {
+    // the To-Do may no longer be visible; the board reload handles that
   }
 });
 
@@ -204,6 +232,7 @@ async function addComment(): Promise<void> {
       </nav>
 
       <p v-if="error" class="alert alert-error" role="alert">{{ error }}</p>
+      <p v-if="changedElsewhere" class="alert alert-info" role="status">{{ t('todo.changedElsewhere') }}</p>
 
       <form v-if="tab === 'details'" id="todo-form" class="form todo-form" @submit.prevent="save">
         <p v-if="!editable" class="alert alert-info">{{ t('todo.readOnly') }}</p>

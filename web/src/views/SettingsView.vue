@@ -15,6 +15,28 @@ const language = ref<Locale>(session.user?.locale ?? 'de');
 const profileMessage = ref('');
 const profileError = ref('');
 
+const notifyAssign = ref(session.user?.notifyAssign ?? true);
+const remindEnabled = ref(session.user?.remindDaysBefore !== null && session.user?.remindDaysBefore !== undefined);
+const remindDays = ref(session.user?.remindDaysBefore ?? 1);
+const notifyOverdue = ref(session.user?.notifyOverdue ?? true);
+const notifyMessage = ref('');
+const notifyError = ref('');
+
+async function saveNotifications(): Promise<void> {
+  notifyMessage.value = '';
+  notifyError.value = '';
+  try {
+    await session.updateProfile({
+      notifyAssign: notifyAssign.value,
+      remindDaysBefore: remindEnabled.value ? Math.min(60, Math.max(0, Math.round(remindDays.value))) : null,
+      notifyOverdue: notifyOverdue.value,
+    });
+    notifyMessage.value = t('common.saved');
+  } catch (err) {
+    notifyError.value = t(errorKey(err));
+  }
+}
+
 const currentPassword = ref('');
 const newPassword = ref('');
 const confirm = ref('');
@@ -74,6 +96,32 @@ async function changePassword(): Promise<void> {
           </label>
           <p v-if="profileError" class="alert alert-error" role="alert">{{ profileError }}</p>
           <p v-if="profileMessage" class="alert alert-success" role="status">{{ profileMessage }}</p>
+          <button class="button primary" type="submit">{{ t('common.save') }}</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>{{ t('settings.notifications') }}</h2>
+        <form class="form" @submit.prevent="saveNotifications">
+          <p class="muted small">{{ t('settings.notificationsHint') }}</p>
+          <label class="checkbox">
+            <input v-model="notifyAssign" type="checkbox" />
+            {{ t('settings.notifyAssign') }}
+          </label>
+          <label class="checkbox">
+            <input v-model="remindEnabled" type="checkbox" />
+            {{ t('settings.remind') }}
+          </label>
+          <label v-if="remindEnabled" class="field">
+            <span>{{ t('settings.remindDays') }}</span>
+            <input v-model.number="remindDays" type="number" min="0" max="60" required />
+          </label>
+          <label class="checkbox">
+            <input v-model="notifyOverdue" type="checkbox" />
+            {{ t('settings.notifyOverdue') }}
+          </label>
+          <p v-if="notifyError" class="alert alert-error" role="alert">{{ notifyError }}</p>
+          <p v-if="notifyMessage" class="alert alert-success" role="status">{{ notifyMessage }}</p>
           <button class="button primary" type="submit">{{ t('common.save') }}</button>
         </form>
       </section>

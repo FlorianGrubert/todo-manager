@@ -13,7 +13,23 @@
     "passwordReset": {
       "subject": "Passwort zurücksetzen – FG To-Do-Manager",
       "body": "Für Ihr Konto wurde das Zurücksetzen des Passworts angefordert.\n\nÜber den folgenden Link legen Sie ein neues Passwort fest:\n{link}\n\nDer Link ist 1 Stunde gültig. Falls Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren."
-    }
+    },
+    "assigned": {
+      "subject": "Neues To-Do für Sie: {title}",
+      "body": "{by} hat Ihnen im Mandanten „{tenant}“ ein To-Do zugewiesen:\n\n{title}\n{details}\n{link}"
+    },
+    "digest": {
+      "subject": "Erinnerung an Ihre To-Dos",
+      "intro": "hier ist eine Übersicht über Ihre To-Dos, die bald fällig oder überfällig sind.",
+      "dueSoon": "Bald fällig",
+      "overdue": "Überfällig"
+    },
+    "labels": {
+      "project": "Projekt",
+      "due": "Fällig am",
+      "tenant": "Mandant"
+    },
+    "settingsHint": "Ihre Benachrichtigungen können Sie hier ändern: {link}"
   },
   "export": {
     "sheet": "To-Dos",
