@@ -7,6 +7,7 @@ import { errorKey } from '../i18n';
 import { refLabel, useReferenceStore } from '../stores/reference';
 import { useSessionStore } from '../stores/session';
 import AppModal from './AppModal.vue';
+import ShareButton from './ShareButton.vue';
 import TodoHistory from './TodoHistory.vue';
 
 const props = defineProps<{ todoId: string | null; defaults?: Partial<TodoInput> }>();
@@ -198,6 +199,8 @@ async function addComment(): Promise<void> {
           {{ t('todo.tabComments') }}<span v-if="todo?.commentCount" class="count">{{ todo.commentCount }}</span>
         </button>
         <button type="button" role="tab" :aria-selected="tab === 'history'" @click="tab = 'history'">{{ t('todo.tabHistory') }}</button>
+        <span class="spacer" />
+        <ShareButton v-if="todo" :todo-id="todo.id" :title="todo.title" />
       </nav>
 
       <p v-if="error" class="alert alert-error" role="alert">{{ error }}</p>

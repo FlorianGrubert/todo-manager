@@ -1,13 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import type { CommentDto, HistoryEntryDto, HistoryField, HistoryResponse, TodoDto } from '@fg/shared';
+import { paramsToTodoQuery, type CommentDto, type HistoryEntryDto, type HistoryField, type HistoryResponse, type TodoDto } from '@fg/shared';
 import { now } from '../../db/knex.js';
 import { ApiError, badRequest, conflict, notFound } from '../../lib/errors.js';
 import { idParam } from '../../lib/http.js';
 import { parse } from '../../lib/validate.js';
 import {
-  applyTodoVisibility,
   assertEligibleAssignee,
   assertMayAssign,
   canCreateTodo,
@@ -18,6 +17,7 @@ import {
 import { getTenant, requireTenant, scoped } from '../../tenancy/context.js';
 import { toPriorityDto, toStatusDto, type PriorityRow, type StatusRow } from '../reference/mappers.js';
 import { recordHistory, type HistoryChange } from './history.js';
+import { listTodoRows } from './query.js';
 import {
   assertActiveRef,
   assertEditable,
@@ -33,15 +33,6 @@ import {
   type TodoRow,
 } from './service.js';
 
-const listQuery = z.object({
-  projectId: z.string().min(1).max(64).optional(),
-  assignee: z.enum(['me']).optional(),
-  includeClosed: z.enum(['0', '1']).optional(),
-  includeArchived: z.enum(['0', '1']).optional(),
-  q: z.string().max(200).optional(),
-});
-
-const MAX_LIST = 5000;
 
 export function todoRoutes(app: FastifyInstance): void {
   const opts = { preHandler: requireTenant };
@@ -49,23 +40,9 @@ export function todoRoutes(app: FastifyInstance): void {
 
   app.get('/api/todos', opts, async (req): Promise<TodoDto[]> => {
     const ctx = getTenant(req);
-    const filters = parse(listQuery, req.query);
+    const filters = paramsToTodoQuery(req.query as Record<string, unknown>);
     const roles = await loadProjectRoles(db(), ctx);
-    const query = todoQuery(db(), ctx).join('statuses as s', 's.id', 't.status_id');
-    applyTodoVisibility(query, ctx, roles);
-    if (filters.projectId === 'none') query.whereNull('t.project_id');
-    else if (filters.projectId) query.where('t.project_id', filters.projectId);
-    if (filters.assignee === 'me') query.where('t.assignee_id', ctx.membershipId);
-    if (filters.includeClosed !== '1') query.where('s.category', 'open');
-    if (filters.includeArchived !== '1') query.whereNull('p.archived_at');
-    if (filters.q?.trim()) {
-      const term = `%${filters.q.trim().toLowerCase().replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
-      query.where((q) =>
-        q.whereRaw("lower(t.title) like ? escape '\\'", [term]).orWhereRaw("lower(t.description) like ? escape '\\'", [term]),
-      );
-    }
-    const rows = (await query.orderBy('t.updated_at', 'desc').limit(MAX_LIST).select(TODO_COLUMNS)) as TodoRow[];
-    return toTodoDtos(db(), ctx, roles, rows);
+    return toTodoDtos(db(), ctx, roles, await listTodoRows(db(), ctx, roles, filters));
   });
 
   app.get('/api/todos/:id', opts, async (req): Promise<TodoDto> => {

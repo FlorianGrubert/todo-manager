@@ -14,5 +14,39 @@
       "subject": "Reset password – FG To-Do-Manager",
       "body": "A password reset was requested for your account.\n\nUse the following link to set a new password:\n{link}\n\nThe link is valid for 1 hour. If you did not request this, you can ignore this e-mail."
     }
+  },
+  "export": {
+    "sheet": "To-dos",
+    "filename": "to-dos",
+    "columns": {
+      "title": "Title",
+      "description": "Description",
+      "project": "Project",
+      "status": "Status",
+      "priority": "Priority",
+      "assignee": "Assignee",
+      "dueDate": "Due date",
+      "tags": "Tags",
+      "links": "Links",
+      "createdAt": "Created on",
+      "createdBy": "Created by",
+      "updatedAt": "Changed on",
+      "updatedBy": "Changed by",
+      "url": "Link"
+    }
+  },
+  "status": {
+    "backlog": "Backlog",
+    "in_progress": "In progress",
+    "under_review": "Under review",
+    "done": "Done",
+    "rejected": "Rejected",
+    "deleted": "Deleted"
+  },
+  "priority": {
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
   }
 }

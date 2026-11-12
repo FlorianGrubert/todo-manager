@@ -4,8 +4,9 @@ import { useI18n } from 'vue-i18n';
 import type { TodoDto } from '@fg/shared';
 import { refLabel, useReferenceStore } from '../stores/reference';
 import PriorityBadge from './PriorityBadge.vue';
+import ShareButton from './ShareButton.vue';
 
-const props = defineProps<{ todo: TodoDto }>();
+const props = defineProps<{ todo: TodoDto; compact?: boolean }>();
 const emit = defineEmits<{ open: [id: string] }>();
 const { t, d } = useI18n();
 const reference = useReferenceStore();
@@ -23,24 +24,26 @@ const overdue = computed(() => {
 <template>
   <article
     class="todo-card"
+    :class="{ compact }"
     :style="{ '--status-color': status?.color ?? '#94a3b8' }"
     tabindex="0"
     @click="emit('open', todo.id)"
-    @keydown.enter="emit('open', todo.id)"
+    @keydown.enter.self="emit('open', todo.id)"
   >
     <header class="todo-card-head">
       <PriorityBadge :priority="priority" />
       <h3>{{ todo.title }}</h3>
+      <ShareButton v-if="!compact" :todo-id="todo.id" :title="todo.title" small />
     </header>
     <div class="todo-card-meta">
       <span class="status-chip">{{ refLabel('status', status) }}</span>
-      <span v-if="project" class="muted">{{ project.name }}</span>
+      <span v-if="project && !compact" class="muted">{{ project.name }}</span>
       <span v-if="todo.dueDate" class="due" :class="{ overdue }">{{ t('todo.dueShort', { date: d(new Date(`${todo.dueDate}T00:00:00`)) }) }}</span>
     </div>
-    <div v-if="todo.tags.length" class="tag-list">
+    <div v-if="todo.tags.length && !compact" class="tag-list">
       <span v-for="tag in todo.tags" :key="tag.id" class="tag" :style="tag.color ? { '--tag-color': tag.color } : undefined">{{ tag.name }}</span>
     </div>
-    <footer class="todo-card-foot">
+    <footer v-if="!compact" class="todo-card-foot">
       <span class="assignee">{{ assignee?.displayName ?? t('todo.unassigned') }}</span>
       <span v-if="todo.commentCount" class="comment-count muted" :title="t('todo.tabComments')">{{ todo.commentCount }}</span>
     </footer>

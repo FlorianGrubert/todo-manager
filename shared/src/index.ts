@@ -251,3 +251,102 @@ export interface HistoryResponse {
     projects: { id: string; name: string }[];
   };
 }
+
+// ---------------------------------------------------------------------------
+// Board views, filters and sorting (§5)
+// ---------------------------------------------------------------------------
+
+export const VIEW_MODES = ['status', 'person', 'tag', 'grid'] as const;
+export type ViewMode = (typeof VIEW_MODES)[number];
+
+export const SORT_FIELDS = ['priority', 'status', 'dueDate', 'createdAt', 'updatedAt'] as const;
+export type SortField = (typeof SORT_FIELDS)[number];
+export type SortDir = 'asc' | 'desc';
+
+/** Value used in filter lists for "without tag / unassigned / without priority / without project". */
+export const NONE = 'none';
+
+/**
+ * Filter criteria: multiple values within one criterion are combined with OR,
+ * different criteria with AND.
+ */
+export interface FilterCriteria {
+  tagIds: string[];
+  assigneeIds: string[];
+  priorityIds: string[];
+  projectIds: string[];
+}
+
+export interface SavedFilterDto {
+  id: string;
+  name: string;
+  criteria: FilterCriteria;
+}
+
+export interface TodoQuery extends FilterCriteria {
+  scope: 'mine' | 'all';
+  q: string;
+  includeClosed: boolean;
+  includeArchived: boolean;
+  sort: SortField;
+  dir: SortDir;
+}
+
+export const EMPTY_CRITERIA: FilterCriteria = { tagIds: [], assigneeIds: [], priorityIds: [], projectIds: [] };
+
+export const DEFAULT_QUERY: TodoQuery = {
+  ...EMPTY_CRITERIA,
+  scope: 'mine',
+  q: '',
+  includeClosed: false,
+  includeArchived: false,
+  sort: 'priority',
+  dir: 'asc',
+};
+
+const LIST_PARAMS: Record<keyof FilterCriteria, string> = {
+  tagIds: 'tags',
+  assigneeIds: 'assignees',
+  priorityIds: 'priorities',
+  projectIds: 'projects',
+};
+
+/** Serializes a To-Do query into URL parameters (used for API calls, export and bookmarkable URLs). */
+export function todoQueryToParams(query: Partial<TodoQuery>): URLSearchParams {
+  const q = { ...DEFAULT_QUERY, ...query };
+  const params = new URLSearchParams();
+  if (q.scope !== DEFAULT_QUERY.scope) params.set('scope', q.scope);
+  if (q.q.trim()) params.set('q', q.q.trim());
+  if (q.includeClosed) params.set('closed', '1');
+  if (q.includeArchived) params.set('archived', '1');
+  if (q.sort !== DEFAULT_QUERY.sort) params.set('sort', q.sort);
+  if (q.dir !== DEFAULT_QUERY.dir) params.set('dir', q.dir);
+  for (const [key, param] of Object.entries(LIST_PARAMS) as [keyof FilterCriteria, string][]) {
+    if (q[key].length) params.set(param, q[key].join(','));
+  }
+  return params;
+}
+
+/** Parses URL parameters into a To-Do query; unknown values fall back to defaults. */
+export function paramsToTodoQuery(params: Record<string, unknown>): TodoQuery {
+  const str = (key: string) => (typeof params[key] === 'string' ? (params[key] as string) : '');
+  const list = (key: string) =>
+    str(key)
+      .split(',')
+      .map((v) => v.trim())
+      .filter((v) => v.length > 0 && v.length <= 64)
+      .slice(0, 100);
+  const sort = str('sort') as SortField;
+  return {
+    scope: str('scope') === 'all' ? 'all' : 'mine',
+    q: str('q').slice(0, 200),
+    includeClosed: str('closed') === '1',
+    includeArchived: str('archived') === '1',
+    sort: (SORT_FIELDS as readonly string[]).includes(sort) ? sort : DEFAULT_QUERY.sort,
+    dir: str('dir') === 'desc' ? 'desc' : 'asc',
+    tagIds: list(LIST_PARAMS.tagIds),
+    assigneeIds: list(LIST_PARAMS.assigneeIds),
+    priorityIds: list(LIST_PARAMS.priorityIds),
+    projectIds: list(LIST_PARAMS.projectIds),
+  };
+}

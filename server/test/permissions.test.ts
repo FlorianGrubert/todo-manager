@@ -14,7 +14,9 @@ describe('permissions', () => {
   afterEach(async () => env.close());
 
   const list = async (who: keyof Scenario['clients'], query = '') => {
-    const res = await s.clients[who].get(`/api/todos${query}`);
+    const params = new URLSearchParams(query);
+    if (!params.has('scope')) params.set('scope', 'all');
+    const res = await s.clients[who].get(`/api/todos?${params.toString()}`);
     expect(res.statusCode).toBe(200);
     return titles(res.json() as TodoDto[]);
   };
@@ -29,9 +31,9 @@ describe('permissions', () => {
   });
 
   it('filters by project, "without project", assignee and search text', async () => {
-    expect(await list('admin', `?projectId=${s.projectP}`)).toEqual(['t1', 't2', 't3']);
-    expect(await list('admin', '?projectId=none')).toEqual(['t5']);
-    expect(await list('editor', '?assignee=me')).toEqual(['t1']);
+    expect(await list('admin', `?projects=${s.projectP}`)).toEqual(['t1', 't2', 't3']);
+    expect(await list('admin', '?projects=none')).toEqual(['t5']);
+    expect(await list('editor', '?scope=mine')).toEqual(['t1']);
     expect(await list('admin', '?q=T4')).toEqual(['t4']);
     expect(await list('admin', '?q=%25')).toEqual([]);
   });
@@ -119,7 +121,7 @@ describe('permissions', () => {
 
     // closed To-Dos are hidden by default
     expect(await list('editor')).not.toContain('renamed');
-    expect(await list('editor', '?includeClosed=1')).toContain('renamed');
+    expect(await list('editor', '?closed=1')).toContain('renamed');
   });
 
   it('rejects unsafe link schemes', async () => {
@@ -152,7 +154,7 @@ describe('permissions', () => {
       expect((await s.clients.editor.post(`/api/projects/${s.projectP}/archive`)).statusCode).toBe(403);
       expect((await s.clients.padmin.post(`/api/projects/${s.projectP}/archive`)).statusCode).toBe(204);
       expect(await list('editor')).toEqual(['t5']);
-      expect(await list('editor', '?includeArchived=1')).toEqual(['t1', 't2', 't3', 't5']);
+      expect(await list('editor', '?archived=1')).toEqual(['t1', 't2', 't3', 't5']);
       const edit = await s.clients.editor.patch(`/api/todos/${s.todos.t1}`, { title: 'x' });
       expect(edit.json()).toEqual({ error: 'archived' });
       expect((await s.clients.editor.post('/api/todos', { title: 'x', projectId: s.projectP })).statusCode).toBe(409);

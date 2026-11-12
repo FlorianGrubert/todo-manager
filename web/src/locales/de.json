@@ -144,7 +144,6 @@
     "scope": "Ansicht",
     "mine": "Meine",
     "all": "Alle",
-    "allProjects": "Alle Projekte",
     "search": "Suchen …",
     "showClosed": "Erledigte und abgebrochene anzeigen",
     "empty": "Keine To-Dos gefunden."
@@ -292,5 +291,51 @@
       "hint": "Tags entstehen beim Bearbeiten von To-Dos. Hier können sie umbenannt, eingefärbt oder gelöscht werden.",
       "empty": "Noch keine Tags vorhanden."
     }
+  },
+  "board": {
+    "count": "{n} To-Dos",
+    "viewLabel": "Ansicht",
+    "view": {
+      "status": "Nach Status",
+      "person": "Nach Personen",
+      "tag": "Nach Tags",
+      "grid": "Raster"
+    },
+    "sort": {
+      "label": "Sortierung",
+      "priority": "Priorität",
+      "status": "Status",
+      "dueDate": "Fälligkeitsdatum",
+      "createdAt": "Erfassungsdatum",
+      "updatedAt": "Änderungsdatum",
+      "asc": "Aufsteigend",
+      "desc": "Absteigend"
+    },
+    "filter": "Filter",
+    "filters": {
+      "tags": "Tags",
+      "persons": "Personen",
+      "priorities": "Prioritäten",
+      "projects": "Projekte",
+      "reset": "Filter zurücksetzen"
+    },
+    "withoutTag": "Ohne Tag",
+    "savedFilters": "Gespeicherte Filter",
+    "noSavedFilters": "Keine gespeicherten Filter",
+    "saveFilter": "Filter speichern",
+    "saveFilterPrompt": "Name für den Filter:",
+    "deleteFilter": "Filter löschen",
+    "confirmDeleteFilter": "Gespeicherten Filter „{name}“ löschen?",
+    "export": "Exportieren",
+    "exportXlsx": "Excel (XLSX)",
+    "exportCsv": "CSV",
+    "linkNotFound": "Das To-Do wurde nicht gefunden oder Sie haben keinen Zugriff darauf."
+  },
+  "share": {
+    "button": "Teilen",
+    "copy": "Link kopieren",
+    "copied": "Link kopiert",
+    "email": "Per E-Mail senden",
+    "copyManually": "Link kopieren:"
   }
 }

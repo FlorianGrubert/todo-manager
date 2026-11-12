@@ -28,14 +28,14 @@ describe('tenant isolation', () => {
 
   it('lists only own tenant data', async () => {
     const c = a.clients.admin;
-    expect(titles((await c.get('/api/todos?includeClosed=1&includeArchived=1')).json() as TodoDto[])).toEqual([
+    expect(titles((await c.get('/api/todos?scope=all&closed=1&archived=1')).json() as TodoDto[])).toEqual([
       't1',
       't2',
       't3',
       't4',
       't5',
     ]);
-    const ids = ((await c.get('/api/todos')).json() as TodoDto[]).map((t) => t.id);
+    const ids = ((await c.get('/api/todos?scope=all')).json() as TodoDto[]).map((t) => t.id);
     expect(ids.some((id) => Object.values(b.todos).includes(id))).toBe(false);
     expect(((await c.get('/api/tags')).json() as TagDto[]).map((t) => t.name)).not.toContain('secret-b');
     const statusIds = ((await c.get('/api/statuses')).json() as { id: string }[]).map((st) => st.id);

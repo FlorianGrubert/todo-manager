@@ -15,6 +15,7 @@ import { memberRoutes } from './modules/members/routes.js';
 import { projectRoutes } from './modules/projects/routes.js';
 import { referenceRoutes } from './modules/reference/routes.js';
 import { systemRoutes } from './modules/system/routes.js';
+import { todoExtraRoutes } from './modules/todos/extra-routes.js';
 import { todoRoutes } from './modules/todos/routes.js';
 import { registerAuthContext } from './tenancy/context.js';
 import './types.js';
@@ -81,6 +82,7 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   referenceRoutes(app);
   projectRoutes(app);
   memberRoutes(app);
+  todoExtraRoutes(app);
   todoRoutes(app);
 
   const webDist = resolve(config.WEB_DIST ?? defaultWebDist);

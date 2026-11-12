@@ -252,6 +252,22 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 
 - Ansicht nach Status setzt den Status, Ansicht nach Personen setzt die Zuweisung, die Raster-Ansicht setzt beides
 - In der Ansicht nach Tags ist kein Drag and Drop möglich
+- Auf Touch-Geräten startet das Ziehen nach kurzem Gedrückthalten einer Kachel, damit normales Scrollen möglich bleibt
+
+### Board, Filter und Sortierung
+
+- „Meine“ zeigt die dem Benutzer zugewiesenen To-Dos (Startansicht), „Alle“ alle To-Dos, die er sehen darf
+- Ansicht nach Personen und Raster-Ansicht zeigen eine Zeile bzw. Lane je Person mit To-Dos (bzw. je gefilterter Person) sowie „Nicht zugewiesen“; in der Ansicht nach Tags erscheint ein To-Do mit mehreren Tags in mehreren Lanes, To-Dos ohne Tag in „Ohne Tag“
+- Filter bieten je Kriterium auch „ohne“ (ohne Tag, nicht zugewiesen, ohne Priorität, ohne Projekt)
+- Gespeicherte Filter speichern die Filterkriterien (Tag, Person, Priorität, Projekt), nicht Ansicht, Suche oder Sortierung
+- Sortierung „aufsteigend“ nach Priorität bedeutet: höchste Priorität (Rang 1) zuerst. Leere Werte (keine Priorität, kein Fälligkeitsdatum) stehen immer am Ende
+- Ansicht, Filter und Sortierung stehen in der Adresse der Seite und können als Lesezeichen gespeichert werden
+
+### Teilen und Export
+
+- Der Deep Link eines To-Dos hat die Form `<BASE_URL>/todos/<ID>`
+- Export-Spalten: Titel, Beschreibung, Projekt, Status, Priorität, Zuständig, Fällig am, Tags, Links, Erfasst am/von, Geändert am/von, Link zum To-Do; Spaltenüberschriften in der Sprache des Benutzers
+- CSV wird als UTF-8 mit BOM erzeugt, mit Semikolon als Trennzeichen bei deutscher und Komma bei englischer Oberfläche. Zellen, die mit `=`, `+`, `-` oder `@` beginnen, werden in CSV mit einem Apostroph geschützt (Formel-Injection)
 
 ### Mandanten und Benutzer
 

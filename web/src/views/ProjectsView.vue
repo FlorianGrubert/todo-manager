@@ -131,7 +131,7 @@ onMounted(load);
     <ul v-else class="project-list">
       <li v-for="p in visible" :key="p.id" class="card project-item" :class="{ archived: p.archived }">
         <div class="project-main">
-          <RouterLink :to="{ name: 'todos', query: { scope: 'all', projectId: p.id } }" class="project-name">{{ p.name }}</RouterLink>
+          <RouterLink :to="{ name: 'todos', query: { scope: 'all', projects: p.id, ...(p.archived ? { archived: '1' } : {}) } }" class="project-name">{{ p.name }}</RouterLink>
           <span v-if="p.archived" class="badge badge-off">{{ t('projects.archived') }}</span>
           <span v-if="p.myRole" class="badge">{{ t(`role.${p.myRole}`) }}</span>
           <p v-if="p.description" class="muted project-description">{{ p.description }}</p>

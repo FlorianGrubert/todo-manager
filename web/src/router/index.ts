@@ -16,7 +16,8 @@ export const router = createRouter({
     { path: '/forgot', name: 'forgot', component: () => import('../views/ForgotView.vue'), meta: { public: true } },
     { path: '/reset/:token', name: 'reset', component: () => import('../views/ResetView.vue'), meta: { public: true } },
     { path: '/invite/:token', name: 'invite', component: () => import('../views/InviteView.vue'), meta: { public: true } },
-    { path: '/', name: 'todos', component: () => import('../views/TodoListView.vue') },
+    { path: '/', name: 'todos', component: () => import('../views/BoardView.vue') },
+    { path: '/todos/:id', name: 'todo', component: () => import('../views/BoardView.vue') },
     { path: '/projects', name: 'projects', component: () => import('../views/ProjectsView.vue') },
     {
       path: '/admin',

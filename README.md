@@ -2,7 +2,7 @@
 
 Mandantenfähige To-Do-Verwaltung mit Kanban-Oberfläche für Einzelpersonen und Teams. Web-Anwendung für Desktop, Tablet und Smartphone (installierbar als Progressive Web App). Oberfläche auf Deutsch und Englisch.
 
-> **Stand: Version 0.2.0 (Ausbaustufe 2 von 6).** Enthalten sind Installation, Anmeldung, Einladungen, Mandantenwechsel, Systemverwaltung, Projekte mit Projektrollen, To-Dos (Liste mit Filtern, Kommentare, Änderungsverlauf) sowie die Mandanten-Administration (Benutzer, Status, Prioritäten, Tags). Kanban-Board, Live-Aktualisierung, Benachrichtigungen, Offline-Erfassung und Export folgen in den nächsten Ausbaustufen.
+> **Stand: Version 0.3.0 (Ausbaustufe 3 von 6).** Enthalten sind Anmeldung, Einladungen, Mandantenwechsel, Systemverwaltung, Projekte mit Projektrollen, Kanban-Board (nach Status, Personen, Tags und als Raster) mit Drag and Drop, Filtern, gespeicherten Filtern und Sortierung, Kommentare, Änderungsverlauf, Teilen per Link sowie Export als Excel/CSV und die Mandanten-Administration. Live-Aktualisierung, E-Mail-Benachrichtigungen, Offline-Erfassung und Mandanten-Export folgen in den nächsten Ausbaustufen.
 
 ## Voraussetzungen
 
@@ -54,6 +54,8 @@ Die Anwendung ist anschließend unter `BASE_URL` erreichbar (standardmäßig `ht
 Jeder neue Mandant startet mit den Standard-Status (Backlog, In Arbeit, Under Review, Erledigt, Abgelehnt, Gelöscht) und den Standard-Prioritäten (Kritisch, Hoch, Mittel, Niedrig).
 
 Der Mandanten-Administrator lädt unter **Administration → Benutzer** weitere Personen ein und legt dort Mandantenrolle und Standardrolle (für To-Dos ohne Projekt) fest. Projekte und die Rollen der Personen in Projekten (Bearbeiter, eingeschränkter Bearbeiter, Leser) werden unter **Projekte** verwaltet. Status, Prioritäten und Tags werden unter **Administration** angepasst.
+
+Links zu einzelnen To-Dos (Teilen-Button) öffnen das To-Do nach der Anmeldung direkt – auch in einem anderen Mandanten, sofern die Person dort Zugriff hat. Die aktuelle Board-Ansicht inklusive Filter lässt sich über **Exportieren** als Excel- oder CSV-Datei herunterladen.
 
 Personen, die bereits ein Konto in einem anderen Mandanten haben, nehmen Einladungen mit ihrem bestehenden Login an. Nach der Anmeldung öffnet sich der zuletzt genutzte Mandant; über den Umschalter in der Kopfzeile wird zwischen Mandanten gewechselt.
 

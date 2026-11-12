@@ -144,7 +144,6 @@
     "scope": "View",
     "mine": "Mine",
     "all": "All",
-    "allProjects": "All projects",
     "search": "Search …",
     "showClosed": "Show done and cancelled",
     "empty": "No to-dos found."
@@ -292,5 +291,51 @@
       "hint": "Tags are created while editing to-dos. Here they can be renamed, colored or deleted.",
       "empty": "No tags yet."
     }
+  },
+  "board": {
+    "count": "{n} to-dos",
+    "viewLabel": "View",
+    "view": {
+      "status": "By status",
+      "person": "By person",
+      "tag": "By tag",
+      "grid": "Grid"
+    },
+    "sort": {
+      "label": "Sort by",
+      "priority": "Priority",
+      "status": "Status",
+      "dueDate": "Due date",
+      "createdAt": "Creation date",
+      "updatedAt": "Last change",
+      "asc": "Ascending",
+      "desc": "Descending"
+    },
+    "filter": "Filter",
+    "filters": {
+      "tags": "Tags",
+      "persons": "Persons",
+      "priorities": "Priorities",
+      "projects": "Projects",
+      "reset": "Reset filters"
+    },
+    "withoutTag": "Without tag",
+    "savedFilters": "Saved filters",
+    "noSavedFilters": "No saved filters",
+    "saveFilter": "Save filter",
+    "saveFilterPrompt": "Name of the filter:",
+    "deleteFilter": "Delete filter",
+    "confirmDeleteFilter": "Delete saved filter “{name}”?",
+    "export": "Export",
+    "exportXlsx": "Excel (XLSX)",
+    "exportCsv": "CSV",
+    "linkNotFound": "The to-do was not found or you have no access to it."
+  },
+  "share": {
+    "button": "Share",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "email": "Send by e-mail",
+    "copyManually": "Copy link:"
   }
 }

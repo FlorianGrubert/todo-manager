@@ -14,5 +14,39 @@
       "subject": "Passwort zurücksetzen – FG To-Do-Manager",
       "body": "Für Ihr Konto wurde das Zurücksetzen des Passworts angefordert.\n\nÜber den folgenden Link legen Sie ein neues Passwort fest:\n{link}\n\nDer Link ist 1 Stunde gültig. Falls Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren."
     }
+  },
+  "export": {
+    "sheet": "To-Dos",
+    "filename": "to-dos",
+    "columns": {
+      "title": "Titel",
+      "description": "Beschreibung",
+      "project": "Projekt",
+      "status": "Status",
+      "priority": "Priorität",
+      "assignee": "Zuständig",
+      "dueDate": "Fällig am",
+      "tags": "Tags",
+      "links": "Links",
+      "createdAt": "Erfasst am",
+      "createdBy": "Erfasst von",
+      "updatedAt": "Geändert am",
+      "updatedBy": "Geändert von",
+      "url": "Link"
+    }
+  },
+  "status": {
+    "backlog": "Backlog",
+    "in_progress": "In Arbeit",
+    "under_review": "Under Review",
+    "done": "Erledigt",
+    "rejected": "Abgelehnt",
+    "deleted": "Gelöscht"
+  },
+  "priority": {
+    "critical": "Kritisch",
+    "high": "Hoch",
+    "medium": "Mittel",
+    "low": "Niedrig"
   }
 }
