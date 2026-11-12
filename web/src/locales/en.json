@@ -1,0 +1,136 @@
+{
+  "app": {
+    "name": "FG To-Do-Manager",
+    "version": "Version {version}"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "loading": "Loading …",
+    "close": "Close",
+    "create": "Create",
+    "yes": "Yes",
+    "no": "No",
+    "saved": "Saved"
+  },
+  "nav": {
+    "home": "Overview",
+    "system": "System administration",
+    "settings": "Settings",
+    "logout": "Sign out",
+    "tenant": "Tenant",
+    "menu": "Menu"
+  },
+  "language": {
+    "label": "Language",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "auth": {
+    "email": "E-mail address",
+    "password": "Password",
+    "passwordConfirm": "Repeat password",
+    "passwordHint": "At least {min} characters",
+    "passwordMismatch": "The passwords do not match.",
+    "login": {
+      "title": "Sign in",
+      "submit": "Sign in",
+      "forgot": "Forgot password?"
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "intro": "Enter your e-mail address. If an account exists, you will receive a reset link.",
+      "submit": "Request link",
+      "sent": "If an account exists for this address, an e-mail has been sent."
+    },
+    "reset": {
+      "title": "Set new password",
+      "submit": "Save password",
+      "done": "Your password has been changed. You can sign in now."
+    },
+    "toLogin": "Go to sign in"
+  },
+  "invite": {
+    "title": "Accept invitation",
+    "intro": "You have been invited to the tenant “{tenant}”.",
+    "newAccount": "Set your password to activate your account.",
+    "existingAccount": "You already have an account. Confirm the invitation with your existing password.",
+    "name": "Your name",
+    "submit": "Accept invitation",
+    "invalid": "This invitation is invalid, expired or has already been used."
+  },
+  "home": {
+    "welcome": "Welcome, {name}!",
+    "tenantInfo": "You are working in the tenant “{tenant}”.",
+    "noTenant": "You are currently not assigned to an active tenant.",
+    "boardSoon": "The Kanban board follows in the next development step."
+  },
+  "system": {
+    "title": "System administration",
+    "tenants": "Tenants",
+    "newTenant": "New tenant",
+    "tenantName": "Tenant name",
+    "adminEmail": "E-mail of the first administrator",
+    "adminName": "Name of the first administrator",
+    "inviteLocale": "Invitation language",
+    "created": "Tenant created. The invitation to the administrator has been sent.",
+    "members": "Members",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Deactivated",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "createdAt": "Created on",
+    "empty": "No tenants yet.",
+    "confirmDeactivate": "Really deactivate tenant “{name}”? Its users will no longer be able to open it."
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "name": "Name",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "passwordChanged": "Your password has been changed."
+  },
+  "role": {
+    "admin": "Administrator",
+    "project_admin": "Project administrator",
+    "member": "Member",
+    "editor": "Editor",
+    "restricted": "Restricted editor",
+    "reader": "Reader",
+    "none": "No access"
+  },
+  "status": {
+    "backlog": "Backlog",
+    "in_progress": "In progress",
+    "under_review": "Under review",
+    "done": "Done",
+    "rejected": "Rejected",
+    "deleted": "Deleted"
+  },
+  "priority": {
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "errors": {
+    "bad_request": "The input is invalid.",
+    "unauthorized": "Please sign in.",
+    "forbidden": "You are not allowed to do this.",
+    "not_found": "Not found.",
+    "conflict": "The action conflicts with existing data.",
+    "csrf": "Your session has expired. Please reload the page.",
+    "rate_limited": "Too many attempts. Please wait a moment.",
+    "invalid_credentials": "E-mail address or password is wrong.",
+    "invalid_token": "The link is invalid or has expired.",
+    "password_too_short": "The password is too short.",
+    "already_member": "This person is already a member of the tenant.",
+    "last_admin": "The last active administrator cannot be removed.",
+    "internal": "An unexpected error occurred.",
+    "network": "No connection to the server."
+  }
+}

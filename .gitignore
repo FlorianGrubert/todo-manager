@@ -73,3 +73,8 @@ desktop.ini
 *.tgz
 .tmp/
 tmp/
+
+# Application data (SQLite database)
+data/
+server/data/
+server/dist-check/

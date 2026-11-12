@@ -1,0 +1,41 @@
+{
+  "name": "fg-todo-manager",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FG To-Do-Manager – multi-tenant Kanban to-do management",
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "server",
+    "web"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build:shared": "npm run build -w @fg/shared",
+    "build": "npm run build:shared && npm run build -w @fg/server && npm run build -w @fg/web",
+    "dev": "npm run build:shared && concurrently -n server,web -c blue,green \"npm run dev -w @fg/server\" \"npm run dev -w @fg/web\"",
+    "start": "node server/dist/index.js",
+    "setup": "node server/dist/scripts/setup.js",
+    "lint": "eslint .",
+    "typecheck": "npm run build:shared && npm run typecheck -w @fg/server && npm run typecheck -w @fg/web",
+    "test": "npm run test:sqlite && npm run test:pg && npm run test:web",
+    "test:sqlite": "npm run build:shared && npm run test -w @fg/server -- --project sqlite",
+    "test:pg": "npm run build:shared && npm run test -w @fg/server -- --project pg",
+    "test:web": "npm run test -w @fg/web",
+    "test:db:up": "docker compose -f docker-compose.test.yml up -d --wait",
+    "test:db:down": "docker compose -f docker-compose.test.yml down"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@intlify/eslint-plugin-vue-i18n": "^4.5.1",
+    "concurrently": "^9.1.0",
+    "eslint": "^10.14.0",
+    "eslint-plugin-vue": "^10.12.1",
+    "globals": "^17.14.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.72.2",
+    "vue-eslint-parser": "^10.4.2"
+  }
+}

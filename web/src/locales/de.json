@@ -1,0 +1,136 @@
+{
+  "app": {
+    "name": "FG To-Do-Manager",
+    "version": "Version {version}"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "loading": "Wird geladen …",
+    "close": "Schließen",
+    "create": "Anlegen",
+    "yes": "Ja",
+    "no": "Nein",
+    "saved": "Gespeichert"
+  },
+  "nav": {
+    "home": "Übersicht",
+    "system": "Systemverwaltung",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "tenant": "Mandant",
+    "menu": "Menü"
+  },
+  "language": {
+    "label": "Sprache",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "auth": {
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "passwordConfirm": "Passwort wiederholen",
+    "passwordHint": "Mindestens {min} Zeichen",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+    "login": {
+      "title": "Anmelden",
+      "submit": "Anmelden",
+      "forgot": "Passwort vergessen?"
+    },
+    "forgot": {
+      "title": "Passwort vergessen",
+      "intro": "Geben Sie Ihre E-Mail-Adresse ein. Falls ein Konto existiert, erhalten Sie einen Link zum Zurücksetzen.",
+      "submit": "Link anfordern",
+      "sent": "Falls ein Konto zu dieser Adresse existiert, wurde eine E-Mail versendet."
+    },
+    "reset": {
+      "title": "Neues Passwort festlegen",
+      "submit": "Passwort speichern",
+      "done": "Ihr Passwort wurde geändert. Sie können sich jetzt anmelden."
+    },
+    "toLogin": "Zur Anmeldung"
+  },
+  "invite": {
+    "title": "Einladung annehmen",
+    "intro": "Sie wurden zum Mandanten „{tenant}“ eingeladen.",
+    "newAccount": "Legen Sie Ihr Passwort fest, um Ihr Konto zu aktivieren.",
+    "existingAccount": "Sie haben bereits ein Konto. Bestätigen Sie die Einladung mit Ihrem bestehenden Passwort.",
+    "name": "Ihr Name",
+    "submit": "Einladung annehmen",
+    "invalid": "Diese Einladung ist ungültig, abgelaufen oder wurde bereits verwendet."
+  },
+  "home": {
+    "welcome": "Willkommen, {name}!",
+    "tenantInfo": "Sie arbeiten im Mandanten „{tenant}“.",
+    "noTenant": "Sie sind derzeit keinem aktiven Mandanten zugeordnet.",
+    "boardSoon": "Das Kanban-Board folgt im nächsten Ausbauschritt."
+  },
+  "system": {
+    "title": "Systemverwaltung",
+    "tenants": "Mandanten",
+    "newTenant": "Neuer Mandant",
+    "tenantName": "Name des Mandanten",
+    "adminEmail": "E-Mail des ersten Administrators",
+    "adminName": "Name des ersten Administrators",
+    "inviteLocale": "Sprache der Einladung",
+    "created": "Mandant angelegt. Die Einladung an den Administrator wurde versendet.",
+    "members": "Mitglieder",
+    "status": "Status",
+    "active": "Aktiv",
+    "inactive": "Deaktiviert",
+    "activate": "Aktivieren",
+    "deactivate": "Deaktivieren",
+    "createdAt": "Angelegt am",
+    "empty": "Noch keine Mandanten vorhanden.",
+    "confirmDeactivate": "Mandant „{name}“ wirklich deaktivieren? Seine Benutzer können ihn dann nicht mehr öffnen."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "profile": "Profil",
+    "name": "Name",
+    "changePassword": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "passwordChanged": "Ihr Passwort wurde geändert."
+  },
+  "role": {
+    "admin": "Administrator",
+    "project_admin": "Projektadministrator",
+    "member": "Mitglied",
+    "editor": "Bearbeiter",
+    "restricted": "Eingeschränkter Bearbeiter",
+    "reader": "Leser",
+    "none": "Kein Zugriff"
+  },
+  "status": {
+    "backlog": "Backlog",
+    "in_progress": "In Arbeit",
+    "under_review": "Under Review",
+    "done": "Erledigt",
+    "rejected": "Abgelehnt",
+    "deleted": "Gelöscht"
+  },
+  "priority": {
+    "critical": "Kritisch",
+    "high": "Hoch",
+    "medium": "Mittel",
+    "low": "Niedrig"
+  },
+  "errors": {
+    "bad_request": "Die Eingaben sind ungültig.",
+    "unauthorized": "Bitte melden Sie sich an.",
+    "forbidden": "Dafür fehlt Ihnen die Berechtigung.",
+    "not_found": "Nicht gefunden.",
+    "conflict": "Die Aktion steht im Konflikt mit vorhandenen Daten.",
+    "csrf": "Die Sitzung ist abgelaufen. Bitte laden Sie die Seite neu.",
+    "rate_limited": "Zu viele Versuche. Bitte warten Sie einen Moment.",
+    "invalid_credentials": "E-Mail-Adresse oder Passwort ist falsch.",
+    "invalid_token": "Der Link ist ungültig oder abgelaufen.",
+    "password_too_short": "Das Passwort ist zu kurz.",
+    "already_member": "Diese Person ist bereits Mitglied des Mandanten.",
+    "last_admin": "Der letzte aktive Administrator kann nicht entfernt werden.",
+    "internal": "Ein unerwarteter Fehler ist aufgetreten.",
+    "network": "Keine Verbindung zum Server."
+  }
+}

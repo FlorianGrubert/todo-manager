@@ -222,3 +222,42 @@ Setze die Anwendung vollständig nach diesem Dokument um; bei Unklarheiten gelte
 * **Mehrsprachigkeit:** Alle Texte über Übersetzungsdateien, keine fest codierten Texte
 * **Tests:** Automatisierte Tests für Rechte, Filter und Datenbankumschaltung (SQLite und PostgreSQL)
 * **Lieferumfang:** Quellcode, README mit Installation und Konfiguration, Setup-Skript, Migrationsskript SQLite → PostgreSQL
+
+## 14. Präzisierungen und Entscheidungen
+
+Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgestimmte Festlegungen.
+
+### Statusmodell
+
+- Jeder Status hat eine **Kategorie**: offen, erledigt oder abgebrochen. Standard: Backlog, In Arbeit, Under Review = offen; Erledigt = erledigt; Abgelehnt, Gelöscht = abgebrochen
+- To-Dos mit einem Status der Kategorie „erledigt“ oder „abgebrochen“ sind standardmäßig ausgeblendet
+- **Canceln** setzt den Status, den der Administrator als Abbruch-Status markiert hat (Standard: „Abgelehnt“)
+- Ein Status ist als Standard für neue To-Dos markiert (Standard: „Backlog“)
+- Standard-Status und -Prioritäten werden in der jeweiligen Oberflächensprache angezeigt, bis der Administrator sie umbenennt
+- Entfernte Status und Prioritäten werden nur ausgeblendet; betroffene To-Dos erhalten beim Entfernen einen Ersatzwert
+
+### Rollen und Zuweisung
+
+- Der eingeschränkte Bearbeiter darf To-Dos anlegen und nur sich selbst oder niemanden zuweisen
+- Zugewiesen werden kann nur, wer im Projekt des To-Dos mindestens eingeschränkter Bearbeiter ist (bei To-Dos ohne Projekt: entsprechende Standardrolle)
+- Der Projektadministrator hat keine automatischen Rechte an To-Dos; dafür gelten nur seine Projektrollen. Der Mandanten-Administrator hat überall alle Rechte
+
+### Drag and Drop
+
+- Ansicht nach Status setzt den Status, Ansicht nach Personen setzt die Zuweisung, die Raster-Ansicht setzt beides
+- In der Ansicht nach Tags ist kein Drag and Drop möglich
+
+### Mandanten und Benutzer
+
+- Letzter Login, Deaktivierung und Pseudonymisierung gelten je Mandantenmitgliedschaft; dadurch ist für einen Mandanten-Administrator nicht erkennbar, ob eine Person anderen Mandanten angehört
+- Der Anzeigename einer Person wird je Mandant geführt (beim Einladen vom Administrator vergeben)
+- Passwörter haben mindestens 10 Zeichen; Links zum Zurücksetzen des Passworts sind 1 Stunde gültig
+- Nach dem Zurücksetzen des Passworts werden alle Sitzungen des Benutzers beendet
+
+### Technik
+
+- Backend: Node.js mit Fastify und TypeScript; Datenzugriff über den Query-Builder Knex
+- Oberfläche: Vue 3 mit TypeScript (Single-Page-App und PWA)
+- Live-Aktualisierung über Server-Sent Events; Ereignisse enthalten nur IDs, Inhalte werden über die rechtegeprüfte API nachgeladen
+- E-Mail-Versand über SMTP; für Tests kann der Versand ins Server-Log umgeleitet werden
+- Zeitstempel werden in UTC gespeichert, Fälligkeitsdaten als Kalenderdatum; Erinnerungen werden stündlich geprüft

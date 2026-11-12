@@ -1,0 +1,18 @@
+{
+  "mail": {
+    "greeting": "Hallo {name},",
+    "signature": "Ihr FG To-Do-Manager",
+    "inviteNew": {
+      "subject": "Einladung zu „{tenant}“ im FG To-Do-Manager",
+      "body": "Sie wurden zum Mandanten „{tenant}“ im FG To-Do-Manager eingeladen.\n\nÜber den folgenden Link legen Sie Ihr Passwort fest und schließen die Registrierung ab:\n{link}\n\nDer Link ist {days} Tage gültig und kann nur einmal verwendet werden."
+    },
+    "inviteExisting": {
+      "subject": "Einladung zu „{tenant}“ im FG To-Do-Manager",
+      "body": "Sie wurden zusätzlich zum Mandanten „{tenant}“ im FG To-Do-Manager eingeladen.\n\nÜber den folgenden Link nehmen Sie die Einladung mit Ihrem bestehenden Login an:\n{link}\n\nDer Link ist {days} Tage gültig und kann nur einmal verwendet werden."
+    },
+    "passwordReset": {
+      "subject": "Passwort zurücksetzen – FG To-Do-Manager",
+      "body": "Für Ihr Konto wurde das Zurücksetzen des Passworts angefordert.\n\nÜber den folgenden Link legen Sie ein neues Passwort fest:\n{link}\n\nDer Link ist 1 Stunde gültig. Falls Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren."
+    }
+  }
+}

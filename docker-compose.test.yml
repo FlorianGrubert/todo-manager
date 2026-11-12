@@ -1,0 +1,17 @@
+# PostgreSQL instance for the automated tests (npm run test:db:up / test:pg).
+services:
+  postgres-test:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: todo
+      POSTGRES_DB: todo_test
+    ports:
+      - "15432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todo -d todo_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
