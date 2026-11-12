@@ -1,6 +1,6 @@
 {
   "name": "@fg/web",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@fg/shared": "0.4.0",
+    "@fg/shared": "0.5.0",
+    "idb": "^8.0.4",
     "pinia": "^3.0.0",
     "sortablejs": "^1.15.7",
     "vue": "^3.5.13",
@@ -20,9 +21,13 @@
   "devDependencies": {
     "@types/sortablejs": "^1.15.9",
     "@vitejs/plugin-vue": "^6.0.10",
+    "fake-indexeddb": "^6.2.8",
     "happy-dom": "^21.0.4",
     "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0",
-    "vue-tsc": "^3.3.14"
+    "vue-tsc": "^3.3.14",
+    "workbox-build": "^7.4.1",
+    "workbox-window": "^7.4.1"
   }
 }

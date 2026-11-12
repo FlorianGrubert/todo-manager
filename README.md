@@ -2,7 +2,7 @@
 
 Mandantenfähige To-Do-Verwaltung mit Kanban-Oberfläche für Einzelpersonen und Teams. Web-Anwendung für Desktop, Tablet und Smartphone (installierbar als Progressive Web App). Oberfläche auf Deutsch und Englisch.
 
-> **Stand: Version 0.4.0 (Ausbaustufe 4 von 6).** Enthalten sind Anmeldung, Einladungen, Mandantenwechsel, Systemverwaltung, Projekte mit Projektrollen, Kanban-Board (nach Status, Personen, Tags und als Raster) mit Drag and Drop, Filtern und Sortierung, Kommentare, Änderungsverlauf, Teilen per Link, Export als Excel/CSV, Live-Aktualisierung, E-Mail-Benachrichtigungen mit Fälligkeitserinnerungen sowie die Mandanten-Administration. Offline-Erfassung (PWA) und Mandanten-Export/-Import folgen in den nächsten Ausbaustufen.
+> **Stand: Version 0.5.0 (Ausbaustufe 5 von 6).** Enthalten sind Anmeldung, Einladungen, Mandantenwechsel, Systemverwaltung, Projekte mit Projektrollen, Kanban-Board (nach Status, Personen, Tags und als Raster) mit Drag and Drop, Filtern und Sortierung, Kommentare, Änderungsverlauf, Teilen per Link, Export als Excel/CSV, Live-Aktualisierung, E-Mail-Benachrichtigungen, die installierbare Smartphone-App (PWA) mit Offline-Schnellerfassung sowie die Mandanten-Administration. Mandanten-Export/-Import und das Migrationsskript SQLite → PostgreSQL folgen in der letzten Ausbaustufe.
 
 ## Voraussetzungen
 
@@ -56,6 +56,8 @@ Jeder neue Mandant startet mit den Standard-Status (Backlog, In Arbeit, Under Re
 Der Mandanten-Administrator lädt unter **Administration → Benutzer** weitere Personen ein und legt dort Mandantenrolle und Standardrolle (für To-Dos ohne Projekt) fest. Projekte und die Rollen der Personen in Projekten (Bearbeiter, eingeschränkter Bearbeiter, Leser) werden unter **Projekte** verwaltet. Status, Prioritäten und Tags werden unter **Administration** angepasst.
 
 Jeder Benutzer legt unter **Einstellungen → Benachrichtigungen** fest, ob er E-Mails bei neuen Zuweisungen, Erinnerungen vor Fälligkeit (Anzahl Tage) und Meldungen bei Überfälligkeit erhalten möchte; die Einstellungen gelten für alle seine Mandanten. Für den Versand muss `MAIL_TRANSPORT=smtp` konfiguriert sein.
+
+**Smartphone:** Die Anwendung lässt sich im Browser des Smartphones „zum Startbildschirm hinzufügen“ und startet dann wie eine App in der **Schnellerfassung**. Neue To-Dos können auch ohne Netzverbindung erfasst werden; sie werden auf dem Gerät gespeichert und automatisch übertragen, sobald wieder eine Verbindung besteht. Offline ist der zuletzt geladene Stand des Boards schreibgeschützt sichtbar. Installation und Offline-Betrieb erfordern HTTPS (siehe Reverse Proxy).
 
 Links zu einzelnen To-Dos (Teilen-Button) öffnen das To-Do nach der Anmeldung direkt – auch in einem anderen Mandanten, sofern die Person dort Zugriff hat. Die aktuelle Board-Ansicht inklusive Filter lässt sich über **Exportieren** als Excel- oder CSV-Datei herunterladen.
 

@@ -62,3 +62,31 @@ describe('tenants and tenant switching', () => {
     expect(rows.find((r) => r.tenant_id === tenantB)?.last_login_at).toBeNull();
   });
 });
+
+describe('offline sync tenant guard', () => {
+  it('rejects requests whose expected tenant differs from the active tenant', async () => {
+    const env = await createTestEnv();
+    try {
+      const tenantA = await createTenant(env.db, 'Alpha');
+      const tenantB = await createTenant(env.db, 'Beta');
+      const user = await createUser(env.db, { email: 'sync@example.com' });
+      await addMembership(env.db, tenantA, user, { defaultRole: 'editor' });
+      await addMembership(env.db, tenantB, user, { defaultRole: 'editor' });
+      const client = new TestClient(env.app);
+      await client.login('sync@example.com');
+      const send = (tenant: string) =>
+        env.app.inject({
+          method: 'POST',
+          url: '/api/todos',
+          headers: { cookie: client.cookie!, 'x-csrf-token': client.csrf!, 'x-expect-tenant': tenant },
+          payload: { title: 'offline', clientId: `c-${tenant}` },
+        });
+      const wrong = await send(tenantB);
+      expect(wrong.statusCode).toBe(409);
+      expect(wrong.json()).toEqual({ error: 'tenant_mismatch' });
+      expect((await send(tenantA)).statusCode).toBe(201);
+    } finally {
+      await env.close();
+    }
+  });
+});

@@ -94,6 +94,7 @@ export const ERROR_CODES = [
   'archived',
   'invalid_assignee',
   'in_use',
+  'tenant_mismatch',
   'internal',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];

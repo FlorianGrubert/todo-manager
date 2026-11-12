@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { CommentDto, HistoryResponse, MemberDto, TagDto, TodoDto, TodoInput, TodoLinkDto } from '@fg/shared';
-import { get, patch, post } from '../api/client';
+import { ApiError, get, patch, post } from '../api/client';
 import { errorKey } from '../i18n';
 import { onLive } from '../live';
 import { refLabel, useReferenceStore } from '../stores/reference';
@@ -11,7 +11,7 @@ import AppModal from './AppModal.vue';
 import ShareButton from './ShareButton.vue';
 import TodoHistory from './TodoHistory.vue';
 
-const props = defineProps<{ todoId: string | null; defaults?: Partial<TodoInput> }>();
+const props = defineProps<{ todoId: string | null; defaults?: Partial<TodoInput>; fallback?: TodoDto }>();
 const emit = defineEmits<{ close: []; saved: [todo: TodoDto] }>();
 
 const { t, d } = useI18n();
@@ -30,6 +30,7 @@ const history = ref<HistoryResponse | null>(null);
 /** Snapshot of the form after loading – used to detect unsaved edits. */
 const pristine = ref('');
 const changedElsewhere = ref(false);
+const offlineCopy = ref(false);
 
 const form = reactive({
   title: '',
@@ -97,7 +98,14 @@ async function loadHistory(): Promise<void> {
 onMounted(async () => {
   try {
     if (props.todoId) {
-      todo.value = await get<TodoDto>(`/api/todos/${props.todoId}`);
+      try {
+        todo.value = await get<TodoDto>(`/api/todos/${props.todoId}`);
+      } catch (err) {
+        // Offline: show the cached copy read-only.
+        if (!(err instanceof ApiError && err.code === 'network' && props.fallback)) throw err;
+        todo.value = { ...props.fallback, canEdit: false };
+        offlineCopy.value = true;
+      }
       fillForm(todo.value);
       pristine.value = JSON.stringify(payload());
     } else {
@@ -120,6 +128,7 @@ watch(
   },
 );
 watch(tab, async (value) => {
+  if (offlineCopy.value) return;
   try {
     if (value === 'comments') await loadComments();
     if (value === 'history') await loadHistory();
@@ -233,6 +242,7 @@ async function addComment(): Promise<void> {
 
       <p v-if="error" class="alert alert-error" role="alert">{{ error }}</p>
       <p v-if="changedElsewhere" class="alert alert-info" role="status">{{ t('todo.changedElsewhere') }}</p>
+      <p v-if="offlineCopy" class="alert alert-info" role="status">{{ t('offline.readOnlyTodo') }}</p>
 
       <form v-if="tab === 'details'" id="todo-form" class="form todo-form" @submit.prevent="save">
         <p v-if="!editable" class="alert alert-info">{{ t('todo.readOnly') }}</p>

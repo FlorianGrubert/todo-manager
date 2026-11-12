@@ -4,6 +4,9 @@ import type { Locale, MeResponse } from '@fg/shared';
 import { ApiError, get, patch, post, setCsrfToken } from '../api/client';
 import { applyLocale } from '../i18n';
 import { connectLive } from '../live';
+import { cacheGet, cachePut, clearOfflineData } from '../offline/db';
+
+const ME_CACHE = 'session:me';
 
 export const useSessionStore = defineStore('session', () => {
   const me = ref<MeResponse | null>(null);
@@ -16,14 +19,21 @@ export const useSessionStore = defineStore('session', () => {
 
   function apply(data: MeResponse | null): void {
     me.value = data;
-    setCsrfToken(data?.csrfToken);
+    setCsrfToken(data?.csrfToken || undefined);
     if (data) applyLocale(data.user.locale);
+    if (data?.csrfToken) void cachePut(ME_CACHE, { ...data, csrfToken: '' });
   }
 
   async function load(): Promise<void> {
     try {
       apply(await get<MeResponse>('/api/auth/me'));
     } catch (err) {
+      if (err instanceof ApiError && err.code === 'network') {
+        // Offline: continue with the last known session (read-only, no CSRF token).
+        const cached = await cacheGet<MeResponse>(ME_CACHE);
+        apply(cached ? { ...cached.data, csrfToken: '' } : null);
+        return;
+      }
       if (!(err instanceof ApiError) || err.status !== 401) throw err;
       apply(null);
     } finally {
@@ -38,6 +48,8 @@ export const useSessionStore = defineStore('session', () => {
   async function logout(): Promise<void> {
     await post('/api/auth/logout').catch(() => undefined);
     connectLive(false);
+    // The device may be shared: remove cached data and unsent To-Dos.
+    await clearOfflineData();
     apply(null);
   }
 

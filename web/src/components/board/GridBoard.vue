@@ -9,6 +9,7 @@ const props = defineProps<{
   rows: { key: string; title: string }[];
   todos: TodoDto[];
   personKeyOf: (todo: TodoDto) => string;
+  droppable: boolean;
 }>();
 const emit = defineEmits<{ open: [id: string]; move: [todoId: string, from: string, to: string] }>();
 
@@ -34,7 +35,7 @@ const cell = (rowKey: string, statusId: string) =>
             <DropZone
               :zone="`${row.key}|${s.id}`"
               :todos="cell(row.key, s.id)"
-              droppable
+              :droppable="droppable"
               compact
               @open="emit('open', $event)"
               @drop="(id, from, to) => emit('move', id, from, to)"

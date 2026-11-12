@@ -18,6 +18,7 @@ export const router = createRouter({
     { path: '/invite/:token', name: 'invite', component: () => import('../views/InviteView.vue'), meta: { public: true } },
     { path: '/', name: 'todos', component: () => import('../views/BoardView.vue') },
     { path: '/todos/:id', name: 'todo', component: () => import('../views/BoardView.vue') },
+    { path: '/quick', name: 'quick', component: () => import('../views/QuickCaptureView.vue') },
     { path: '/projects', name: 'projects', component: () => import('../views/ProjectsView.vue') },
     {
       path: '/admin',

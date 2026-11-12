@@ -9,6 +9,12 @@ export class ApiError extends Error {
 }
 
 let csrfToken: string | undefined;
+let reachabilityListener: ((reachable: boolean) => void) | undefined;
+
+/** Called with `false` when the server cannot be reached and `true` on the next successful response. */
+export function onReachability(listener: (reachable: boolean) => void): void {
+  reachabilityListener = listener;
+}
 
 export function setCsrfToken(token: string | undefined): void {
   csrfToken = token;
@@ -16,8 +22,13 @@ export function setCsrfToken(token: string | undefined): void {
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
-export async function api<T = unknown>(method: Method, path: string, body?: unknown): Promise<T> {
-  const headers: Record<string, string> = { accept: 'application/json' };
+export async function api<T = unknown>(
+  method: Method,
+  path: string,
+  body?: unknown,
+  extraHeaders: Record<string, string> = {},
+): Promise<T> {
+  const headers: Record<string, string> = { accept: 'application/json', ...extraHeaders };
   if (body !== undefined) headers['content-type'] = 'application/json';
   if (method !== 'GET' && csrfToken) headers['x-csrf-token'] = csrfToken;
   let res: Response;
@@ -29,8 +40,15 @@ export async function api<T = unknown>(method: Method, path: string, body?: unkn
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch {
+    reachabilityListener?.(false);
     throw new ApiError(0, 'network');
   }
+  // A proxy/service worker answering 502–504 also means "server not reachable".
+  if (res.status >= 502 && res.status <= 504) {
+    reachabilityListener?.(false);
+    throw new ApiError(0, 'network');
+  }
+  reachabilityListener?.(true);
   if (res.status === 204) return undefined as T;
   const data = (await res.json().catch(() => ({}))) as { error?: string };
   if (!res.ok) throw new ApiError(res.status, data.error ?? 'internal');

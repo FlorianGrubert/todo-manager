@@ -4,11 +4,13 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { LOCALES, type Locale } from '@fg/shared';
 import { errorKey } from '../i18n';
+import { useOfflineStore } from '../stores/offline';
 import { useSessionStore } from '../stores/session';
 
 const { t, locale } = useI18n();
 const router = useRouter();
 const session = useSessionStore();
+const offline = useOfflineStore();
 const menuOpen = ref(false);
 const error = ref('');
 
@@ -29,6 +31,8 @@ async function onLocaleChange(event: Event): Promise<void> {
 
 async function logout(): Promise<void> {
   menuOpen.value = false;
+  // Unsent To-Dos are removed on logout (the device may be shared) – ask first.
+  if (offline.entries.length && !window.confirm(t('offline.confirmLogout', { n: offline.entries.length }, offline.entries.length))) return;
   await session.logout();
   await router.push({ name: 'login' });
 }
@@ -64,6 +68,7 @@ async function logout(): Promise<void> {
     <nav class="topnav" :class="{ open: menuOpen }" @click="menuOpen = false">
       <template v-if="session.activeTenant">
         <RouterLink :to="{ name: 'todos' }">{{ t('nav.todos') }}</RouterLink>
+        <RouterLink :to="{ name: 'quick' }">{{ t('nav.quick') }}</RouterLink>
         <RouterLink :to="{ name: 'projects' }">{{ t('nav.projects') }}</RouterLink>
         <RouterLink v-if="session.activeTenant.role === 'admin'" to="/admin">{{ t('nav.admin') }}</RouterLink>
       </template>

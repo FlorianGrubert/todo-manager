@@ -12,23 +12,28 @@ import {
   type TodoQuery,
   type ViewMode,
 } from '@fg/shared';
-import { get, patch } from '../api/client';
+import { ApiError, get, patch } from '../api/client';
 import GridBoard from '../components/board/GridBoard.vue';
 import BoardToolbar from '../components/board/BoardToolbar.vue';
 import KanbanBoard, { type Lane } from '../components/board/KanbanBoard.vue';
 import TodoDialog from '../components/TodoDialog.vue';
 import { errorKey } from '../i18n';
+import { filterLocally } from '../offline/localFilter';
 import { debounce, onLive } from '../live';
 import { refLabel, useReferenceStore } from '../stores/reference';
+import { useOfflineStore } from '../stores/offline';
 import { useSessionStore } from '../stores/session';
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const session = useSessionStore();
 const reference = useReferenceStore();
 
+const offline = useOfflineStore();
 const todos = ref<TodoDto[]>([]);
+/** Time of the cached data shown while offline (null = live data). */
+const cachedAt = ref<string | null>(null);
 const loading = ref(true);
 const error = ref('');
 const creating = ref(false);
@@ -50,11 +55,30 @@ async function load(): Promise<void> {
   if (!session.activeTenant) return;
   loading.value = true;
   error.value = '';
+  const queryKey = todoQueryToParams(query.value).toString();
   try {
     await reference.load(session.activeTenant.id);
-    todos.value = await get<TodoDto[]>(`/api/todos?${todoQueryToParams(query.value).toString()}`);
+    todos.value = await get<TodoDto[]>(`/api/todos?${queryKey}`);
+    cachedAt.value = null;
+    // Keep the last result for offline use (read-only, §5).
+    void offline.saveCache(`board:${queryKey}`, todos.value);
+    void offline.saveCache('board:last', todos.value);
   } catch (err) {
-    error.value = t(errorKey(err));
+    const network = err instanceof ApiError && err.code === 'network';
+    const exact = network ? await offline.readCache<TodoDto[]>(`board:${queryKey}`) : undefined;
+    // No copy of exactly this view: filter the last loaded list on the device.
+    const last = network && !exact ? await offline.readCache<TodoDto[]>('board:last') : undefined;
+    const cached = exact ?? last;
+    if (cached) {
+      const list = exact
+        ? cached.data
+        : filterLocally(cached.data, query.value, session.activeTenant?.membershipId ?? null, (id) => reference.statusById.get(id)?.category);
+      // Offline copies are read-only.
+      todos.value = list.map((todo) => ({ ...todo, canEdit: false }));
+      cachedAt.value = cached.savedAt;
+    } else {
+      error.value = t(errorKey(err));
+    }
   } finally {
     loading.value = false;
   }
@@ -65,7 +89,8 @@ async function resolveDeepLink(id: string): Promise<void> {
   try {
     const { tenantId } = await get<{ tenantId: string }>(`/api/todos/${id}/locate`);
     if (tenantId !== session.activeTenant?.id) await session.switchTenant(tenantId);
-  } catch {
+  } catch (err) {
+    if (err instanceof ApiError && err.code === 'network') return; // offline: try the cached copy
     error.value = t('board.linkNotFound');
     void router.replace({ name: 'todos' });
   }
@@ -149,6 +174,12 @@ async function move(todoId: string, _from: string, to: string): Promise<void> {
   }
 }
 
+/** Offline, new To-Dos are captured in the quick capture (stored on the device). */
+function newTodo(): void {
+  if (offline.online) creating.value = true;
+  else void router.push({ name: 'quick' });
+}
+
 function openTodo(id: string): void {
   navigate({}, view.value, id);
 }
@@ -189,17 +220,19 @@ onLive('reference', reloadSoon);
     <template v-else>
       <div class="page-head">
         <h1>{{ t('todos.title') }}</h1>
-        <button v-if="canCreate" type="button" class="button primary" @click="creating = true">+ {{ t('todo.new') }}</button>
+        <button v-if="canCreate" type="button" class="button primary new-todo" @click="newTodo">+ {{ t('todo.new') }}</button>
       </div>
 
       <BoardToolbar :query="query" :view="view" @change="navigate($event)" @view="navigate({}, $event)" @error="error = $event" />
 
       <p v-if="error" class="alert alert-error" role="alert">{{ error }}</p>
+      <p v-if="cachedAt" class="alert alert-info" role="status">{{ t('offline.cachedBoard', { date: d(new Date(cachedAt), 'long') }) }}</p>
       <p v-if="loading && todos.length === 0" class="muted">{{ t('common.loading') }}</p>
       <template v-else>
         <p v-if="todos.length === 0" class="empty muted">{{ t('todos.empty') }}</p>
         <GridBoard
           v-if="view === 'grid'"
+          :droppable="offline.online"
           :statuses="statusColumns"
           :rows="personRows"
           :todos="todos"
@@ -207,11 +240,21 @@ onLive('reference', reloadSoon);
           @open="openTodo"
           @move="move"
         />
-        <KanbanBoard v-else :lanes="lanes" :droppable="view !== 'tag'" @open="openTodo" @move="move" />
+        <KanbanBoard v-else :lanes="lanes" :droppable="view !== 'tag' && offline.online" @open="openTodo" @move="move" />
       </template>
     </template>
 
     <TodoDialog v-if="creating" :todo-id="null" :defaults="createDefaults" @close="creating = false" @saved="load" />
-    <TodoDialog v-if="openTodoId && session.activeTenant" :key="openTodoId" :todo-id="openTodoId" @close="closeTodo" @saved="load" />
+    <TodoDialog
+      v-if="openTodoId && session.activeTenant"
+      :key="openTodoId"
+      :todo-id="openTodoId"
+      :fallback="todos.find((todo) => todo.id === openTodoId)"
+      @close="closeTodo"
+      @saved="load"
+    />
+
+    <!-- Phone: quick capture is one tap away. -->
+    <RouterLink v-if="canCreate" :to="{ name: 'quick' }" class="fab" :aria-label="t('quick.title')">+</RouterLink>
   </section>
 </template>

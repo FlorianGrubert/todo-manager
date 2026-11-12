@@ -26,7 +26,8 @@
     "menu": "Menü",
     "todos": "To-Dos",
     "projects": "Projekte",
-    "admin": "Administration"
+    "admin": "Administration",
+    "quick": "Schnellerfassung"
   },
   "language": {
     "label": "Sprache",
@@ -143,7 +144,8 @@
     "network": "Keine Verbindung zum Server.",
     "archived": "Das Projekt ist archiviert; seine To-Dos können nicht geändert werden.",
     "invalid_assignee": "Diese Person kann To-Dos in diesem Projekt nicht zugewiesen bekommen.",
-    "in_use": "Dieser Eintrag wird noch verwendet (z. B. als Standard- oder Abbruch-Status)."
+    "in_use": "Dieser Eintrag wird noch verwendet (z. B. als Standard- oder Abbruch-Status).",
+    "tenant_mismatch": "Der Mandant wurde inzwischen gewechselt."
   },
   "todos": {
     "title": "To-Dos",
@@ -300,7 +302,7 @@
     }
   },
   "board": {
-    "count": "{n} To-Dos",
+    "count": "{n} To-Do | {n} To-Dos",
     "viewLabel": "Ansicht",
     "view": {
       "status": "Nach Status",
@@ -344,5 +346,33 @@
     "copied": "Link kopiert",
     "email": "Per E-Mail senden",
     "copyManually": "Link kopieren:"
+  },
+  "quick": {
+    "title": "Schnellerfassung",
+    "toBoard": "Zum Board",
+    "notAllowed": "Sie dürfen in diesem Mandanten keine To-Dos anlegen.",
+    "more": "Mehr",
+    "less": "Weniger",
+    "submit": "To-Do speichern",
+    "saved": "Gespeichert.",
+    "queued": "Offline gespeichert – wird automatisch übertragen, sobald eine Verbindung besteht.",
+    "outbox": "Noch nicht übertragen",
+    "rejected": "Vom Server abgelehnt:",
+    "syncing": "Wird übertragen …",
+    "waiting": "Wartet auf Verbindung",
+    "retry": "Erneut versuchen",
+    "discard": "Verwerfen",
+    "otherTenants": "{n} weiteres To-Do wartet auf die Übertragung in einem anderen Mandanten ({tenants}). Wechseln Sie dorthin, um es zu übertragen. | {n} weitere To-Dos warten auf die Übertragung in anderen Mandanten ({tenants}). Wechseln Sie dorthin, um sie zu übertragen."
+  },
+  "offline": {
+    "title": "Offline",
+    "text": "Sie sehen den zuletzt geladenen Stand. Bearbeiten ist nicht möglich; neue To-Dos werden auf dem Gerät gespeichert und automatisch übertragen.",
+    "pending": "{n} To-Do wartet auf Übertragung | {n} To-Dos warten auf Übertragung",
+    "failed": "{n} To-Do konnte nicht übertragen werden. | {n} To-Dos konnten nicht übertragen werden.",
+    "syncing": "{n} To-Do wird übertragen … | {n} To-Dos werden übertragen …",
+    "show": "Anzeigen",
+    "cachedBoard": "Offline-Stand vom {date} (schreibgeschützt).",
+    "readOnlyTodo": "Offline-Kopie – schreibgeschützt. Kommentare und Verlauf sind nur online verfügbar.",
+    "confirmLogout": "{n} To-Do wurde noch nicht übertragen und geht beim Abmelden verloren. Trotzdem abmelden? | {n} To-Dos wurden noch nicht übertragen und gehen beim Abmelden verloren. Trotzdem abmelden?"
   }
 }

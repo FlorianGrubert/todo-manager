@@ -1,8 +1,17 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import type { MemberDto, PriorityDto, ProjectDto, StatusDto, TagDto } from '@fg/shared';
-import { get } from '../api/client';
+import { ApiError, get } from '../api/client';
 import { i18n } from '../i18n';
+import { useOfflineStore } from './offline';
+
+interface ReferenceSnapshot {
+  statuses: StatusDto[];
+  priorities: PriorityDto[];
+  tags: TagDto[];
+  members: MemberDto[];
+  projects: ProjectDto[];
+}
 
 /** Tenant reference data (statuses, priorities, tags, members, projects). */
 export const useReferenceStore = defineStore('reference', () => {
@@ -18,20 +27,33 @@ export const useReferenceStore = defineStore('reference', () => {
   const memberById = computed(() => new Map(members.value.map((m) => [m.id, m])));
   const projectById = computed(() => new Map(projects.value.map((p) => [p.id, p])));
 
+  function assign(snapshot: ReferenceSnapshot): void {
+    statuses.value = snapshot.statuses;
+    priorities.value = snapshot.priorities;
+    tags.value = snapshot.tags;
+    members.value = snapshot.members;
+    projects.value = snapshot.projects;
+  }
+
   async function load(tenantId: string, force = false): Promise<void> {
     if (!force && loadedFor.value === tenantId) return;
-    const [s, p, t, m, pr] = await Promise.all([
-      get<StatusDto[]>('/api/statuses'),
-      get<PriorityDto[]>('/api/priorities'),
-      get<TagDto[]>('/api/tags'),
-      get<MemberDto[]>('/api/members'),
-      get<ProjectDto[]>('/api/projects?includeArchived=1'),
-    ]);
-    statuses.value = s;
-    priorities.value = p;
-    tags.value = t;
-    members.value = m;
-    projects.value = pr;
+    const offline = useOfflineStore();
+    try {
+      const [s, p, t, m, pr] = await Promise.all([
+        get<StatusDto[]>('/api/statuses'),
+        get<PriorityDto[]>('/api/priorities'),
+        get<TagDto[]>('/api/tags'),
+        get<MemberDto[]>('/api/members'),
+        get<ProjectDto[]>('/api/projects?includeArchived=1'),
+      ]);
+      const snapshot = { statuses: s, priorities: p, tags: t, members: m, projects: pr };
+      assign(snapshot);
+      void offline.saveCache('reference', snapshot);
+    } catch (err) {
+      const cached = err instanceof ApiError && err.code === 'network' ? await offline.readCache<ReferenceSnapshot>('reference') : undefined;
+      if (!cached) throw err;
+      assign(cached.data);
+    }
     loadedFor.value = tenantId;
   }
 

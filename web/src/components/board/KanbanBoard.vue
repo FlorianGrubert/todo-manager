@@ -20,7 +20,7 @@ const { t } = useI18n();
     <section v-for="lane in lanes" :key="lane.key" class="lane" :style="lane.color ? { '--lane-color': lane.color } : undefined">
       <header class="lane-head">
         <span class="lane-title">{{ lane.title }}</span>
-        <span class="lane-count" :aria-label="t('board.count', { n: lane.todos.length })">{{ lane.todos.length }}</span>
+        <span class="lane-count" :aria-label="t('board.count', { n: lane.todos.length }, lane.todos.length)">{{ lane.todos.length }}</span>
       </header>
       <DropZone
         :zone="lane.key"

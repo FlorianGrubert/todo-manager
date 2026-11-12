@@ -27,6 +27,8 @@ const showFilters = ref(false);
 const savedFilters = ref<SavedFilterDto[]>([]);
 const search = ref(props.query.q);
 const exportOpen = ref(false);
+/** Phone: secondary controls are collapsed behind a "more" button. */
+const moreOpen = ref(false);
 
 const criteria = computed<FilterCriteria>(() => ({
   tagIds: props.query.tagIds,
@@ -115,6 +117,16 @@ onMounted(loadFilters);
         </select>
       </label>
 
+      <label class="search">
+        <span class="sr-only">{{ t('todos.search') }}</span>
+        <input v-model="search" type="search" :placeholder="t('todos.search')" />
+      </label>
+      <button type="button" class="button small more-toggle" :aria-expanded="moreOpen" @click="moreOpen = !moreOpen">
+        {{ moreOpen ? t('quick.less') : t('quick.more') }}<span v-if="activeCount" class="count-badge">{{ activeCount }}</span>
+      </button>
+    </div>
+
+    <div class="toolbar toolbar-secondary" :class="{ open: moreOpen }">
       <label class="inline-select">
         <span>{{ t('board.sort.label') }}</span>
         <select :value="query.sort" @change="emit('change', { sort: ($event.target as HTMLSelectElement).value as SortField })">
@@ -131,13 +143,6 @@ onMounted(loadFilters);
         {{ query.dir === 'asc' ? '↑' : '↓' }}
       </button>
 
-      <label class="search">
-        <span class="sr-only">{{ t('todos.search') }}</span>
-        <input v-model="search" type="search" :placeholder="t('todos.search')" />
-      </label>
-    </div>
-
-    <div class="toolbar">
       <button type="button" class="button small" :aria-expanded="showFilters" @click="showFilters = !showFilters">
         {{ t('board.filter') }}<span v-if="activeCount" class="count-badge">{{ activeCount }}</span>
       </button>

@@ -78,6 +78,9 @@ export async function requireTenant(req: FastifyRequest): Promise<void> {
   if (!req.auth.activeTenantId) throw new ApiError(403, 'forbidden');
   const m = await loadMembership(req.server.deps.db, req.auth.userId, req.auth.activeTenantId);
   if (!m) throw new ApiError(403, 'forbidden');
+  // Offline sync sends the tenant the data was captured in; never write into another one.
+  const expected = req.headers['x-expect-tenant'];
+  if (typeof expected === 'string' && expected !== m.tenant_id) throw new ApiError(409, 'tenant_mismatch');
   req.tenant = {
     tenantId: m.tenant_id,
     membershipId: m.id,

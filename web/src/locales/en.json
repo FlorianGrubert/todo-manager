@@ -26,7 +26,8 @@
     "menu": "Menu",
     "todos": "To-dos",
     "projects": "Projects",
-    "admin": "Administration"
+    "admin": "Administration",
+    "quick": "Quick capture"
   },
   "language": {
     "label": "Language",
@@ -143,7 +144,8 @@
     "network": "No connection to the server.",
     "archived": "The project is archived; its to-dos cannot be changed.",
     "invalid_assignee": "This person cannot be assigned to-dos in this project.",
-    "in_use": "This entry is still in use (e.g. as default or cancel status)."
+    "in_use": "This entry is still in use (e.g. as default or cancel status).",
+    "tenant_mismatch": "The tenant has been switched in the meantime."
   },
   "todos": {
     "title": "To-dos",
@@ -300,7 +302,7 @@
     }
   },
   "board": {
-    "count": "{n} to-dos",
+    "count": "{n} to-do | {n} to-dos",
     "viewLabel": "View",
     "view": {
       "status": "By status",
@@ -344,5 +346,33 @@
     "copied": "Link copied",
     "email": "Send by e-mail",
     "copyManually": "Copy link:"
+  },
+  "quick": {
+    "title": "Quick capture",
+    "toBoard": "To the board",
+    "notAllowed": "You are not allowed to create to-dos in this tenant.",
+    "more": "More",
+    "less": "Less",
+    "submit": "Save to-do",
+    "saved": "Saved.",
+    "queued": "Saved offline – it will be sent automatically as soon as there is a connection.",
+    "outbox": "Not yet sent",
+    "rejected": "Rejected by the server:",
+    "syncing": "Sending …",
+    "waiting": "Waiting for connection",
+    "retry": "Try again",
+    "discard": "Discard",
+    "otherTenants": "{n} more to-do is waiting to be sent in another tenant ({tenants}). Switch there to send it. | {n} more to-dos are waiting to be sent in other tenants ({tenants}). Switch there to send them."
+  },
+  "offline": {
+    "title": "Offline",
+    "text": "You are seeing the last loaded state. Editing is not possible; new to-dos are stored on the device and sent automatically.",
+    "pending": "{n} to-do waiting to be sent | {n} to-dos waiting to be sent",
+    "failed": "{n} to-do could not be sent. | {n} to-dos could not be sent.",
+    "syncing": "Sending {n} to-do … | Sending {n} to-dos …",
+    "show": "Show",
+    "cachedBoard": "Offline copy from {date} (read-only).",
+    "readOnlyTodo": "Offline copy – read-only. Comments and history are only available online.",
+    "confirmLogout": "{n} to-do has not been sent yet and will be lost when you sign out. Sign out anyway? | {n} to-dos have not been sent yet and will be lost when you sign out. Sign out anyway?"
   }
 }
