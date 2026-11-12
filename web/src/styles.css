@@ -808,11 +808,6 @@ input[type='color'] {
   font-weight: 600;
 }
 
-.icon-editor {
-  display: flex;
-  gap: 0.35rem;
-}
-
 .spacer {
   flex: 1;
 }

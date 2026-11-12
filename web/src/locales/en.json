@@ -285,12 +285,7 @@
     },
     "priorities": {
       "icon": "Icon",
-      "kind": "Icon type",
-      "arrows": "Number of arrows",
-      "direction": "Direction",
-      "color": "Color",
       "kinds": {
-        "arrows": "Arrows",
         "exclamation": "Red exclamation mark"
       },
       "directions": {
@@ -302,7 +297,12 @@
         "yellow": "Yellow",
         "red": "Red"
       },
-      "preview": "Preview",
+      "option": "One arrow {direction}, {color} | {count} arrows {direction}, {color}",
+      "rows": {
+        "up": "1 arrow up | {count} arrows up",
+        "down": "1 arrow down | {count} arrows down",
+        "exclamation": "Exclamation mark"
+      },
       "new": "New priority",
       "removeTitle": "Remove priority “{name}”",
       "removeText": "To-dos with this priority get the selected priority. The change is recorded in the history of the to-dos."

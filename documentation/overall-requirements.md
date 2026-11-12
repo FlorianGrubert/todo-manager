@@ -235,6 +235,7 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - Ein Status ist als Standard für neue To-Dos markiert (Standard: „Backlog“)
 - Standard-Status und -Prioritäten werden in der jeweiligen Oberflächensprache angezeigt, bis der Administrator sie umbenennt
 - Entfernte Status und Prioritäten werden nur ausgeblendet; betroffene To-Dos erhalten beim Entfernen einen Ersatzwert
+- Das Prioritäts-Icon wird über eine einzige Auswahlliste gewählt, die alle Icons als Tabelle zeigt: Zeilen = Anzahl und Richtung der Pfeile (3, 2, 1 nach oben, 1, 2, 3 nach unten), Spalten = Farbe (Grün, Gelb, Rot), dazu eine eigene Zeile für das rote Ausrufezeichen
 
 ### Rollen und Zuweisung
 

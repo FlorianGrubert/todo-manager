@@ -285,12 +285,7 @@
     },
     "priorities": {
       "icon": "Symbol",
-      "kind": "Symbolart",
-      "arrows": "Anzahl Pfeile",
-      "direction": "Richtung",
-      "color": "Farbe",
       "kinds": {
-        "arrows": "Pfeile",
         "exclamation": "Rotes Ausrufezeichen"
       },
       "directions": {
@@ -302,7 +297,12 @@
         "yellow": "Gelb",
         "red": "Rot"
       },
-      "preview": "Vorschau",
+      "option": "Ein Pfeil {direction}, {color} | {count} Pfeile {direction}, {color}",
+      "rows": {
+        "up": "1 Pfeil nach oben | {count} Pfeile nach oben",
+        "down": "1 Pfeil nach unten | {count} Pfeile nach unten",
+        "exclamation": "Ausrufezeichen"
+      },
       "new": "Neue Priorität",
       "removeTitle": "Priorität „{name}“ entfernen",
       "removeText": "To-Dos mit dieser Priorität erhalten die ausgewählte Priorität. Die Änderung wird im Verlauf der To-Dos vermerkt."

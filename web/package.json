@@ -1,6 +1,6 @@
 {
   "name": "@fg/web",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@fg/shared": "1.0.0",
+    "@fg/shared": "1.0.1",
     "idb": "^8.0.4",
     "pinia": "^3.0.0",
     "sortablejs": "^1.15.7",

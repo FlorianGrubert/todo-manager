@@ -1,6 +1,6 @@
 {
   "name": "fg-todo-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "FG To-Do-Manager – multi-tenant Kanban to-do management",
   "type": "module",
