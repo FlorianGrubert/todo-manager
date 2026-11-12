@@ -24,7 +24,7 @@ export interface TestEnv {
 }
 
 /** Creates an isolated database (temp SQLite file or own PostgreSQL schema) plus app instance. */
-export async function createTestEnv(): Promise<TestEnv> {
+export async function createTestEnv(overrides: Record<string, string> = {}): Promise<TestEnv> {
   let db: Db;
   let cleanup: () => Promise<void>;
   if (TEST_DB === 'pg') {
@@ -46,7 +46,10 @@ export async function createTestEnv(): Promise<TestEnv> {
     };
   }
   await migrateLatest(db);
-  const config = loadConfig({}, { NODE_ENV: 'test', LOG_LEVEL: 'silent', BASE_URL: 'http://localhost:3000', WEB_DIST: './no-web-dist' });
+  const config = loadConfig({}, { NODE_ENV: 'test', LOG_LEVEL: 'silent', BASE_URL: 'http://localhost:3000', WEB_DIST: './no-web-dist',
+    AUTH_RATE_LIMIT: '10000',
+    ...overrides,
+  });
   const mails: MailMessage[] = [];
   const mailer: Mailer = {
     sent: mails,
@@ -145,6 +148,12 @@ export class TestClient {
   }
   patch(url: string, body: unknown = {}) {
     return this.request('PATCH', url, body);
+  }
+  put(url: string, body: unknown = {}) {
+    return this.request('PUT', url, body);
+  }
+  delete(url: string) {
+    return this.request('DELETE', url);
   }
 
   async login(email: string, password = TEST_PASSWORD): Promise<MeResponse> {

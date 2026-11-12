@@ -241,6 +241,12 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - Der eingeschränkte Bearbeiter darf To-Dos anlegen und nur sich selbst oder niemanden zuweisen
 - Zugewiesen werden kann nur, wer im Projekt des To-Dos mindestens eingeschränkter Bearbeiter ist (bei To-Dos ohne Projekt: entsprechende Standardrolle)
 - Der Projektadministrator hat keine automatischen Rechte an To-Dos; dafür gelten nur seine Projektrollen. Der Mandanten-Administrator hat überall alle Rechte
+- Benutzer sehen nur Projekte, in denen sie eine Rolle haben; Projektadministratoren und Mandanten-Administratoren sehen alle Projekte
+- Projekte und To-Dos, auf die ein Benutzer keinen Zugriff hat, werden wie nicht vorhanden behandelt (Antwort „nicht gefunden“)
+- To-Dos archivierter Projekte sind schreibgeschützt, bis das Projekt wiederhergestellt ist
+- Tags entstehen beim Bearbeiten eines To-Dos (jeder mit Bearbeitungsrecht); umbenennen, einfärben und löschen darf nur der Administrator. Ein gelöschter Tag wird von allen To-Dos entfernt
+- Links in To-Dos sind auf `http://`, `https://` und `mailto:` beschränkt
+- Die Beschreibung eines To-Dos ist reiner Text
 
 ### Drag and Drop
 
@@ -251,6 +257,8 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 
 - Letzter Login, Deaktivierung und Pseudonymisierung gelten je Mandantenmitgliedschaft; dadurch ist für einen Mandanten-Administrator nicht erkennbar, ob eine Person anderen Mandanten angehört
 - Der Anzeigename einer Person wird je Mandant geführt (beim Einladen vom Administrator vergeben)
+- Pseudonymisieren ersetzt den Anzeigenamen durch ein Pseudonym, blendet die E-Mail-Adresse im Mandanten aus und deaktiviert die Mitgliedschaft; das ist endgültig. Gehört die Person keinem anderen Mandanten an (und ist kein Systemadministrator), werden auch Name und E-Mail des Kontos anonymisiert und die Anmeldung gesperrt
+- Noch nicht angenommene Einladungen können erneut versendet werden; der alte Link wird dabei ungültig
 - Passwörter haben mindestens 10 Zeichen; Links zum Zurücksetzen des Passworts sind 1 Stunde gültig
 - Nach dem Zurücksetzen des Passworts werden alle Sitzungen des Benutzers beendet
 

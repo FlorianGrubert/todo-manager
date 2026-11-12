@@ -17,7 +17,7 @@ async function onTenantChange(event: Event): Promise<void> {
   error.value = '';
   try {
     await session.switchTenant(id);
-    await router.push({ name: 'home' });
+    await router.push({ name: 'todos' });
   } catch (err) {
     error.value = t(errorKey(err));
   }
@@ -62,7 +62,11 @@ async function logout(): Promise<void> {
     </button>
 
     <nav class="topnav" :class="{ open: menuOpen }" @click="menuOpen = false">
-      <RouterLink to="/">{{ t('nav.home') }}</RouterLink>
+      <template v-if="session.activeTenant">
+        <RouterLink :to="{ name: 'todos' }">{{ t('nav.todos') }}</RouterLink>
+        <RouterLink :to="{ name: 'projects' }">{{ t('nav.projects') }}</RouterLink>
+        <RouterLink v-if="session.activeTenant.role === 'admin'" to="/admin">{{ t('nav.admin') }}</RouterLink>
+      </template>
       <RouterLink v-if="session.isSystemAdmin" to="/system">{{ t('nav.system') }}</RouterLink>
       <RouterLink to="/settings">{{ t('nav.settings') }}</RouterLink>
       <label class="locale-switch" @click.stop>

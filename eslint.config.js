@@ -40,7 +40,7 @@ export default tseslint.config(
     plugins: { '@intlify/vue-i18n': vueI18n },
     settings: { 'vue-i18n': { localeDir: './web/src/locales/*.json', messageSyntaxVersion: '^11.0.0' } },
     rules: {
-      '@intlify/vue-i18n/no-raw-text': ['error', { ignorePattern: '^[-–—•·☰×✓✕+/:#()\\s\\d]+$' }],
+      '@intlify/vue-i18n/no-raw-text': ['error', { ignorePattern: '^[-–—•·☰×✓✕→+/:#()\\s\\d]+$' }],
       '@intlify/vue-i18n/no-missing-keys': 'error',
     },
   },

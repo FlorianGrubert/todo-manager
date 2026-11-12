@@ -12,15 +12,21 @@
     "create": "Anlegen",
     "yes": "Ja",
     "no": "Nein",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "edit": "Bearbeiten",
+    "remove": "Entfernen",
+    "rename": "Umbenennen",
+    "add": "Hinzufügen"
   },
   "nav": {
-    "home": "Übersicht",
     "system": "Systemverwaltung",
     "settings": "Einstellungen",
     "logout": "Abmelden",
     "tenant": "Mandant",
-    "menu": "Menü"
+    "menu": "Menü",
+    "todos": "To-Dos",
+    "projects": "Projekte",
+    "admin": "Administration"
   },
   "language": {
     "label": "Sprache",
@@ -61,10 +67,7 @@
     "invalid": "Diese Einladung ist ungültig, abgelaufen oder wurde bereits verwendet."
   },
   "home": {
-    "welcome": "Willkommen, {name}!",
-    "tenantInfo": "Sie arbeiten im Mandanten „{tenant}“.",
-    "noTenant": "Sie sind derzeit keinem aktiven Mandanten zugeordnet.",
-    "boardSoon": "Das Kanban-Board folgt im nächsten Ausbauschritt."
+    "noTenant": "Sie sind derzeit keinem aktiven Mandanten zugeordnet."
   },
   "system": {
     "title": "Systemverwaltung",
@@ -131,6 +134,163 @@
     "already_member": "Diese Person ist bereits Mitglied des Mandanten.",
     "last_admin": "Der letzte aktive Administrator kann nicht entfernt werden.",
     "internal": "Ein unerwarteter Fehler ist aufgetreten.",
-    "network": "Keine Verbindung zum Server."
+    "network": "Keine Verbindung zum Server.",
+    "archived": "Das Projekt ist archiviert; seine To-Dos können nicht geändert werden.",
+    "invalid_assignee": "Diese Person kann To-Dos in diesem Projekt nicht zugewiesen bekommen.",
+    "in_use": "Dieser Eintrag wird noch verwendet (z. B. als Standard- oder Abbruch-Status)."
+  },
+  "todos": {
+    "title": "To-Dos",
+    "scope": "Ansicht",
+    "mine": "Meine",
+    "all": "Alle",
+    "allProjects": "Alle Projekte",
+    "search": "Suchen …",
+    "showClosed": "Erledigte und abgebrochene anzeigen",
+    "empty": "Keine To-Dos gefunden."
+  },
+  "todo": {
+    "new": "Neues To-Do",
+    "edit": "To-Do bearbeiten",
+    "title": "Titel",
+    "description": "Beschreibung",
+    "project": "Projekt",
+    "noProject": "Ohne Projekt",
+    "status": "Status",
+    "priority": "Priorität",
+    "noPriority": "Keine Priorität",
+    "assignee": "Zuständig",
+    "unassigned": "Nicht zugewiesen",
+    "dueDate": "Fällig am",
+    "dueShort": "fällig {date}",
+    "tags": "Tags",
+    "tagsHint": "Mehrere durch Komma trennen",
+    "links": "Links / Verweise",
+    "linkUrl": "https://…",
+    "linkLabel": "Bezeichnung (optional)",
+    "addLink": "Link hinzufügen",
+    "removeLink": "Link entfernen",
+    "cancelTodo": "To-Do abbrechen",
+    "confirmCancel": "Dieses To-Do wirklich abbrechen?",
+    "readOnly": "Sie können dieses To-Do lesen und kommentieren, aber nicht bearbeiten.",
+    "createdMeta": "Erfasst von {name} am {date}",
+    "updatedMeta": "Zuletzt geändert von {name} am {date}",
+    "tabDetails": "Details",
+    "tabComments": "Kommentare",
+    "tabHistory": "Verlauf"
+  },
+  "comments": {
+    "empty": "Noch keine Kommentare.",
+    "placeholder": "Kommentar schreiben …",
+    "add": "Kommentieren"
+  },
+  "history": {
+    "empty": "Noch keine Änderungen.",
+    "created": "To-Do erfasst",
+    "field": {
+      "title": "Titel",
+      "description": "Beschreibung",
+      "dueDate": "Fälligkeitsdatum",
+      "priority": "Priorität",
+      "assignee": "Zuständig",
+      "status": "Status",
+      "project": "Projekt",
+      "tags": "Tags",
+      "links": "Links"
+    }
+  },
+  "projects": {
+    "title": "Projekte",
+    "new": "Neues Projekt",
+    "edit": "Projekt bearbeiten",
+    "showArchived": "Archivierte anzeigen",
+    "empty": "Keine Projekte vorhanden.",
+    "archived": "Archiviert",
+    "members": "Mitglieder",
+    "membersOf": "Mitglieder von „{name}“",
+    "archive": "Archivieren",
+    "restore": "Wiederherstellen",
+    "confirmArchive": "Projekt „{name}“ archivieren? Alle To-Dos des Projekts werden ebenfalls archiviert und ausgeblendet. Es wird nichts gelöscht; das Projekt kann samt To-Dos wiederhergestellt werden.",
+    "name": "Name",
+    "description": "Beschreibung",
+    "noMembers": "Diesem Projekt ist noch niemand zugeordnet.",
+    "role": "Rolle",
+    "addMember": "Person auswählen"
+  },
+  "admin": {
+    "title": "Administration",
+    "removed": "Entfernt.",
+    "replacement": "Ersetzen durch",
+    "tab": {
+      "members": "Benutzer",
+      "statuses": "Status",
+      "priorities": "Prioritäten",
+      "tags": "Tags"
+    },
+    "members": {
+      "title": "Benutzer",
+      "displayName": "Anzeigename",
+      "tenantRole": "Mandantenrolle",
+      "defaultRole": "Standardrolle (ohne Projekt)",
+      "lastLogin": "Letzter Login",
+      "pending": "Eingeladen",
+      "pseudonymizedBadge": "Pseudonymisiert",
+      "neverLoggedIn": "nie angemeldet",
+      "resend": "Einladung erneut senden",
+      "pseudonymize": "Pseudonymisieren",
+      "confirmPseudonymize": "„{name}“ pseudonymisieren? Name und E-Mail-Adresse werden in diesem Mandanten dauerhaft durch ein Pseudonym ersetzt und die Person wird deaktiviert. Das kann nicht rückgängig gemacht werden.",
+      "pseudonymized": "Die Person wurde pseudonymisiert.",
+      "invited": "Die Einladung wurde versendet.",
+      "invite": "Person einladen",
+      "sendInvite": "Einladung senden",
+      "defaultRoleHint": "Die Standardrolle gilt für To-Dos ohne Projekt. Rollen in Projekten werden unter „Projekte“ vergeben."
+    },
+    "statuses": {
+      "rank": "Rang",
+      "name": "Name",
+      "color": "Farbe",
+      "category": "Kategorie",
+      "newDefault": "Standard für neue",
+      "cancelTarget": "Abbruch-Status",
+      "hint": "Der Rang bestimmt die Reihenfolge der Spalten. Status der Kategorien „Erledigt“ und „Abgebrochen“ sind standardmäßig ausgeblendet. Ein leerer Name stellt die Standardbezeichnung wieder her.",
+      "new": "Neuer Status",
+      "categories": {
+        "open": "Offen",
+        "done": "Erledigt",
+        "cancelled": "Abgebrochen"
+      },
+      "removeTitle": "Status „{name}“ entfernen",
+      "removeText": "To-Dos mit diesem Status erhalten den ausgewählten Status. Die Änderung wird im Verlauf der To-Dos vermerkt."
+    },
+    "priorities": {
+      "icon": "Symbol",
+      "kind": "Symbolart",
+      "arrows": "Anzahl Pfeile",
+      "direction": "Richtung",
+      "color": "Farbe",
+      "kinds": {
+        "arrows": "Pfeile",
+        "exclamation": "Rotes Ausrufezeichen"
+      },
+      "directions": {
+        "up": "nach oben",
+        "down": "nach unten"
+      },
+      "colors": {
+        "green": "Grün",
+        "yellow": "Gelb",
+        "red": "Rot"
+      },
+      "preview": "Vorschau",
+      "new": "Neue Priorität",
+      "removeTitle": "Priorität „{name}“ entfernen",
+      "removeText": "To-Dos mit dieser Priorität erhalten die ausgewählte Priorität. Die Änderung wird im Verlauf der To-Dos vermerkt."
+    },
+    "tags": {
+      "name": "Name",
+      "confirmDelete": "Tag „{name}“ löschen? Er wird von allen To-Dos entfernt.",
+      "hint": "Tags entstehen beim Bearbeiten von To-Dos. Hier können sie umbenannt, eingefärbt oder gelöscht werden.",
+      "empty": "Noch keine Tags vorhanden."
+    }
   }
 }

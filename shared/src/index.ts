@@ -91,6 +91,163 @@ export const ERROR_CODES = [
   'password_too_short',
   'already_member',
   'last_admin',
+  'archived',
+  'invalid_assignee',
+  'in_use',
   'internal',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
+
+// ---------------------------------------------------------------------------
+// Reference data (per tenant)
+// ---------------------------------------------------------------------------
+
+export interface StatusDto {
+  id: string;
+  /** Key of a standard status (translated in the UI while `name` is null). */
+  key: string | null;
+  name: string | null;
+  rank: number;
+  color: string;
+  category: StatusCategory;
+  isNewDefault: boolean;
+  isCancelTarget: boolean;
+}
+
+export interface PriorityDto {
+  id: string;
+  key: string | null;
+  name: string | null;
+  rank: number;
+  iconKind: PriorityIconKind;
+  iconArrows: number;
+  iconDirection: PriorityIconDirection;
+  iconColor: PriorityIconColor;
+}
+
+export interface TagDto {
+  id: string;
+  name: string;
+  color: string | null;
+}
+
+export interface MemberDto {
+  id: string;
+  displayName: string;
+}
+
+export interface ProjectDto {
+  id: string;
+  name: string;
+  description: string | null;
+  archived: boolean;
+  /** Effective role of the current user in this project (`admin` = tenant admin). */
+  myRole: ProjectRole | 'admin' | null;
+}
+
+export interface ProjectMemberDto {
+  membershipId: string;
+  displayName: string;
+  role: ProjectRole;
+}
+
+/** Member as seen by the tenant administrator. */
+export interface AdminMemberDto {
+  id: string;
+  displayName: string;
+  /** null when pseudonymized. */
+  email: string | null;
+  tenantRole: TenantRole;
+  defaultRole: DefaultRole;
+  isActive: boolean;
+  pseudonymized: boolean;
+  /** Invitation not yet accepted. */
+  pending: boolean;
+  lastLoginAt: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// To-Dos
+// ---------------------------------------------------------------------------
+
+export interface TodoLinkDto {
+  url: string;
+  label: string | null;
+}
+
+export interface TodoDto {
+  id: string;
+  projectId: string | null;
+  title: string;
+  description: string | null;
+  dueDate: string | null;
+  priorityId: string | null;
+  assigneeId: string | null;
+  statusId: string;
+  tags: TagDto[];
+  links: TodoLinkDto[];
+  createdAt: string;
+  updatedAt: string;
+  createdBy: MemberDto;
+  updatedBy: MemberDto;
+  commentCount: number;
+  canEdit: boolean;
+}
+
+export interface TodoInput {
+  projectId?: string | null;
+  title?: string;
+  description?: string | null;
+  dueDate?: string | null;
+  priorityId?: string | null;
+  assigneeId?: string | null;
+  statusId?: string;
+  tags?: string[];
+  links?: TodoLinkDto[];
+  /** Client-generated ID for idempotent offline creation. */
+  clientId?: string;
+}
+
+export const HISTORY_FIELDS = [
+  'created',
+  'title',
+  'description',
+  'dueDate',
+  'priority',
+  'assignee',
+  'status',
+  'project',
+  'tags',
+  'links',
+] as const;
+export type HistoryField = (typeof HISTORY_FIELDS)[number];
+
+export interface HistoryEntryDto {
+  id: string;
+  field: HistoryField;
+  oldValue: string | null;
+  newValue: string | null;
+  changedAt: string;
+  changedBy: MemberDto;
+}
+
+export interface CommentDto {
+  id: string;
+  body: string;
+  createdAt: string;
+  author: MemberDto;
+}
+
+export const LINK_URL_PATTERN = /^(https?:\/\/|mailto:)/i;
+export const DUE_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/** History of a To-Do plus the referenced objects needed to display IDs as names. */
+export interface HistoryResponse {
+  entries: HistoryEntryDto[];
+  refs: {
+    statuses: StatusDto[];
+    priorities: PriorityDto[];
+    members: MemberDto[];
+    projects: { id: string; name: string }[];
+  };
+}

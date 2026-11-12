@@ -2,7 +2,7 @@
 
 Mandantenfähige To-Do-Verwaltung mit Kanban-Oberfläche für Einzelpersonen und Teams. Web-Anwendung für Desktop, Tablet und Smartphone (installierbar als Progressive Web App). Oberfläche auf Deutsch und Englisch.
 
-> **Stand: Version 0.1.0 (Ausbaustufe 1 von 6).** Enthalten sind Installation, Anmeldung, Passwort-vergessen-Funktion, Einladungen, Mandantenwechsel und die Systemverwaltung (Mandanten anlegen und deaktivieren). Board, Projekte und To-Dos folgen in den nächsten Ausbaustufen.
+> **Stand: Version 0.2.0 (Ausbaustufe 2 von 6).** Enthalten sind Installation, Anmeldung, Einladungen, Mandantenwechsel, Systemverwaltung, Projekte mit Projektrollen, To-Dos (Liste mit Filtern, Kommentare, Änderungsverlauf) sowie die Mandanten-Administration (Benutzer, Status, Prioritäten, Tags). Kanban-Board, Live-Aktualisierung, Benachrichtigungen, Offline-Erfassung und Export folgen in den nächsten Ausbaustufen.
 
 ## Voraussetzungen
 
@@ -53,6 +53,8 @@ Die Anwendung ist anschließend unter `BASE_URL` erreichbar (standardmäßig `ht
 
 Jeder neue Mandant startet mit den Standard-Status (Backlog, In Arbeit, Under Review, Erledigt, Abgelehnt, Gelöscht) und den Standard-Prioritäten (Kritisch, Hoch, Mittel, Niedrig).
 
+Der Mandanten-Administrator lädt unter **Administration → Benutzer** weitere Personen ein und legt dort Mandantenrolle und Standardrolle (für To-Dos ohne Projekt) fest. Projekte und die Rollen der Personen in Projekten (Bearbeiter, eingeschränkter Bearbeiter, Leser) werden unter **Projekte** verwaltet. Status, Prioritäten und Tags werden unter **Administration** angepasst.
+
 Personen, die bereits ein Konto in einem anderen Mandanten haben, nehmen Einladungen mit ihrem bestehenden Login an. Nach der Anmeldung öffnet sich der zuletzt genutzte Mandant; über den Umschalter in der Kopfzeile wird zwischen Mandanten gewechselt.
 
 ## Konfiguration
@@ -70,6 +72,7 @@ Die Konfiguration erfolgt über Umgebungsvariablen oder die Datei `.env` im Prog
 | `SQLITE_FILE` | `./data/todo-manager.db` | Pfad der SQLite-Datenbank |
 | `DATABASE_URL` | – | PostgreSQL-Verbindung, z. B. `postgres://user:pass@localhost:5432/todo` (nur bei `DB_CLIENT=pg`) |
 | `SESSION_TTL_HOURS` | `336` | Gültigkeit einer Anmeldung in Stunden (verlängert sich bei Nutzung) |
+| `AUTH_RATE_LIMIT` | `10` | Max. Anmelde-, Passwort- und Einladungsanfragen pro Minute und IP-Adresse |
 | `MAIL_TRANSPORT` | `log` | `smtp` für echten Versand; `log` schreibt E-Mails nur ins Server-Log (Test) |
 | `MAIL_FROM` | – | Absenderadresse |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` | – | SMTP-Zugangsdaten |
@@ -141,3 +144,4 @@ Die regelmäßige Datensicherung erfolgt außerhalb der Anwendung:
 - Sitzungen liegen serverseitig; das Sitzungs-Cookie ist `HttpOnly`, bei HTTPS zusätzlich `Secure`.
 - Anmeldung, Passwort-vergessen und Einladungen sind gegen Massenversuche begrenzt.
 - Benutzer und To-Dos werden nie physisch gelöscht, sondern nur deaktiviert bzw. pseudonymisiert.
+- Jede Anfrage wird serverseitig auf Anmeldung, Mandant, Rolle und Objektzugriff geprüft; Mandanten sind vollständig voneinander getrennt.

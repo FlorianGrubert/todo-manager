@@ -21,6 +21,8 @@ const schema = z
     DATABASE_URL: z.string().optional(),
 
     SESSION_TTL_HOURS: z.coerce.number().int().positive().default(24 * 14),
+    /** Max. login / password reset / invitation requests per minute and client IP. */
+    AUTH_RATE_LIMIT: z.coerce.number().int().positive().default(10),
 
     MAIL_TRANSPORT: z.enum(['smtp', 'log']).default('log'),
     MAIL_FROM: z.string().default('FG To-Do-Manager <no-reply@localhost>'),

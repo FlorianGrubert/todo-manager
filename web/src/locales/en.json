@@ -12,15 +12,21 @@
     "create": "Create",
     "yes": "Yes",
     "no": "No",
-    "saved": "Saved"
+    "saved": "Saved",
+    "edit": "Edit",
+    "remove": "Remove",
+    "rename": "Rename",
+    "add": "Add"
   },
   "nav": {
-    "home": "Overview",
     "system": "System administration",
     "settings": "Settings",
     "logout": "Sign out",
     "tenant": "Tenant",
-    "menu": "Menu"
+    "menu": "Menu",
+    "todos": "To-dos",
+    "projects": "Projects",
+    "admin": "Administration"
   },
   "language": {
     "label": "Language",
@@ -61,10 +67,7 @@
     "invalid": "This invitation is invalid, expired or has already been used."
   },
   "home": {
-    "welcome": "Welcome, {name}!",
-    "tenantInfo": "You are working in the tenant “{tenant}”.",
-    "noTenant": "You are currently not assigned to an active tenant.",
-    "boardSoon": "The Kanban board follows in the next development step."
+    "noTenant": "You are currently not assigned to an active tenant."
   },
   "system": {
     "title": "System administration",
@@ -131,6 +134,163 @@
     "already_member": "This person is already a member of the tenant.",
     "last_admin": "The last active administrator cannot be removed.",
     "internal": "An unexpected error occurred.",
-    "network": "No connection to the server."
+    "network": "No connection to the server.",
+    "archived": "The project is archived; its to-dos cannot be changed.",
+    "invalid_assignee": "This person cannot be assigned to-dos in this project.",
+    "in_use": "This entry is still in use (e.g. as default or cancel status)."
+  },
+  "todos": {
+    "title": "To-dos",
+    "scope": "View",
+    "mine": "Mine",
+    "all": "All",
+    "allProjects": "All projects",
+    "search": "Search …",
+    "showClosed": "Show done and cancelled",
+    "empty": "No to-dos found."
+  },
+  "todo": {
+    "new": "New to-do",
+    "edit": "Edit to-do",
+    "title": "Title",
+    "description": "Description",
+    "project": "Project",
+    "noProject": "Without project",
+    "status": "Status",
+    "priority": "Priority",
+    "noPriority": "No priority",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "dueDate": "Due date",
+    "dueShort": "due {date}",
+    "tags": "Tags",
+    "tagsHint": "Separate multiple tags with commas",
+    "links": "Links / references",
+    "linkUrl": "https://…",
+    "linkLabel": "Label (optional)",
+    "addLink": "Add link",
+    "removeLink": "Remove link",
+    "cancelTodo": "Cancel to-do",
+    "confirmCancel": "Really cancel this to-do?",
+    "readOnly": "You can read and comment on this to-do, but not edit it.",
+    "createdMeta": "Created by {name} on {date}",
+    "updatedMeta": "Last changed by {name} on {date}",
+    "tabDetails": "Details",
+    "tabComments": "Comments",
+    "tabHistory": "History"
+  },
+  "comments": {
+    "empty": "No comments yet.",
+    "placeholder": "Write a comment …",
+    "add": "Comment"
+  },
+  "history": {
+    "empty": "No changes yet.",
+    "created": "To-do created",
+    "field": {
+      "title": "Title",
+      "description": "Description",
+      "dueDate": "Due date",
+      "priority": "Priority",
+      "assignee": "Assignee",
+      "status": "Status",
+      "project": "Project",
+      "tags": "Tags",
+      "links": "Links"
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "new": "New project",
+    "edit": "Edit project",
+    "showArchived": "Show archived",
+    "empty": "No projects yet.",
+    "archived": "Archived",
+    "members": "Members",
+    "membersOf": "Members of “{name}”",
+    "archive": "Archive",
+    "restore": "Restore",
+    "confirmArchive": "Archive project “{name}”? All to-dos of the project are archived and hidden as well. Nothing is deleted; the project can be restored together with its to-dos.",
+    "name": "Name",
+    "description": "Description",
+    "noMembers": "Nobody is assigned to this project yet.",
+    "role": "Role",
+    "addMember": "Select person"
+  },
+  "admin": {
+    "title": "Administration",
+    "removed": "Removed.",
+    "replacement": "Replace with",
+    "tab": {
+      "members": "Users",
+      "statuses": "Statuses",
+      "priorities": "Priorities",
+      "tags": "Tags"
+    },
+    "members": {
+      "title": "Users",
+      "displayName": "Display name",
+      "tenantRole": "Tenant role",
+      "defaultRole": "Default role (without project)",
+      "lastLogin": "Last login",
+      "pending": "Invited",
+      "pseudonymizedBadge": "Pseudonymized",
+      "neverLoggedIn": "never signed in",
+      "resend": "Resend invitation",
+      "pseudonymize": "Pseudonymize",
+      "confirmPseudonymize": "Pseudonymize “{name}”? Name and e-mail address are permanently replaced by a pseudonym in this tenant and the person is deactivated. This cannot be undone.",
+      "pseudonymized": "The person has been pseudonymized.",
+      "invited": "The invitation has been sent.",
+      "invite": "Invite person",
+      "sendInvite": "Send invitation",
+      "defaultRoleHint": "The default role applies to to-dos without project. Project roles are assigned under “Projects”."
+    },
+    "statuses": {
+      "rank": "Rank",
+      "name": "Name",
+      "color": "Color",
+      "category": "Category",
+      "newDefault": "Default for new",
+      "cancelTarget": "Cancel status",
+      "hint": "The rank determines the order of the columns. Statuses of the categories “Done” and “Cancelled” are hidden by default. An empty name restores the standard label.",
+      "new": "New status",
+      "categories": {
+        "open": "Open",
+        "done": "Done",
+        "cancelled": "Cancelled"
+      },
+      "removeTitle": "Remove status “{name}”",
+      "removeText": "To-dos with this status get the selected status. The change is recorded in the history of the to-dos."
+    },
+    "priorities": {
+      "icon": "Icon",
+      "kind": "Icon type",
+      "arrows": "Number of arrows",
+      "direction": "Direction",
+      "color": "Color",
+      "kinds": {
+        "arrows": "Arrows",
+        "exclamation": "Red exclamation mark"
+      },
+      "directions": {
+        "up": "up",
+        "down": "down"
+      },
+      "colors": {
+        "green": "Green",
+        "yellow": "Yellow",
+        "red": "Red"
+      },
+      "preview": "Preview",
+      "new": "New priority",
+      "removeTitle": "Remove priority “{name}”",
+      "removeText": "To-dos with this priority get the selected priority. The change is recorded in the history of the to-dos."
+    },
+    "tags": {
+      "name": "Name",
+      "confirmDelete": "Delete tag “{name}”? It will be removed from all to-dos.",
+      "hint": "Tags are created while editing to-dos. Here they can be renamed, colored or deleted.",
+      "empty": "No tags yet."
+    }
   }
 }

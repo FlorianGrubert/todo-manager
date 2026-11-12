@@ -11,7 +11,11 @@ import type { Config } from './config.js';
 import type { Db } from './db/knex.js';
 import { ApiError } from './lib/errors.js';
 import { createMailer, type Mailer } from './mail/mailer.js';
+import { memberRoutes } from './modules/members/routes.js';
+import { projectRoutes } from './modules/projects/routes.js';
+import { referenceRoutes } from './modules/reference/routes.js';
 import { systemRoutes } from './modules/system/routes.js';
+import { todoRoutes } from './modules/todos/routes.js';
 import { registerAuthContext } from './tenancy/context.js';
 import './types.js';
 
@@ -74,6 +78,10 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   app.get('/api/health', async () => ({ status: 'ok', version: config.version }));
   authRoutes(app);
   systemRoutes(app);
+  referenceRoutes(app);
+  projectRoutes(app);
+  memberRoutes(app);
+  todoRoutes(app);
 
   const webDist = resolve(config.WEB_DIST ?? defaultWebDist);
   const serveWeb = existsSync(resolve(webDist, 'index.html'));

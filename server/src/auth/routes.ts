@@ -22,7 +22,6 @@ import {
 import { clearSessionCookie, createSession, destroyUserSessions, SESSION_COOKIE, setSessionCookie } from './sessions.js';
 
 const RESET_VALID_MS = 3600_000;
-const strictLimit = { rateLimit: { max: 10, timeWindow: '1 minute' } };
 
 const password = z.string().max(1024);
 
@@ -32,6 +31,7 @@ function assertPasswordLength(value: string): void {
 
 export function authRoutes(app: FastifyInstance): void {
   const deps = () => app.deps;
+  const strictLimit = { rateLimit: { max: app.deps.config.AUTH_RATE_LIMIT, timeWindow: '1 minute' } };
 
   app.post('/api/auth/login', { config: strictLimit }, async (req, reply) => {
     const body = parse(z.object({ email: z.string().max(320), password }), req.body);

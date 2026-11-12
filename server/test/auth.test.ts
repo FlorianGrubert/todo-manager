@@ -97,6 +97,20 @@ describe('authentication', () => {
     await client.login('anna@example.com', 'a-brand-new-password');
   });
 
+  it('limits login attempts per client', async () => {
+    const limited = await createTestEnv({ AUTH_RATE_LIMIT: '3' });
+    try {
+      const client = new TestClient(limited.app);
+      const codes: number[] = [];
+      for (let i = 0; i < 4; i++) {
+        codes.push((await client.post('/api/auth/login', { email: 'x@example.com', password: 'wrong-password' })).statusCode);
+      }
+      expect(codes).toEqual([401, 401, 401, 429]);
+    } finally {
+      await limited.close();
+    }
+  });
+
   it('changes the password with the current password', async () => {
     const client = new TestClient(env.app);
     await client.login('anna@example.com');
