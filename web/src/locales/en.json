@@ -1,0 +1,391 @@
+{
+  "app": {
+    "name": "FG To-Do-Manager",
+    "version": "Version {version}"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "loading": "Loading …",
+    "close": "Close",
+    "create": "Create",
+    "yes": "Yes",
+    "no": "No",
+    "saved": "Saved",
+    "edit": "Edit",
+    "remove": "Remove",
+    "rename": "Rename",
+    "add": "Add"
+  },
+  "nav": {
+    "system": "System administration",
+    "settings": "Settings",
+    "logout": "Sign out",
+    "tenant": "Tenant",
+    "menu": "Menu",
+    "todos": "To-dos",
+    "projects": "Projects",
+    "admin": "Administration",
+    "quick": "Quick capture"
+  },
+  "language": {
+    "label": "Language",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "auth": {
+    "email": "E-mail address",
+    "password": "Password",
+    "passwordConfirm": "Repeat password",
+    "passwordHint": "At least {min} characters",
+    "passwordMismatch": "The passwords do not match.",
+    "login": {
+      "title": "Sign in",
+      "submit": "Sign in",
+      "forgot": "Forgot password?"
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "intro": "Enter your e-mail address. If an account exists, you will receive a reset link.",
+      "submit": "Request link",
+      "sent": "If an account exists for this address, an e-mail has been sent."
+    },
+    "reset": {
+      "title": "Set new password",
+      "submit": "Save password",
+      "done": "Your password has been changed. You can sign in now."
+    },
+    "toLogin": "Go to sign in"
+  },
+  "invite": {
+    "title": "Accept invitation",
+    "intro": "You have been invited to the tenant “{tenant}”.",
+    "newAccount": "Set your password to activate your account.",
+    "existingAccount": "You already have an account. Confirm the invitation with your existing password.",
+    "name": "Your name",
+    "submit": "Accept invitation",
+    "invalid": "This invitation is invalid, expired or has already been used."
+  },
+  "home": {
+    "noTenant": "You are currently not assigned to an active tenant."
+  },
+  "system": {
+    "title": "System administration",
+    "tenants": "Tenants",
+    "newTenant": "New tenant",
+    "tenantName": "Tenant name",
+    "adminEmail": "E-mail of the first administrator",
+    "adminName": "Name of the first administrator",
+    "inviteLocale": "Invitation language",
+    "created": "Tenant created. The invitation to the administrator has been sent.",
+    "members": "Members",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Deactivated",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "createdAt": "Created on",
+    "empty": "No tenants yet.",
+    "confirmDeactivate": "Really deactivate tenant “{name}”? Its users will no longer be able to open it.",
+    "export": "Export",
+    "replace": "Replace …",
+    "importTitle": "Import tenant",
+    "importHint": "Imports an export file (JSON) as a new tenant. Persons are matched by their e-mail address; new persons set their password via “Forgot password”.",
+    "file": "Export file (JSON)",
+    "importName": "Name of the new tenant (optional)",
+    "import": "Import",
+    "imported": "The tenant has been imported.",
+    "invalidFile": "The file is not a valid export file.",
+    "replaceTitle": "Replace tenant “{name}”",
+    "replaceWarning": "Attention: all data of the tenant “{name}” (to-dos, projects, memberships, settings, history) is deleted and replaced by the content of the file. This cannot be undone. Create an export first.",
+    "replaceConfirm": "Type the name “{name}” to confirm",
+    "replaced": "The tenant “{name}” has been replaced."
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "name": "Name",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "passwordChanged": "Your password has been changed.",
+    "notifications": "Notifications",
+    "notificationsHint": "These settings apply to all your tenants.",
+    "notifyAssign": "E-mail when a to-do is assigned to me",
+    "remind": "Remind me of due to-dos",
+    "remindDays": "Days before the due date (0 = on the due date)",
+    "notifyOverdue": "E-mail when a to-do becomes overdue"
+  },
+  "role": {
+    "admin": "Administrator",
+    "project_admin": "Project administrator",
+    "member": "Member",
+    "editor": "Editor",
+    "restricted": "Restricted editor",
+    "reader": "Reader",
+    "none": "No access"
+  },
+  "status": {
+    "backlog": "Backlog",
+    "in_progress": "In progress",
+    "under_review": "Under review",
+    "done": "Done",
+    "rejected": "Rejected",
+    "deleted": "Deleted"
+  },
+  "priority": {
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "errors": {
+    "bad_request": "The input is invalid.",
+    "unauthorized": "Please sign in.",
+    "forbidden": "You are not allowed to do this.",
+    "not_found": "Not found.",
+    "conflict": "The action conflicts with existing data.",
+    "csrf": "Your session has expired. Please reload the page.",
+    "rate_limited": "Too many attempts. Please wait a moment.",
+    "invalid_credentials": "E-mail address or password is wrong.",
+    "invalid_token": "The link is invalid or has expired.",
+    "password_too_short": "The password is too short.",
+    "already_member": "This person is already a member of the tenant.",
+    "last_admin": "The last active administrator cannot be removed.",
+    "internal": "An unexpected error occurred.",
+    "network": "No connection to the server.",
+    "archived": "The project is archived; its to-dos cannot be changed.",
+    "invalid_assignee": "This person cannot be assigned to-dos in this project.",
+    "in_use": "This entry is still in use (e.g. as default or cancel status).",
+    "tenant_mismatch": "The tenant has been switched in the meantime."
+  },
+  "todos": {
+    "title": "To-dos",
+    "scope": "View",
+    "mine": "Mine",
+    "all": "All",
+    "search": "Search …",
+    "showClosed": "Show done and cancelled",
+    "empty": "No to-dos found."
+  },
+  "todo": {
+    "new": "New to-do",
+    "edit": "Edit to-do",
+    "title": "Title",
+    "description": "Description",
+    "project": "Project",
+    "noProject": "Without project",
+    "status": "Status",
+    "priority": "Priority",
+    "noPriority": "No priority",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "dueDate": "Due date",
+    "dueShort": "due {date}",
+    "tags": "Tags",
+    "tagsHint": "Separate multiple tags with commas",
+    "links": "Links / references",
+    "linkUrl": "https://…",
+    "linkLabel": "Label (optional)",
+    "addLink": "Add link",
+    "removeLink": "Remove link",
+    "cancelTodo": "Cancel to-do",
+    "confirmCancel": "Really cancel this to-do?",
+    "readOnly": "You can read and comment on this to-do, but not edit it.",
+    "createdMeta": "Created by {name} on {date}",
+    "updatedMeta": "Last changed by {name} on {date}",
+    "tabDetails": "Details",
+    "tabComments": "Comments",
+    "tabHistory": "History",
+    "changedElsewhere": "This to-do has been changed by someone else in the meantime. Your input is kept; saving overwrites the changed fields."
+  },
+  "comments": {
+    "empty": "No comments yet.",
+    "placeholder": "Write a comment …",
+    "add": "Comment"
+  },
+  "history": {
+    "empty": "No changes yet.",
+    "created": "To-do created",
+    "field": {
+      "title": "Title",
+      "description": "Description",
+      "dueDate": "Due date",
+      "priority": "Priority",
+      "assignee": "Assignee",
+      "status": "Status",
+      "project": "Project",
+      "tags": "Tags",
+      "links": "Links"
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "new": "New project",
+    "edit": "Edit project",
+    "showArchived": "Show archived",
+    "empty": "No projects yet.",
+    "archived": "Archived",
+    "members": "Members",
+    "membersOf": "Members of “{name}”",
+    "archive": "Archive",
+    "restore": "Restore",
+    "confirmArchive": "Archive project “{name}”? All to-dos of the project are archived and hidden as well. Nothing is deleted; the project can be restored together with its to-dos.",
+    "name": "Name",
+    "description": "Description",
+    "noMembers": "Nobody is assigned to this project yet.",
+    "role": "Role",
+    "addMember": "Select person"
+  },
+  "admin": {
+    "title": "Administration",
+    "removed": "Removed.",
+    "replacement": "Replace with",
+    "tab": {
+      "members": "Users",
+      "statuses": "Statuses",
+      "priorities": "Priorities",
+      "tags": "Tags"
+    },
+    "members": {
+      "title": "Users",
+      "displayName": "Display name",
+      "tenantRole": "Tenant role",
+      "defaultRole": "Default role (without project)",
+      "lastLogin": "Last login",
+      "pending": "Invited",
+      "pseudonymizedBadge": "Pseudonymized",
+      "neverLoggedIn": "never signed in",
+      "resend": "Resend invitation",
+      "pseudonymize": "Pseudonymize",
+      "confirmPseudonymize": "Pseudonymize “{name}”? Name and e-mail address are permanently replaced by a pseudonym in this tenant and the person is deactivated. This cannot be undone.",
+      "pseudonymized": "The person has been pseudonymized.",
+      "invited": "The invitation has been sent.",
+      "invite": "Invite person",
+      "sendInvite": "Send invitation",
+      "defaultRoleHint": "The default role applies to to-dos without project. Project roles are assigned under “Projects”."
+    },
+    "statuses": {
+      "rank": "Rank",
+      "name": "Name",
+      "color": "Color",
+      "category": "Category",
+      "newDefault": "Default for new",
+      "cancelTarget": "Cancel status",
+      "hint": "The rank determines the order of the columns. Statuses of the categories “Done” and “Cancelled” are hidden by default. An empty name restores the standard label.",
+      "new": "New status",
+      "categories": {
+        "open": "Open",
+        "done": "Done",
+        "cancelled": "Cancelled"
+      },
+      "removeTitle": "Remove status “{name}”",
+      "removeText": "To-dos with this status get the selected status. The change is recorded in the history of the to-dos."
+    },
+    "priorities": {
+      "icon": "Icon",
+      "kinds": {
+        "exclamation": "Red exclamation mark"
+      },
+      "directions": {
+        "up": "up",
+        "down": "down"
+      },
+      "colors": {
+        "green": "Green",
+        "yellow": "Yellow",
+        "red": "Red"
+      },
+      "option": "One arrow {direction}, {color} | {count} arrows {direction}, {color}",
+      "rows": {
+        "up": "1 arrow up | {count} arrows up",
+        "down": "1 arrow down | {count} arrows down",
+        "exclamation": "Exclamation mark"
+      },
+      "new": "New priority",
+      "removeTitle": "Remove priority “{name}”",
+      "removeText": "To-dos with this priority get the selected priority. The change is recorded in the history of the to-dos."
+    },
+    "tags": {
+      "name": "Name",
+      "confirmDelete": "Delete tag “{name}”? It will be removed from all to-dos.",
+      "hint": "Tags are created while editing to-dos. Here they can be renamed, colored or deleted.",
+      "empty": "No tags yet."
+    }
+  },
+  "board": {
+    "count": "{n} to-do | {n} to-dos",
+    "viewLabel": "View",
+    "view": {
+      "status": "By status",
+      "person": "By person",
+      "tag": "By tag",
+      "grid": "Grid"
+    },
+    "sort": {
+      "label": "Sort by",
+      "priority": "Priority",
+      "status": "Status",
+      "dueDate": "Due date",
+      "createdAt": "Creation date",
+      "updatedAt": "Last change",
+      "asc": "Ascending",
+      "desc": "Descending"
+    },
+    "filter": "Filter",
+    "filters": {
+      "tags": "Tags",
+      "persons": "Persons",
+      "priorities": "Priorities",
+      "projects": "Projects",
+      "reset": "Reset filters"
+    },
+    "withoutTag": "Without tag",
+    "savedFilters": "Saved filters",
+    "noSavedFilters": "No saved filters",
+    "saveFilter": "Save filter",
+    "saveFilterPrompt": "Name of the filter:",
+    "deleteFilter": "Delete filter",
+    "confirmDeleteFilter": "Delete saved filter “{name}”?",
+    "export": "Export",
+    "exportXlsx": "Excel (XLSX)",
+    "exportCsv": "CSV",
+    "linkNotFound": "The to-do was not found or you have no access to it."
+  },
+  "share": {
+    "button": "Share",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "email": "Send by e-mail",
+    "copyManually": "Copy link:"
+  },
+  "quick": {
+    "title": "Quick capture",
+    "toBoard": "To the board",
+    "notAllowed": "You are not allowed to create to-dos in this tenant.",
+    "more": "More",
+    "less": "Less",
+    "submit": "Save to-do",
+    "saved": "Saved.",
+    "queued": "Saved offline – it will be sent automatically as soon as there is a connection.",
+    "outbox": "Not yet sent",
+    "rejected": "Rejected by the server:",
+    "syncing": "Sending …",
+    "waiting": "Waiting for connection",
+    "retry": "Try again",
+    "discard": "Discard",
+    "otherTenants": "{n} more to-do is waiting to be sent in another tenant ({tenants}). Switch there to send it. | {n} more to-dos are waiting to be sent in other tenants ({tenants}). Switch there to send them."
+  },
+  "offline": {
+    "title": "Offline",
+    "text": "You are seeing the last loaded state. Editing is not possible; new to-dos are stored on the device and sent automatically.",
+    "pending": "{n} to-do waiting to be sent | {n} to-dos waiting to be sent",
+    "failed": "{n} to-do could not be sent. | {n} to-dos could not be sent.",
+    "syncing": "Sending {n} to-do … | Sending {n} to-dos …",
+    "show": "Show",
+    "cachedBoard": "Offline copy from {date} (read-only).",
+    "readOnlyTodo": "Offline copy – read-only. Comments and history are only available online.",
+    "confirmLogout": "{n} to-do has not been sent yet and will be lost when you sign out. Sign out anyway? | {n} to-dos have not been sent yet and will be lost when you sign out. Sign out anyway?"
+  }
+}
