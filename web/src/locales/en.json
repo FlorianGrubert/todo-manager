@@ -236,7 +236,17 @@
     "description": "Description",
     "noMembers": "Nobody is assigned to this project yet.",
     "role": "Role",
-    "addMember": "Select person"
+    "addMember": "Select person",
+    "persons": "Persons without login",
+    "personsHint": "Persons without login can be assigned the to-dos of this project but cannot sign in.",
+    "noPersons": "No persons without login are linked to this project.",
+    "addPerson": "Select person without login",
+    "newPerson": "New person (name)",
+    "managePersons": "Persons without login",
+    "personsEmpty": "No persons without login yet.",
+    "personsManageHint": "Persons without login can be assigned the to-dos of the projects they are linked to. The tenant administrator can turn a person into a user under “Administration → Users”; all assigned to-dos are kept.",
+    "personProjects": "Projects",
+    "personName": "Name"
   },
   "admin": {
     "title": "Administration",
@@ -264,7 +274,11 @@
       "invited": "The invitation has been sent.",
       "invite": "Invite person",
       "sendInvite": "Send invitation",
-      "defaultRoleHint": "The default role applies to to-dos without project. Project roles are assigned under “Projects”."
+      "defaultRoleHint": "The default role applies to to-dos without project. Project roles are assigned under “Projects”.",
+      "noLogin": "No login",
+      "makeUser": "Make user",
+      "makeUserTitle": "Make “{name}” a user",
+      "makeUserHint": "The person receives an invitation by e-mail. All to-dos assigned to them are kept. After accepting, they become restricted editor in the projects they are linked to."
     },
     "statuses": {
       "rank": "Rank",
@@ -387,5 +401,8 @@
     "cachedBoard": "Offline copy from {date} (read-only).",
     "readOnlyTodo": "Offline copy – read-only. Comments and history are only available online.",
     "confirmLogout": "{n} to-do has not been sent yet and will be lost when you sign out. Sign out anyway? | {n} to-dos have not been sent yet and will be lost when you sign out. Sign out anyway?"
+  },
+  "person": {
+    "noLogin": "no login"
   }
 }

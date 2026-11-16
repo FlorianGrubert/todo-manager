@@ -81,6 +81,12 @@ export const useReferenceStore = defineStore('reference', () => {
   };
 });
 
+/** Display name of a member; persons without login are marked. */
+export function memberLabel(member: MemberDto | undefined, fallback = '—'): string {
+  if (!member) return fallback;
+  return member.isContact ? `${member.displayName} (${i18n.global.t('person.noLogin')})` : member.displayName;
+}
+
 /** Display name of a status/priority: custom name, otherwise the translated standard name. */
 export function refLabel(kind: 'status' | 'priority', item: { key: string | null; name: string | null } | undefined): string {
   if (!item) return '—';

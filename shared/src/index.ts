@@ -13,6 +13,17 @@ export type TenantRole = (typeof TENANT_ROLES)[number];
 export const PROJECT_ROLES = ['editor', 'restricted', 'reader'] as const;
 export type ProjectRole = (typeof PROJECT_ROLES)[number];
 
+/**
+ * Kind of a membership: `user` has (or is invited to) a login, `contact` is a
+ * person without login that can only be assigned to To-Dos.
+ */
+export const MEMBERSHIP_KINDS = ['user', 'contact'] as const;
+export type MembershipKind = (typeof MEMBERSHIP_KINDS)[number];
+
+/** Project link of a person without login; grants no rights, only assignability. */
+export const CONTACT_ROLE = 'contact';
+export type ProjectLinkRole = ProjectRole | typeof CONTACT_ROLE;
+
 /** Default role for To-Dos without project; `none` = no access. */
 export const DEFAULT_ROLES = [...PROJECT_ROLES, 'none'] as const;
 export type DefaultRole = (typeof DEFAULT_ROLES)[number];
@@ -135,6 +146,18 @@ export interface TagDto {
 export interface MemberDto {
   id: string;
   displayName: string;
+  /** Person without login. */
+  isContact?: boolean;
+}
+
+/** Person without login as managed by tenant and project administrators. */
+export interface ContactDto {
+  id: string;
+  displayName: string;
+  isActive: boolean;
+  /** An invitation to become a user has been sent but not accepted yet. */
+  invited: boolean;
+  projectIds: string[];
 }
 
 export interface ProjectDto {
@@ -149,7 +172,9 @@ export interface ProjectDto {
 export interface ProjectMemberDto {
   membershipId: string;
   displayName: string;
-  role: ProjectRole;
+  /** `contact` for persons without login. */
+  role: ProjectLinkRole;
+  isContact: boolean;
 }
 
 /** Member as seen by the tenant administrator. */
@@ -165,6 +190,8 @@ export interface AdminMemberDto {
   /** Invitation not yet accepted. */
   pending: boolean;
   lastLoginAt: string | null;
+  /** Person without login (may have a pending invitation to become a user). */
+  isContact: boolean;
 }
 
 // ---------------------------------------------------------------------------

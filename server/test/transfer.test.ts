@@ -46,7 +46,7 @@ describe('tenant export and import', () => {
     const res = await sys.get(`/api/system/tenants/${s.tenantId}/export`);
     expect(res.headers['content-disposition']).toMatch(/attachment; filename="Acme-\d{4}-\d{2}-\d{2}\.json"/);
     const data = res.json() as TenantExport;
-    expect(data).toMatchObject({ format: 'fg-todo-manager/tenant', version: 1, tenant: { name: 'Acme' } });
+    expect(data).toMatchObject({ format: 'fg-todo-manager/tenant', version: 2, tenant: { name: 'Acme' } });
     expect(data.todos).toHaveLength(5);
     expect(data.members.map((m) => m.email).sort()).toContain('editor@acme.test');
     expect(data.comments).toHaveLength(1);

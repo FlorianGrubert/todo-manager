@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PROJECT_ROLES, type MemberDto, type ProjectDto, type ProjectMemberDto, type ProjectRole } from '@fg/shared';
+import {
+  CONTACT_ROLE,
+  PROJECT_ROLES,
+  type ContactDto,
+  type MemberDto,
+  type ProjectDto,
+  type ProjectMemberDto,
+  type ProjectRole,
+} from '@fg/shared';
 import { api, get, patch, post } from '../api/client';
 import AppModal from '../components/AppModal.vue';
 import { errorKey } from '../i18n';
@@ -21,10 +29,22 @@ const membersOf = ref<ProjectDto | null>(null);
 const projectMembers = ref<ProjectMemberDto[]>([]);
 const allMembers = ref<MemberDto[]>([]);
 const addMember = reactive({ membershipId: '', role: 'editor' as ProjectRole });
+const contacts = ref<ContactDto[]>([]);
+const addContact = reactive({ id: '', newName: '' });
+const showPersons = ref(false);
+const newPersonName = ref('');
 
 const isManager = computed(() => ['admin', 'project_admin'].includes(session.activeTenant?.role ?? ''));
 const visible = computed(() => projects.value.filter((p) => showArchived.value || !p.archived));
-const addable = computed(() => allMembers.value.filter((m) => !projectMembers.value.some((pm) => pm.membershipId === m.id)));
+const userMembers = computed(() => projectMembers.value.filter((m) => !m.isContact));
+const contactMembers = computed(() => projectMembers.value.filter((m) => m.isContact));
+const addable = computed(() =>
+  allMembers.value.filter((m) => !m.isContact && !projectMembers.value.some((pm) => pm.membershipId === m.id)),
+);
+const addableContacts = computed(() =>
+  contacts.value.filter((c) => c.isActive && !projectMembers.value.some((pm) => pm.membershipId === c.id)),
+);
+const projectName = (id: string) => projects.value.find((p) => p.id === id)?.name ?? '';
 
 async function run(action: () => Promise<unknown>): Promise<void> {
   error.value = '';
@@ -77,14 +97,15 @@ async function restore(project: ProjectDto): Promise<void> {
 async function openMembers(project: ProjectDto): Promise<void> {
   membersOf.value = project;
   await run(async () => {
-    [projectMembers.value, allMembers.value] = await Promise.all([
+    [projectMembers.value, allMembers.value, contacts.value] = await Promise.all([
       get<ProjectMemberDto[]>(`/api/projects/${project.id}/members`),
       get<MemberDto[]>('/api/members'),
+      get<ContactDto[]>('/api/contacts'),
     ]);
   });
 }
 
-async function setRole(membershipId: string, role: ProjectRole): Promise<void> {
+async function setRole(membershipId: string, role: ProjectRole | typeof CONTACT_ROLE): Promise<void> {
   if (!membersOf.value) return;
   const project = membersOf.value;
   await run(async () => {
@@ -108,6 +129,59 @@ async function add(): Promise<void> {
   addMember.membershipId = '';
 }
 
+/** Links an existing person without login, or creates a new one and links it. */
+async function linkContact(): Promise<void> {
+  if (!membersOf.value) return;
+  const project = membersOf.value;
+  const name = addContact.newName.trim();
+  if (name) {
+    await run(async () => {
+      await post('/api/contacts', { displayName: name, projectIds: [project.id] });
+      addContact.newName = '';
+      await openMembers(project);
+      if (session.activeTenant) await reference.load(session.activeTenant.id, true);
+    });
+  } else if (addContact.id) {
+    await setRole(addContact.id, CONTACT_ROLE);
+    addContact.id = '';
+  }
+}
+
+async function loadContacts(): Promise<void> {
+  await run(async () => {
+    contacts.value = await get<ContactDto[]>('/api/contacts');
+  });
+}
+
+async function openPersons(): Promise<void> {
+  showPersons.value = true;
+  await loadContacts();
+}
+
+async function changeContact(contact: ContactDto, changes: { displayName?: string; isActive?: boolean }): Promise<void> {
+  await run(async () => {
+    await patch(`/api/contacts/${contact.id}`, changes);
+    await loadContacts();
+    if (session.activeTenant) await reference.load(session.activeTenant.id, true);
+  });
+}
+
+function renameContact(contact: ContactDto): void {
+  const name = window.prompt(t('projects.personName'), contact.displayName)?.trim();
+  if (name && name !== contact.displayName) void changeContact(contact, { displayName: name });
+}
+
+async function createPerson(): Promise<void> {
+  const name = newPersonName.value.trim();
+  if (!name) return;
+  await run(async () => {
+    await post('/api/contacts', { displayName: name });
+    newPersonName.value = '';
+    await loadContacts();
+    if (session.activeTenant) await reference.load(session.activeTenant.id, true);
+  });
+}
+
 onMounted(load);
 </script>
 
@@ -115,6 +189,8 @@ onMounted(load);
   <section class="page">
     <div class="page-head">
       <h1>{{ t('projects.title') }}</h1>
+      <span class="spacer" />
+      <button v-if="isManager" type="button" class="button" @click="openPersons">{{ t('projects.managePersons') }}</button>
       <button v-if="isManager" type="button" class="button primary" @click="editing = { id: null, name: '', description: '' }">
         + {{ t('projects.new') }}
       </button>
@@ -166,10 +242,10 @@ onMounted(load);
     </AppModal>
 
     <AppModal v-if="membersOf" :title="t('projects.membersOf', { name: membersOf.name })" @close="membersOf = null">
-      <p v-if="projectMembers.length === 0" class="muted">{{ t('projects.noMembers') }}</p>
+      <p v-if="userMembers.length === 0" class="muted">{{ t('projects.noMembers') }}</p>
       <table v-else class="table">
         <tbody>
-          <tr v-for="m in projectMembers" :key="m.membershipId">
+          <tr v-for="m in userMembers" :key="m.membershipId">
             <td>{{ m.displayName }}</td>
             <td>
               <label>
@@ -200,6 +276,73 @@ onMounted(load);
           </select>
         </label>
         <button type="submit" class="button primary small">{{ t('common.add') }}</button>
+      </form>
+
+      <h3>{{ t('projects.persons') }}</h3>
+      <p class="muted small">{{ t('projects.personsHint') }}</p>
+      <p v-if="contactMembers.length === 0" class="muted">{{ t('projects.noPersons') }}</p>
+      <table v-else class="table">
+        <tbody>
+          <tr v-for="m in contactMembers" :key="m.membershipId">
+            <td>{{ m.displayName }}</td>
+            <td class="actions">
+              <button type="button" class="button small" @click="removeMember(m.membershipId)">{{ t('common.remove') }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <form class="inline-form" @submit.prevent="linkContact">
+        <label>
+          <span class="sr-only">{{ t('projects.addPerson') }}</span>
+          <select v-model="addContact.id" :disabled="addContact.newName.trim().length > 0">
+            <option value="">{{ t('projects.addPerson') }}</option>
+            <option v-for="c in addableContacts" :key="c.id" :value="c.id">{{ c.displayName }}</option>
+          </select>
+        </label>
+        <label>
+          <span class="sr-only">{{ t('projects.newPerson') }}</span>
+          <input v-model="addContact.newName" type="text" maxlength="200" :placeholder="t('projects.newPerson')" />
+        </label>
+        <button type="submit" class="button primary small" :disabled="!addContact.id && !addContact.newName.trim()">
+          {{ t('common.add') }}
+        </button>
+      </form>
+    </AppModal>
+
+    <AppModal v-if="showPersons" :title="t('projects.managePersons')" @close="showPersons = false">
+      <p class="muted small">{{ t('projects.personsManageHint') }}</p>
+      <p v-if="contacts.length === 0" class="muted">{{ t('projects.personsEmpty') }}</p>
+      <table v-else class="table">
+        <thead>
+          <tr>
+            <th>{{ t('projects.personName') }}</th>
+            <th>{{ t('projects.personProjects') }}</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="c in contacts" :key="c.id" :class="{ inactive: !c.isActive }">
+            <td>
+              {{ c.displayName }}
+              <span v-if="c.invited" class="badge">{{ t('admin.members.pending') }}</span>
+              <span v-else-if="!c.isActive" class="badge badge-off">{{ t('system.inactive') }}</span>
+            </td>
+            <td>{{ c.projectIds.map(projectName).filter(Boolean).join(', ') || '—' }}</td>
+            <td class="actions">
+              <button type="button" class="button small" @click="renameContact(c)">{{ t('common.rename') }}</button>
+              <button type="button" class="button small" @click="changeContact(c, { isActive: !c.isActive })">
+                {{ c.isActive ? t('system.deactivate') : t('system.activate') }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <form class="inline-form" @submit.prevent="createPerson">
+        <label>
+          <span class="sr-only">{{ t('projects.newPerson') }}</span>
+          <input v-model="newPersonName" type="text" maxlength="200" required :placeholder="t('projects.newPerson')" />
+        </label>
+        <button type="submit" class="button primary small">{{ t('common.create') }}</button>
       </form>
     </AppModal>
   </section>

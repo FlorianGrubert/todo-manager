@@ -13,6 +13,7 @@ import { EventBus } from './events/bus.js';
 import { ApiError } from './lib/errors.js';
 import { TaskQueue } from './lib/queue.js';
 import { createMailer, type Mailer } from './mail/mailer.js';
+import { contactRoutes } from './modules/contacts/routes.js';
 import { eventRoutes, publishReferenceChanges } from './modules/events/routes.js';
 import { memberRoutes } from './modules/members/routes.js';
 import { projectRoutes } from './modules/projects/routes.js';
@@ -90,6 +91,7 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   referenceRoutes(app);
   projectRoutes(app);
   memberRoutes(app);
+  contactRoutes(app);
   todoExtraRoutes(app);
   todoRoutes(app);
   eventRoutes(app);

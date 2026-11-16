@@ -236,7 +236,17 @@
     "description": "Beschreibung",
     "noMembers": "Diesem Projekt ist noch niemand zugeordnet.",
     "role": "Rolle",
-    "addMember": "Person auswählen"
+    "addMember": "Person auswählen",
+    "persons": "Personen ohne Login",
+    "personsHint": "Personen ohne Login können To-Dos dieses Projekts zugewiesen bekommen, sich aber nicht anmelden.",
+    "noPersons": "Diesem Projekt sind keine Personen ohne Login zugeordnet.",
+    "addPerson": "Person ohne Login auswählen",
+    "newPerson": "Neue Person (Name)",
+    "managePersons": "Personen ohne Login",
+    "personsEmpty": "Noch keine Personen ohne Login vorhanden.",
+    "personsManageHint": "Personen ohne Login können To-Dos der Projekte zugewiesen bekommen, denen sie zugeordnet sind. Der Mandanten-Administrator kann eine Person unter „Administration → Benutzer“ zum Benutzer machen; alle zugewiesenen To-Dos bleiben erhalten.",
+    "personProjects": "Projekte",
+    "personName": "Name"
   },
   "admin": {
     "title": "Administration",
@@ -264,7 +274,11 @@
       "invited": "Die Einladung wurde versendet.",
       "invite": "Person einladen",
       "sendInvite": "Einladung senden",
-      "defaultRoleHint": "Die Standardrolle gilt für To-Dos ohne Projekt. Rollen in Projekten werden unter „Projekte“ vergeben."
+      "defaultRoleHint": "Die Standardrolle gilt für To-Dos ohne Projekt. Rollen in Projekten werden unter „Projekte“ vergeben.",
+      "noLogin": "Ohne Login",
+      "makeUser": "Zum Benutzer machen",
+      "makeUserTitle": "„{name}“ zum Benutzer machen",
+      "makeUserHint": "Die Person erhält eine Einladung per E-Mail. Alle ihr zugewiesenen To-Dos bleiben erhalten. Nach dem Annehmen ist sie in den zugeordneten Projekten eingeschränkter Bearbeiter."
     },
     "statuses": {
       "rank": "Rang",
@@ -387,5 +401,8 @@
     "cachedBoard": "Offline-Stand vom {date} (schreibgeschützt).",
     "readOnlyTodo": "Offline-Kopie – schreibgeschützt. Kommentare und Verlauf sind nur online verfügbar.",
     "confirmLogout": "{n} To-Do wurde noch nicht übertragen und geht beim Abmelden verloren. Trotzdem abmelden? | {n} To-Dos wurden noch nicht übertragen und gehen beim Abmelden verloren. Trotzdem abmelden?"
+  },
+  "person": {
+    "noLogin": "ohne Login"
   }
 }

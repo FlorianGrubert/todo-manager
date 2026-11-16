@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { TodoDto } from '@fg/shared';
-import { refLabel, useReferenceStore } from '../stores/reference';
+import { memberLabel, refLabel, useReferenceStore } from '../stores/reference';
 import PriorityBadge from './PriorityBadge.vue';
 import ShareButton from './ShareButton.vue';
 
@@ -44,7 +44,7 @@ const overdue = computed(() => {
       <span v-for="tag in todo.tags" :key="tag.id" class="tag" :style="tag.color ? { '--tag-color': tag.color } : undefined">{{ tag.name }}</span>
     </div>
     <footer v-if="!compact" class="todo-card-foot">
-      <span class="assignee">{{ assignee?.displayName ?? t('todo.unassigned') }}</span>
+      <span class="assignee">{{ memberLabel(assignee, t('todo.unassigned')) }}</span>
       <span v-if="todo.commentCount" class="comment-count muted" :title="t('todo.tabComments')">{{ todo.commentCount }}</span>
     </footer>
   </article>

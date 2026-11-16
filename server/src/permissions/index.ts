@@ -9,7 +9,7 @@
  * - `defaultRole` of the membership for To-Dos without project
  */
 import type { Knex } from 'knex';
-import type { ProjectRole } from '@fg/shared';
+import { CONTACT_ROLE, PROJECT_ROLES, type ProjectRole } from '@fg/shared';
 import type { Db } from '../db/knex.js';
 import { ApiError, forbidden } from '../lib/errors.js';
 import type { TenantContext } from '../types.js';
@@ -22,6 +22,7 @@ export type RoleMap = Map<string, ProjectRole>;
 export async function loadProjectRoles(db: Db, ctx: TenantContext): Promise<RoleMap> {
   const rows = (await db('project_members')
     .where({ tenant_id: ctx.tenantId, membership_id: ctx.membershipId })
+    .whereIn('role', [...PROJECT_ROLES])
     .select('project_id', 'role')) as { project_id: string; role: ProjectRole }[];
   return new Map(rows.map((r) => [r.project_id, r.role]));
 }
@@ -106,7 +107,9 @@ export function applyTodoVisibility(query: Knex.QueryBuilder, ctx: TenantContext
 
 /**
  * Checks that a membership may be assigned to To-Dos of the project: active,
- * accepted and at least restricted editor (tenant admins always).
+ * accepted and at least restricted editor (tenant admins always). Persons
+ * without login are assignable in the projects they are linked to, never to
+ * To-Dos without project.
  */
 export async function assertEligibleAssignee(
   db: Db,
@@ -117,9 +120,18 @@ export async function assertEligibleAssignee(
   if (assigneeId === null) return;
   const m = (await db('memberships')
     .where({ id: assigneeId, tenant_id: ctx.tenantId, is_active: 1 })
-    .whereNotNull('accepted_at')
-    .first('tenant_role', 'default_role')) as { tenant_role: string; default_role: string } | undefined;
+    .where((q) => q.whereNotNull('accepted_at').orWhere('kind', 'contact'))
+    .first('tenant_role', 'default_role', 'kind')) as { tenant_role: string; default_role: string; kind: string } | undefined;
   if (!m) throw new ApiError(400, 'invalid_assignee');
+  if (m.kind === 'contact') {
+    const link =
+      projectId !== null &&
+      (await db('project_members')
+        .where({ tenant_id: ctx.tenantId, project_id: projectId, membership_id: assigneeId, role: CONTACT_ROLE })
+        .first('id'));
+    if (!link) throw new ApiError(400, 'invalid_assignee');
+    return;
+  }
   if (m.tenant_role === 'admin') return;
   let role: string | undefined;
   if (projectId === null) {

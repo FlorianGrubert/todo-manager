@@ -3,7 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import type { Knex } from 'knex';
 import { z } from 'zod';
 import { DEFAULT_ROLES, LOCALES, TENANT_ROLES, type AdminMemberDto, type DefaultRole, type TenantRole } from '@fg/shared';
-import { inviteMember } from '../../auth/invitations.js';
+import { convertContact, inviteMember } from '../../auth/invitations.js';
 import { now } from '../../db/knex.js';
 import { conflict, notFound } from '../../lib/errors.js';
 import { toBool } from '../../lib/flags.js';
@@ -11,6 +11,7 @@ import { idParam } from '../../lib/http.js';
 import { parse } from '../../lib/validate.js';
 import { requireTenantAdmin } from '../../permissions/index.js';
 import { getTenant, requireTenant, scoped } from '../../tenancy/context.js';
+import { PLACEHOLDER_DOMAIN } from '../contacts/service.js';
 import type { TenantContext } from '../../types.js';
 
 interface MemberRow {
@@ -25,6 +26,7 @@ interface MemberRow {
   pseudonymized: number;
   accepted_at: string | null;
   last_login_at: string | null;
+  kind: 'user' | 'contact';
 }
 
 const memberSelect = [
@@ -39,19 +41,25 @@ const memberSelect = [
   'm.pseudonymized',
   'm.accepted_at',
   'm.last_login_at',
+  'm.kind',
 ];
 
-const toDto = (r: MemberRow): AdminMemberDto => ({
-  id: r.id,
-  displayName: r.display_name,
-  email: toBool(r.pseudonymized) ? null : r.email,
-  tenantRole: r.tenant_role,
-  defaultRole: r.default_role,
-  isActive: toBool(r.is_active),
-  pseudonymized: toBool(r.pseudonymized),
-  pending: r.accepted_at === null,
-  lastLoginAt: r.last_login_at,
-});
+const toDto = (r: MemberRow): AdminMemberDto => {
+  // Persons without login have a placeholder address until they are invited.
+  const placeholder = r.email.endsWith(PLACEHOLDER_DOMAIN);
+  return {
+    id: r.id,
+    displayName: r.display_name,
+    email: toBool(r.pseudonymized) || placeholder ? null : r.email,
+    tenantRole: r.tenant_role,
+    defaultRole: r.default_role,
+    isActive: toBool(r.is_active),
+    pseudonymized: toBool(r.pseudonymized),
+    pending: r.accepted_at === null && !placeholder,
+    lastLoginAt: r.last_login_at,
+    isContact: r.kind === 'contact',
+  };
+};
 
 /**
  * Ensures the tenant keeps at least one active administrator (§11) when the
@@ -123,7 +131,9 @@ export function memberRoutes(app: FastifyInstance): void {
     requireTenantAdmin(ctx);
     const { id } = parse(idParam, req.params);
     const member = await findMember(db(), ctx, id);
-    if (member.accepted_at !== null || toBool(member.pseudonymized)) throw conflict();
+    if (member.accepted_at !== null || toBool(member.pseudonymized) || member.email.endsWith(PLACEHOLDER_DOMAIN)) {
+      throw conflict();
+    }
     await inviteMember(app.deps, {
       tenantId: ctx.tenantId,
       email: member.email,
@@ -135,6 +145,36 @@ export function memberRoutes(app: FastifyInstance): void {
     });
     return reply.code(204).send();
   });
+
+  /** Invites a person without login to become a user; assignments are kept (same membership). */
+  app.post(
+    '/api/admin/members/:id/invite',
+    { ...opts, config: { rateLimit: { max: 30, timeWindow: '1 minute' } } },
+    async (req, reply) => {
+      const ctx = getTenant(req);
+      requireTenantAdmin(ctx);
+      const { id } = parse(idParam, req.params);
+      const body = parse(
+        z.object({
+          email: z.string().trim().max(320).email(),
+          tenantRole: z.enum(TENANT_ROLES).default('member'),
+          defaultRole: z.enum(DEFAULT_ROLES).default('none'),
+          locale: z.enum(LOCALES).default(app.deps.config.DEFAULT_LOCALE),
+        }),
+        req.body,
+      );
+      await convertContact(app.deps, {
+        tenantId: ctx.tenantId,
+        membershipId: id,
+        email: body.email,
+        tenantRole: body.tenantRole,
+        defaultRole: body.defaultRole,
+        invitedByUserId: ctx.userId,
+        locale: body.locale,
+      });
+      return reply.code(204).send();
+    },
+  );
 
   app.patch('/api/admin/members/:id', opts, async (req, reply) => {
     const ctx = getTenant(req);
