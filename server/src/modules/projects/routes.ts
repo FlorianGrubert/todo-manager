@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { PROJECT_ROLES, type ProjectDto, type ProjectMemberDto } from '@fg/shared';
+import { CONTACT_ROLE, PROJECT_ROLES, type ProjectDto, type ProjectMemberDto } from '@fg/shared';
 import { now } from '../../db/knex.js';
-import { notFound } from '../../lib/errors.js';
+import { badRequest, notFound } from '../../lib/errors.js';
 import { idParam, pickDefined } from '../../lib/http.js';
 import { parse } from '../../lib/validate.js';
 import {
@@ -110,11 +110,15 @@ export function projectRoutes(app: FastifyInstance): void {
     requireProjectManager(ctx);
     const { id } = parse(idParam, req.params);
     await findProject(ctx, id);
-    return (await scoped(db(), ctx, 'project_members', 'pm')
+    const rows = (await scoped(db(), ctx, 'project_members', 'pm')
       .join('memberships as m', 'm.id', 'pm.membership_id')
       .where({ 'pm.project_id': id })
       .orderBy('m.display_name')
-      .select('pm.membership_id as membershipId', 'm.display_name as displayName', 'pm.role')) as ProjectMemberDto[];
+      .select('pm.membership_id as membershipId', 'm.display_name as displayName', 'pm.role', 'm.kind')) as (Omit<
+      ProjectMemberDto,
+      'isContact'
+    > & { kind: string })[];
+    return rows.map(({ kind, ...r }) => ({ ...r, isContact: kind === 'contact' }));
   });
 
   app.put('/api/projects/:id/members/:membershipId', opts, async (req, reply) => {
@@ -124,10 +128,14 @@ export function projectRoutes(app: FastifyInstance): void {
       z.object({ id: z.string().max(64), membershipId: z.string().max(64) }),
       req.params,
     );
-    const { role } = parse(z.object({ role: z.enum(PROJECT_ROLES) }), req.body);
+    const { role } = parse(z.object({ role: z.enum([...PROJECT_ROLES, CONTACT_ROLE]) }), req.body);
     await findProject(ctx, id);
-    const membership = await scoped(db(), ctx, 'memberships').where({ id: membershipId }).first();
+    const membership = (await scoped(db(), ctx, 'memberships').where({ id: membershipId }).first('kind')) as
+      | { kind: string }
+      | undefined;
     if (!membership) throw notFound();
+    // Persons without login can only be linked; users only get real project roles.
+    if ((membership.kind === 'contact') !== (role === CONTACT_ROLE)) throw badRequest();
     const existing = await scoped(db(), ctx, 'project_members').where({ project_id: id, membership_id: membershipId }).first();
     if (existing) {
       await scoped(db(), ctx, 'project_members').where({ project_id: id, membership_id: membershipId }).update({ role });

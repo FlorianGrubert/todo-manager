@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import {
+  CONTACT_ROLE,
   PRIORITY_ICON_COLORS,
   PRIORITY_ICON_DIRECTIONS,
   PRIORITY_ICON_KINDS,
@@ -19,6 +20,13 @@ import { effectiveRole, loadProjectRoles, requireTenantAdmin } from '../../permi
 import { getTenant, requireTenant, scoped } from '../../tenancy/context.js';
 import { reassignTodos } from '../todos/history.js';
 import { toPriorityDto, toStatusDto, toTagDto, type PriorityRow, type StatusRow, type TagRow } from './mappers.js';
+
+interface MemberRow {
+  id: string;
+  display_name: string;
+  kind: string;
+}
+const toMemberDto = (r: MemberRow): MemberDto => ({ id: r.id, displayName: r.display_name, isContact: r.kind === 'contact' });
 
 const rank = z.number().int().min(-1_000_000).max(1_000_000);
 const name = z.string().trim().min(1).max(100);
@@ -244,13 +252,15 @@ export function referenceRoutes(app: FastifyInstance): void {
   });
 
   // ---------------- members (for assignment, lanes, filters) ----------------
+  // Users with accepted membership plus persons without login.
   app.get('/api/members', opts, async (req): Promise<MemberDto[]> => {
     const ctx = getTenant(req);
-    return (await scoped(db(), ctx, 'memberships')
+    const rows = (await scoped(db(), ctx, 'memberships')
       .where({ is_active: 1 })
-      .whereNotNull('accepted_at')
+      .where((q) => q.whereNotNull('accepted_at').orWhere('kind', 'contact'))
       .orderBy('display_name')
-      .select('id', 'display_name as displayName')) as MemberDto[];
+      .select('id', 'display_name', 'kind')) as MemberRow[];
+    return rows.map(toMemberDto);
   });
 
   /** Members that can be assigned to To-Dos of a project (`none` = without project). */
@@ -265,22 +275,29 @@ export function referenceRoutes(app: FastifyInstance): void {
     const roles = await loadProjectRoles(db(), ctx);
     if (!effectiveRole(ctx, roles, pid)) throw notFound();
 
+    const linked = (roles: string[]) =>
+      db()('project_members as pm')
+        .whereRaw('pm.membership_id = m.id')
+        .where({ 'pm.project_id': pid, 'pm.tenant_id': ctx.tenantId })
+        .whereIn('pm.role', roles);
     const query = scoped(db(), ctx, 'memberships', 'm')
       .where({ 'm.is_active': 1 })
-      .whereNotNull('m.accepted_at')
       .where((q) => {
-        q.where('m.tenant_role', 'admin');
-        if (pid === null) q.orWhereIn('m.default_role', ['editor', 'restricted']);
-        else
-          q.orWhereExists(
-            db()('project_members as pm')
-              .whereRaw('pm.membership_id = m.id')
-              .where({ 'pm.project_id': pid, 'pm.tenant_id': ctx.tenantId })
-              .whereIn('pm.role', ['editor', 'restricted']),
-          );
+        // Users: accepted, tenant admin or at least restricted editor.
+        q.where((u) => {
+          u.whereNot('m.kind', 'contact')
+            .whereNotNull('m.accepted_at')
+            .where((r) => {
+              r.where('m.tenant_role', 'admin');
+              if (pid === null) r.orWhereIn('m.default_role', ['editor', 'restricted']);
+              else r.orWhereExists(linked(['editor', 'restricted']));
+            });
+        });
+        // Persons without login: only in projects they are linked to.
+        if (pid !== null) q.orWhere((c) => c.where('m.kind', 'contact').whereExists(linked([CONTACT_ROLE])));
       })
       .orderBy('m.display_name')
-      .select('m.id', 'm.display_name as displayName');
-    return (await query) as MemberDto[];
+      .select('m.id', 'm.display_name', 'm.kind');
+    return ((await query) as MemberRow[]).map(toMemberDto);
   });
 }

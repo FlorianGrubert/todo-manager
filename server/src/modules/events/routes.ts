@@ -9,7 +9,7 @@ import { loadVisibleTodo } from '../todos/service.js';
 const HEARTBEAT_MS = 25_000;
 
 /** Prefixes of routes that change tenant reference data (statuses, projects, members …). */
-const REFERENCE_ROUTES = ['/api/statuses', '/api/priorities', '/api/tags', '/api/projects', '/api/admin/members'];
+const REFERENCE_ROUTES = ['/api/statuses', '/api/priorities', '/api/tags', '/api/projects', '/api/admin/members', '/api/contacts'];
 
 /**
  * Server-Sent Events stream for live updates (§9).

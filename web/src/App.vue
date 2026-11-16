@@ -15,10 +15,12 @@ const offline = useOfflineStore();
 offline.start();
 const showShell = computed(() => !route.meta.public && session.user);
 
-// Reference data belongs to a tenant: reload it whenever the active tenant changes.
+// Reference data belongs to a tenant membership: reload it whenever the active tenant or the
+// signed-in person changes (e.g. accepting an invitation in a browser used by someone else).
 watch(
-  () => session.activeTenant?.id,
-  (id) => {
+  () => session.activeTenant?.membershipId,
+  () => {
+    const id = session.activeTenant?.id;
     reference.reset();
     if (id) void reference.load(id).catch(() => undefined);
     connectLive(Boolean(id));

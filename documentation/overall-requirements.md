@@ -103,7 +103,7 @@ Jedes To-Do hat folgende Felder; Anhänge sind nicht vorgesehen.
 | Beschreibung | manuell | nähere Beschreibung |
 | Fälligkeitsdatum | manuell |  |
 | Priorität | manuell |  |
-| Zugewiesene Person | manuell | eine Person oder keine |
+| Zugewiesene Person | manuell | eine Person oder keine; Benutzer oder Person ohne Login |
 | Status | manuell | gemäß Statusmodell |
 | Links / Verweise | manuell | beliebig viele |
 | Tags | manuell | frei definierbar |
@@ -145,6 +145,8 @@ Das System hat eine eigene Benutzerverwaltung mit vier Projektrollen sowie den m
 **„Eigene“ To-Dos beim eingeschränkten Bearbeiter:** alle To-Dos, die der Person zugewiesen sind, plus selbst angelegte To-Dos, solange ihnen noch niemand zugewiesen ist.
 
 **Geltungsbereich der Rollen:** Der Administrator ist eine globale, projektunabhängige Rolle. Bearbeiter, eingeschränkter Bearbeiter und Leser werden pro Projekt vergeben; eine Person kann in verschiedenen Projekten verschiedene Rollen haben. Für To-Dos ohne Projekt gilt eine Standardrolle, die der Administrator pro Benutzer festlegt.
+
+**Personen ohne Login:** To-Dos können auch Personen zugewiesen werden, die kein Benutzerkonto haben (z. B. externe Ansprechpartner). Eine solche Person besteht nur aus einem Namen, gilt für den ganzen Mandanten und wird einem oder mehreren Projekten zugeordnet. Sie kann sich nicht anmelden, hat keine Rechte und erhält keine E-Mails. Anlegen, umbenennen, deaktivieren und Projekten zuordnen dürfen Mandanten-Administrator und Projektadministrator. Wird eine Person später Benutzer, behält sie alle ihr zugewiesenen To-Dos.
 
 **Benutzer einladen:** Nur der Administrator kann neue Benutzer hinzufügen, und zwar ausschließlich per Einladung (kein direktes Anlegen). Die eingeladene Person erhält eine E-Mail mit Link und legt darüber ihr Passwort selbst fest.
 
@@ -240,7 +242,9 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 ### Rollen und Zuweisung
 
 - Der eingeschränkte Bearbeiter darf To-Dos anlegen und nur sich selbst oder niemanden zuweisen
-- Zugewiesen werden kann nur, wer im Projekt des To-Dos mindestens eingeschränkter Bearbeiter ist (bei To-Dos ohne Projekt: entsprechende Standardrolle)
+- Zugewiesen werden kann nur, wer im Projekt des To-Dos mindestens eingeschränkter Bearbeiter ist (bei To-Dos ohne Projekt: entsprechende Standardrolle), sowie Personen ohne Login, die dem Projekt des To-Dos zugeordnet sind. To-Dos ohne Projekt können Personen ohne Login nicht zugewiesen werden
+- Personen ohne Login sind technisch Mandantenmitgliedschaften ohne Login; die Zuordnung zu einem Projekt gewährt keine Rechte. Deaktivierte Personen sind nicht mehr zuweisbar, bestehende Zuweisungen bleiben erhalten
+- Eine Person ohne Login wird Benutzer, indem der Mandanten-Administrator sie mit ihrer E-Mail-Adresse einlädt (gleicher Ablauf wie beim Einladen, auch bei bereits in anderen Mandanten bekannter Adresse). Die Mitgliedschaft bleibt dieselbe, daher bleiben Zuweisungen, Verlauf und Filter erhalten. Bis zum Annehmen bleibt sie zuweisbar; mit dem Annehmen wird sie in allen zugeordneten Projekten eingeschränkter Bearbeiter. Gehört die E-Mail-Adresse bereits einem Mitglied des Mandanten, wird die Einladung abgelehnt
 - Der Projektadministrator hat keine automatischen Rechte an To-Dos; dafür gelten nur seine Projektrollen. Der Mandanten-Administrator hat überall alle Rechte
 - Benutzer sehen nur Projekte, in denen sie eine Rolle haben; Projektadministratoren und Mandanten-Administratoren sehen alle Projekte
 - Projekte und To-Dos, auf die ein Benutzer keinen Zugriff hat, werden wie nicht vorhanden behandelt (Antwort „nicht gefunden“)
@@ -300,7 +304,7 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 
 ### Export/Import von Mandanten und Datenbankwechsel
 
-- Der Mandanten-Export ist eine JSON-Datei mit allen Daten des Mandanten inkl. Kommentaren, Verlauf und gespeicherten Filtern. Passwörter, Sitzungen und offene Einladungen sind nicht enthalten; pseudonymisierte Personen werden ohne Name und E-Mail exportiert
+- Der Mandanten-Export ist eine JSON-Datei mit allen Daten des Mandanten inkl. Kommentaren, Verlauf, gespeicherten Filtern und Personen ohne Login (ohne E-Mail-Adresse). Exporte älterer Formatversionen bleiben importierbar. Passwörter, Sitzungen und offene Einladungen sind nicht enthalten; pseudonymisierte Personen werden ohne Name und E-Mail exportiert
 - Beim Import werden alle IDs neu vergeben (auch Verweise im Verlauf und in gespeicherten Filtern), sodass ein Mandant neben seinem Original oder in einer anderen Installation importiert werden kann. Personen werden über die E-Mail-Adresse einem vorhandenen Konto zugeordnet, bestehende Konten werden nicht verändert; neue Konten haben kein Passwort und werden über „Passwort vergessen“ aktiviert
 - „Passwort vergessen“ funktioniert daher für alle aktiven Konten, auch ohne bisheriges Passwort
 - Ersetzen eines Mandanten erfordert die Eingabe des exakten Mandantennamens; die bisherigen Daten des Mandanten werden dabei entfernt. Ungültige oder in sich widersprüchliche Dateien werden vollständig abgelehnt, ohne etwas zu ändern

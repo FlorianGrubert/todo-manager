@@ -5,7 +5,7 @@ import type { CommentDto, HistoryResponse, MemberDto, TagDto, TodoDto, TodoInput
 import { ApiError, get, patch, post } from '../api/client';
 import { errorKey } from '../i18n';
 import { onLive } from '../live';
-import { refLabel, useReferenceStore } from '../stores/reference';
+import { memberLabel, refLabel, useReferenceStore } from '../stores/reference';
 import { useSessionStore } from '../stores/session';
 import AppModal from './AppModal.vue';
 import ShareButton from './ShareButton.vue';
@@ -280,7 +280,7 @@ async function addComment(): Promise<void> {
               <span>{{ t('todo.assignee') }}</span>
               <select v-model="form.assigneeId">
                 <option :value="null">{{ t('todo.unassigned') }}</option>
-                <option v-for="m in assigneeOptions" :key="m.id" :value="m.id">{{ m.displayName }}</option>
+                <option v-for="m in assigneeOptions" :key="m.id" :value="m.id">{{ memberLabel(m) }}</option>
               </select>
             </label>
             <label class="field">

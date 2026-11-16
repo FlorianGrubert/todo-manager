@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { NONE, type FilterCriteria } from '@fg/shared';
-import { refLabel, useReferenceStore } from '../../stores/reference';
+import { memberLabel, refLabel, useReferenceStore } from '../../stores/reference';
 
 /** Multi-select filters: OR within a group, AND between groups (§5). */
 const props = defineProps<{ criteria: FilterCriteria }>();
@@ -21,7 +21,7 @@ const groups = computed<Group[]>(() => [
   {
     key: 'assigneeIds',
     title: t('board.filters.persons'),
-    options: [{ id: NONE, label: t('todo.unassigned') }, ...reference.members.map((m) => ({ id: m.id, label: m.displayName }))],
+    options: [{ id: NONE, label: t('todo.unassigned') }, ...reference.members.map((m) => ({ id: m.id, label: memberLabel(m) }))],
   },
   {
     key: 'priorityIds',

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { LOCALES, PASSWORD_MIN_LENGTH } from '@fg/shared';
+import { CONTACT_ROLE, LOCALES, PASSWORD_MIN_LENGTH } from '@fg/shared';
 import { now } from '../db/knex.js';
 import { ApiError, notFound } from '../lib/errors.js';
 import { toBool } from '../lib/flags.js';
@@ -178,9 +178,17 @@ export function authRoutes(app: FastifyInstance): void {
     await db.transaction(async (trx) => {
       const used = await trx('invitations').where({ id: inv.id }).whereNull('used_at').update({ used_at: ts });
       if (used !== 1) throw new ApiError(404, 'invalid_token');
-      await trx('memberships').where({ id: inv.membershipId }).update({ accepted_at: ts, last_login_at: ts, updated_at: ts });
+      await trx('memberships')
+        .where({ id: inv.membershipId })
+        .update({ accepted_at: ts, last_login_at: ts, updated_at: ts, kind: 'user' });
+      // A former person without login becomes restricted editor in the projects it was linked to.
+      await trx('project_members')
+        .where({ tenant_id: inv.tenantId, membership_id: inv.membershipId, role: CONTACT_ROLE })
+        .update({ role: 'restricted' });
       await trx('users').where({ id: inv.user.id }).update(userUpdate);
     });
+    // Member lists changed (new user, or a person without login became a user).
+    deps().events.publish(inv.tenantId, { type: 'reference' });
 
     // Replace any existing session of the browser with one for the accepting user.
     if (req.cookies[SESSION_COOKIE] && req.auth) await db('sessions').where({ id: req.auth.sessionId }).delete();

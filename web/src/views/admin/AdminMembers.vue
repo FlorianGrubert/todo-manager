@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { DEFAULT_ROLES, LOCALES, TENANT_ROLES, type AdminMemberDto, type DefaultRole, type Locale, type TenantRole } from '@fg/shared';
 import { get, patch, post } from '../../api/client';
+import AppModal from '../../components/AppModal.vue';
 import { errorKey } from '../../i18n';
 
 const { t, d, locale } = useI18n();
@@ -16,6 +17,29 @@ const invite = reactive({
   defaultRole: 'none' as DefaultRole,
   locale: locale.value as Locale,
 });
+
+/** Person without login that is being turned into a user. */
+const converting = ref<AdminMemberDto | null>(null);
+const conversion = reactive({
+  email: '',
+  tenantRole: 'member' as TenantRole,
+  defaultRole: 'none' as DefaultRole,
+  locale: locale.value as Locale,
+});
+
+function startConversion(m: AdminMemberDto): void {
+  Object.assign(conversion, { email: m.email ?? '', tenantRole: m.tenantRole, defaultRole: m.defaultRole, locale: locale.value });
+  converting.value = m;
+}
+
+function sendConversion(): void {
+  const m = converting.value;
+  if (!m) return;
+  void run(async () => {
+    await post(`/api/admin/members/${m.id}/invite`, { ...conversion });
+    converting.value = null;
+  }, t('admin.members.invited'));
+}
 
 async function run(action: () => Promise<unknown>, success = ''): Promise<void> {
   error.value = '';
@@ -75,18 +99,19 @@ onMounted(() => run(() => Promise.resolve()));
             <tr v-for="m in members" :key="m.id" :class="{ inactive: !m.isActive }">
               <td>
                 {{ m.displayName }}
-                <span v-if="m.pending" class="badge">{{ t('admin.members.pending') }}</span>
+                <span v-if="m.isContact && !m.pending" class="badge">{{ t('admin.members.noLogin') }}</span>
+                <span v-else-if="m.pending" class="badge">{{ t('admin.members.pending') }}</span>
                 <span v-else-if="m.pseudonymized" class="badge badge-off">{{ t('admin.members.pseudonymizedBadge') }}</span>
                 <span v-else-if="!m.isActive" class="badge badge-off">{{ t('system.inactive') }}</span>
               </td>
               <td>{{ m.email ?? '—' }}</td>
               <td>
-                <select :value="m.tenantRole" :disabled="m.pseudonymized" :aria-label="t('admin.members.tenantRole')" @change="update(m, { tenantRole: ($event.target as HTMLSelectElement).value as TenantRole })">
+                <select :value="m.tenantRole" :disabled="m.pseudonymized || m.isContact" :aria-label="t('admin.members.tenantRole')" @change="update(m, { tenantRole: ($event.target as HTMLSelectElement).value as TenantRole })">
                   <option v-for="r in TENANT_ROLES" :key="r" :value="r">{{ t(`role.${r}`) }}</option>
                 </select>
               </td>
               <td>
-                <select :value="m.defaultRole" :disabled="m.pseudonymized" :aria-label="t('admin.members.defaultRole')" @change="update(m, { defaultRole: ($event.target as HTMLSelectElement).value as DefaultRole })">
+                <select :value="m.defaultRole" :disabled="m.pseudonymized || m.isContact" :aria-label="t('admin.members.defaultRole')" @change="update(m, { defaultRole: ($event.target as HTMLSelectElement).value as DefaultRole })">
                   <option v-for="r in DEFAULT_ROLES" :key="r" :value="r">{{ t(`role.${r}`) }}</option>
                 </select>
               </td>
@@ -94,6 +119,9 @@ onMounted(() => run(() => Promise.resolve()));
               <td class="actions">
                 <template v-if="!m.pseudonymized">
                   <button type="button" class="button small" @click="rename(m)">{{ t('common.rename') }}</button>
+                  <button v-if="m.isContact && m.isActive" type="button" class="button small" @click="startConversion(m)">
+                    {{ t('admin.members.makeUser') }}
+                  </button>
                   <button v-if="m.pending" type="button" class="button small" @click="run(() => post(`/api/admin/members/${m.id}/resend`), t('admin.members.invited'))">
                     {{ t('admin.members.resend') }}
                   </button>
@@ -142,5 +170,38 @@ onMounted(() => run(() => Promise.resolve()));
         <button type="submit" class="button primary">{{ t('admin.members.sendInvite') }}</button>
       </form>
     </section>
+
+    <AppModal v-if="converting" :title="t('admin.members.makeUserTitle', { name: converting.displayName })" @close="converting = null">
+      <p class="muted small">{{ t('admin.members.makeUserHint') }}</p>
+      <form id="convert-form" class="form" @submit.prevent="sendConversion">
+        <label class="field">
+          <span>{{ t('auth.email') }}</span>
+          <input v-model="conversion.email" type="email" maxlength="320" required />
+        </label>
+        <label class="field">
+          <span>{{ t('admin.members.tenantRole') }}</span>
+          <select v-model="conversion.tenantRole">
+            <option v-for="r in TENANT_ROLES" :key="r" :value="r">{{ t(`role.${r}`) }}</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>{{ t('admin.members.defaultRole') }}</span>
+          <select v-model="conversion.defaultRole">
+            <option v-for="r in DEFAULT_ROLES" :key="r" :value="r">{{ t(`role.${r}`) }}</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>{{ t('system.inviteLocale') }}</span>
+          <select v-model="conversion.locale">
+            <option v-for="l in LOCALES" :key="l" :value="l">{{ t(`language.${l}`) }}</option>
+          </select>
+        </label>
+      </form>
+      <template #footer>
+        <span class="spacer" />
+        <button type="button" class="button" @click="converting = null">{{ t('common.cancel') }}</button>
+        <button type="submit" form="convert-form" class="button primary">{{ t('admin.members.sendInvite') }}</button>
+      </template>
+    </AppModal>
   </div>
 </template>

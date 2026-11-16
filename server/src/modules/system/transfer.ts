@@ -17,9 +17,10 @@ import type { Db } from '../../db/knex.js';
 import { now } from '../../db/knex.js';
 import { badRequest, notFound } from '../../lib/errors.js';
 import { toBool } from '../../lib/flags.js';
+import { createPlaceholderUser, PLACEHOLDER_DOMAIN } from '../contacts/service.js';
 
 export const EXPORT_FORMAT = 'fg-todo-manager/tenant';
-export const EXPORT_VERSION = 1;
+export const EXPORT_VERSION = 2;
 
 const id = z.string().min(1).max(64);
 const ts = z.string().max(30);
@@ -41,6 +42,7 @@ const memberSchema = z.object({
   last_login_at: ts.nullable(),
   created_at: ts,
   updated_at: ts,
+  kind: z.enum(['user', 'contact']).default('user'),
 });
 const projectSchema = z.object({
   id,
@@ -51,7 +53,7 @@ const projectSchema = z.object({
   created_at: ts,
   updated_at: ts,
 });
-const projectMemberSchema = z.object({ id, project_id: id, membership_id: id, role: z.enum(['editor', 'restricted', 'reader']), created_at: ts });
+const projectMemberSchema = z.object({ id, project_id: id, membership_id: id, role: z.enum(['editor', 'restricted', 'reader', 'contact']), created_at: ts });
 const statusSchema = z.object({
   id,
   system_key: text(40).nullable(),
@@ -110,7 +112,8 @@ const filterSchema = z.object({ id, membership_id: id, name: text(100), criteria
 
 export const tenantExportSchema = z.object({
   format: z.literal(EXPORT_FORMAT),
-  version: z.literal(EXPORT_VERSION),
+  // Version 1 (before persons without login) can still be imported.
+  version: z.union([z.literal(1), z.literal(EXPORT_VERSION)]),
   appVersion: z.string().max(40),
   exportedAt: ts,
   tenant: z.object({ name: text(200), createdAt: ts }),
@@ -178,6 +181,7 @@ export async function exportTenant(db: Db, tenantId: string, appVersion: string)
       'm.last_login_at',
       'm.created_at',
       'm.updated_at',
+      'm.kind',
     )) as TenantExport['members'];
 
   const data = {
@@ -187,8 +191,9 @@ export async function exportTenant(db: Db, tenantId: string, appVersion: string)
     exportedAt: now(),
     tenant: { name: tenant.name, createdAt: tenant.created_at },
     // Pseudonymized persons are exported without personal data.
+    // Persons without login are exported without their placeholder address.
     members: members.map((m) =>
-      toBool(m.pseudonymized) ? { ...m, email: null, name: m.display_name } : m,
+      toBool(m.pseudonymized) || m.email?.endsWith(PLACEHOLDER_DOMAIN) ? { ...m, email: null, name: m.display_name } : m,
     ),
     projects: strip(await all('projects')),
     projectMembers: strip(await all('project_members')),
@@ -287,17 +292,7 @@ export async function importTenant(db: Db, raw: unknown, target: ImportTarget): 
           await trx('users').insert({ id: userId, email, name: m.name, locale: m.locale, password_hash: null, created_at: ts, updated_at: ts });
         }
       } else {
-        userId = randomUUID();
-        await trx('users').insert({
-          id: userId,
-          email: `pseudonym-${randomUUID()}@invalid.invalid`,
-          name: m.display_name,
-          locale: m.locale,
-          password_hash: null,
-          is_active: 0,
-          created_at: ts,
-          updated_at: ts,
-        });
+        userId = await createPlaceholderUser(trx, m.kind === 'contact' ? 'contact' : 'pseudonym', m.display_name, m.locale, ts);
       }
       const { email: _e, name: _n, locale: _l, id: oldId, ...membership } = m;
       await trx('memberships').insert(t({ ...membership, id: members.add(oldId), user_id: userId }));
@@ -306,7 +301,10 @@ export async function importTenant(db: Db, raw: unknown, target: ImportTarget): 
     for (const p of data.projects) {
       await trx('projects').insert(t({ ...p, id: projects.add(p.id), created_by: members.tryGet(p.created_by) }));
     }
+    const contacts = new Set(data.members.filter((m) => m.kind === 'contact').map((m) => m.id));
     for (const pm of data.projectMembers) {
+      // Persons without login are only linked (role `contact`), users never.
+      if (contacts.has(pm.membership_id) !== (pm.role === 'contact')) throw badRequest();
       await trx('project_members').insert(
         t({ ...pm, id: randomUUID(), project_id: projects.get(pm.project_id), membership_id: members.get(pm.membership_id) }),
       );

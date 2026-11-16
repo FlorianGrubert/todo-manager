@@ -20,7 +20,7 @@ import TodoDialog from '../components/TodoDialog.vue';
 import { errorKey } from '../i18n';
 import { filterLocally } from '../offline/localFilter';
 import { debounce, onLive } from '../live';
-import { refLabel, useReferenceStore } from '../stores/reference';
+import { memberLabel, refLabel, useReferenceStore } from '../stores/reference';
 import { useOfflineStore } from '../stores/offline';
 import { useSessionStore } from '../stores/session';
 
@@ -108,7 +108,7 @@ const personRows = computed(() => {
   else if (query.value.scope === 'mine') ids = me ? [me] : [];
   else ids = [...new Set([...(me ? [me] : []), ...todos.value.map((t) => t.assigneeId).filter((v): v is string => !!v)])];
   const rows = ids
-    .map((id) => ({ key: id, title: reference.memberById.get(id)?.displayName ?? '—' }))
+    .map((id) => ({ key: id, title: memberLabel(reference.memberById.get(id)) }))
     .sort((a, b) => (a.key === me ? -1 : b.key === me ? 1 : a.title.localeCompare(b.title)));
   const showUnassigned =
     query.value.scope === 'all' && (!query.value.assigneeIds.length || query.value.assigneeIds.includes(NONE));
