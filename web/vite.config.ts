@@ -1,8 +1,15 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
 
+// Application version shown in the footer (known at build time, also offline and before login).
+const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8')) as { version: string };
+
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   plugins: [
     vue(),
     // Progressive Web App (§10): installable, app shell available offline.

@@ -121,14 +121,30 @@ h2 {
   display: none;
 }
 
+/* Column layout so the footer always sits at the bottom of the page. */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .app-main {
+  flex: 1 0 auto;
+  width: 100%;
   padding: 1.25rem;
   max-width: 1400px;
   margin: 0 auto;
 }
 
+.app-footer {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 .app-public {
-  min-height: 100vh;
+  flex: 1 0 auto;
   display: grid;
   place-items: center;
   padding: 1rem;

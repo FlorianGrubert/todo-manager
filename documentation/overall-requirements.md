@@ -19,6 +19,7 @@ Eine To-Do-Manager-App zur Verwaltung von Aufgaben für Einzelpersonen und/oder 
 - Kanban-artige Oberfläche
 - Swimlanes zur Gliederung
 - Jedes To-Do wird als einzelne Kachel (Karte) dargestellt
+- Eine Fußzeile zeigt auf jeder Seite (auch vor der Anmeldung) die aktuelle Versionsnummer der Anwendung
 
 ## 5. Ansichten, Swimlanes und Tags
 
