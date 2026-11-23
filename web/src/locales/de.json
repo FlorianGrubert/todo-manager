@@ -115,7 +115,11 @@
     "notifyAssign": "E-Mail, wenn mir ein To-Do zugewiesen wird",
     "remind": "An fällige To-Dos erinnern",
     "remindDays": "Tage vor dem Fälligkeitsdatum (0 = am Fälligkeitstag)",
-    "notifyOverdue": "E-Mail, wenn ein To-Do überfällig wird"
+    "notifyOverdue": "E-Mail, wenn ein To-Do überfällig wird",
+    "board": "Board",
+    "boardHint": "Mit dieser Ansicht öffnet sich das Board. Sie gilt für alle Ihre Mandanten und lässt sich auf dem Board jederzeit umschalten.",
+    "defaultScope": "Standardanzeige",
+    "defaultView": "Standardansicht"
   },
   "role": {
     "admin": "Administrator",
@@ -334,6 +338,7 @@
     "view": {
       "status": "Nach Status",
       "person": "Nach Personen",
+      "priority": "Nach Prioritäten",
       "tag": "Nach Tags",
       "grid": "Raster"
     },

@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import {
+  BOARD_SCOPES,
   NONE,
   VIEW_MODES,
   paramsToTodoQuery,
@@ -39,15 +40,25 @@ const error = ref('');
 const creating = ref(false);
 
 // Board state lives in the URL (bookmarkable, shareable, survives reloads).
-const query = computed<TodoQuery>(() => paramsToTodoQuery(route.query));
+// Without scope/view in the URL the personal defaults from the settings apply.
+const query = computed<TodoQuery>(() => {
+  const parsed = paramsToTodoQuery(route.query);
+  const explicitScope = (BOARD_SCOPES as readonly string[]).includes(String(route.query.scope));
+  return explicitScope ? parsed : { ...parsed, scope: session.user?.defaultScope ?? 'mine' };
+});
 const view = computed<ViewMode>(() =>
-  (VIEW_MODES as readonly string[]).includes(String(route.query.view)) ? (route.query.view as ViewMode) : 'status',
+  (VIEW_MODES as readonly string[]).includes(String(route.query.view))
+    ? (route.query.view as ViewMode)
+    : (session.user?.defaultView ?? 'status'),
 );
 const openTodoId = computed(() => (typeof route.params.id === 'string' ? route.params.id : null));
 
 function navigate(changes: Partial<TodoQuery>, nextView: ViewMode = view.value, todoId: string | null = openTodoId.value): void {
-  const params = Object.fromEntries(todoQueryToParams({ ...query.value, ...changes }));
-  if (nextView !== 'status') params.view = nextView;
+  const next = { ...query.value, ...changes };
+  const params = Object.fromEntries(todoQueryToParams(next));
+  // Always explicit, so that bookmarks and shared links do not depend on personal defaults.
+  params.scope = next.scope;
+  params.view = nextView;
   void router.replace(todoId ? { name: 'todo', params: { id: todoId }, query: params } : { name: 'todos', query: params });
 }
 
@@ -130,6 +141,18 @@ const lanes = computed<Lane[]>(() => {
   if (view.value === 'person') {
     return personRows.value.map((row) => ({ ...row, todos: todos.value.filter((t) => personKeyOf(t) === row.key) }));
   }
+  if (view.value === 'priority') {
+    // One lane per priority (highest first; only the filtered ones if filtered), then "no priority".
+    const filtered = query.value.priorityIds;
+    const result: Lane[] = [...reference.priorities]
+      .filter((p) => !filtered.length || filtered.includes(p.id))
+      .sort((a, b) => a.rank - b.rank)
+      .map((p) => ({ key: p.id, title: refLabel('priority', p), todos: todos.value.filter((t) => t.priorityId === p.id) }));
+    if (!filtered.length || filtered.includes(NONE)) {
+      result.push({ key: NONE, title: t('todo.noPriority'), todos: todos.value.filter((t) => !t.priorityId) });
+    }
+    return result;
+  }
   // Tag view: a To-Do with several tags appears in several lanes.
   const tagIds = query.value.tagIds.length
     ? query.value.tagIds.filter((id) => id !== NONE)
@@ -157,6 +180,7 @@ async function move(todoId: string, _from: string, to: string): Promise<void> {
   let changes: TodoInput;
   if (view.value === 'status') changes = { statusId: to };
   else if (view.value === 'person') changes = { assigneeId: to === NONE ? null : to };
+  else if (view.value === 'priority') changes = { priorityId: to === NONE ? null : to };
   else if (view.value === 'grid') {
     const [person, statusId] = to.split('|');
     changes = { statusId, assigneeId: person === NONE ? null : (person ?? null) };

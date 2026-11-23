@@ -4,7 +4,7 @@ Mandantenfähige To-Do-Verwaltung mit Kanban-Oberfläche für Einzelpersonen und
 
 Version 1.0.1. Funktionsumfang:
 
-- Kanban-Board nach Status, Personen oder Tags sowie Raster-Ansicht (Status × Personen), Drag and Drop, Filter, gespeicherte Filter und Sortierung
+- Kanban-Board nach Status, Personen, Prioritäten oder Tags sowie Raster-Ansicht (Status × Personen), Drag and Drop, Filter, gespeicherte Filter und Sortierung
 - Projekte mit Projektrollen (Bearbeiter, eingeschränkter Bearbeiter, Leser), Archivieren und Wiederherstellen
 - To-Dos mit Priorität, Fälligkeit, Tags, Links, Kommentaren und vollständigem Änderungsverlauf
 - Live-Aktualisierung, E-Mail-Benachrichtigungen und Fälligkeitserinnerungen
@@ -67,6 +67,8 @@ Der Mandanten-Administrator lädt unter **Administration → Benutzer** weitere 
 **Personen ohne Login:** To-Dos können auch Personen zugewiesen werden, die (noch) kein Benutzerkonto haben, z. B. externe Ansprechpartner. Mandanten- und Projektadministratoren legen sie unter **Projekte → Personen ohne Login** an (nur ein Name) und ordnen sie über **Mitglieder** einem oder mehreren Projekten zu; zuweisen lassen sie sich nur in diesen Projekten. Personen ohne Login können sich nicht anmelden und erhalten keine E-Mails. Soll eine solche Person später selbst mitarbeiten, wählt der Mandanten-Administrator unter **Administration → Benutzer** bei ihr **Zum Benutzer machen** und gibt ihre E-Mail-Adresse an. Sie erhält eine Einladung; nach dem Annehmen behält sie alle ihr zugewiesenen To-Dos und ist in ihren Projekten eingeschränkter Bearbeiter.
 
 Jeder Benutzer legt unter **Einstellungen → Benachrichtigungen** fest, ob er E-Mails bei neuen Zuweisungen, Erinnerungen vor Fälligkeit (Anzahl Tage) und Meldungen bei Überfälligkeit erhalten möchte; die Einstellungen gelten für alle seine Mandanten. Für den Versand muss `MAIL_TRANSPORT=smtp` konfiguriert sein.
+
+Unter **Einstellungen → Board** legt jeder Benutzer fest, mit welcher Anzeige („Meine“ oder „Alle“) und welcher Ansicht (nach Status, nach Personen, nach Prioritäten, nach Tags oder Raster) sich das Board öffnet. Ohne Einstellung gelten „Meine“ und „Nach Status“.
 
 **Smartphone:** Die Anwendung lässt sich im Browser des Smartphones „zum Startbildschirm hinzufügen“ und startet dann wie eine App in der **Schnellerfassung**. Neue To-Dos können auch ohne Netzverbindung erfasst werden; sie werden auf dem Gerät gespeichert und automatisch übertragen, sobald wieder eine Verbindung besteht. Offline ist der zuletzt geladene Stand des Boards schreibgeschützt sichtbar. Installation und Offline-Betrieb erfordern HTTPS (siehe Reverse Proxy).
 

@@ -63,6 +63,10 @@ export interface CurrentUser {
   notifyAssign: boolean;
   remindDaysBefore: number | null;
   notifyOverdue: boolean;
+  /** Personal start view of the board (§5): "Meine" or "Alle". */
+  defaultScope: BoardScope;
+  /** Personal default board view (status, person, tag or grid). */
+  defaultView: ViewMode;
 }
 
 export interface MeResponse {
@@ -284,8 +288,12 @@ export interface HistoryResponse {
 // Board views, filters and sorting (§5)
 // ---------------------------------------------------------------------------
 
-export const VIEW_MODES = ['status', 'person', 'tag', 'grid'] as const;
+export const VIEW_MODES = ['status', 'person', 'priority', 'tag', 'grid'] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
+
+/** "Meine" (assigned to me) or "Alle" (everything I may see). */
+export const BOARD_SCOPES = ['mine', 'all'] as const;
+export type BoardScope = (typeof BOARD_SCOPES)[number];
 
 export const SORT_FIELDS = ['priority', 'status', 'dueDate', 'createdAt', 'updatedAt'] as const;
 export type SortField = (typeof SORT_FIELDS)[number];
@@ -312,7 +320,7 @@ export interface SavedFilterDto {
 }
 
 export interface TodoQuery extends FilterCriteria {
-  scope: 'mine' | 'all';
+  scope: BoardScope;
   q: string;
   includeClosed: boolean;
   includeArchived: boolean;

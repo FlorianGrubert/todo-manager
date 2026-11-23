@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { LOCALES, type Locale } from '@fg/shared';
+import { BOARD_SCOPES, LOCALES, VIEW_MODES, type BoardScope, type Locale, type ViewMode } from '@fg/shared';
 import { post } from '../api/client';
 import PasswordFields from '../components/PasswordFields.vue';
 import { errorKey } from '../i18n';
@@ -34,6 +34,22 @@ async function saveNotifications(): Promise<void> {
     notifyMessage.value = t('common.saved');
   } catch (err) {
     notifyError.value = t(errorKey(err));
+  }
+}
+
+const defaultScope = ref<BoardScope>(session.user?.defaultScope ?? 'mine');
+const defaultView = ref<ViewMode>(session.user?.defaultView ?? 'status');
+const boardMessage = ref('');
+const boardError = ref('');
+
+async function saveBoard(): Promise<void> {
+  boardMessage.value = '';
+  boardError.value = '';
+  try {
+    await session.updateProfile({ defaultScope: defaultScope.value, defaultView: defaultView.value });
+    boardMessage.value = t('common.saved');
+  } catch (err) {
+    boardError.value = t(errorKey(err));
   }
 }
 
@@ -122,6 +138,28 @@ async function changePassword(): Promise<void> {
           </label>
           <p v-if="notifyError" class="alert alert-error" role="alert">{{ notifyError }}</p>
           <p v-if="notifyMessage" class="alert alert-success" role="status">{{ notifyMessage }}</p>
+          <button class="button primary" type="submit">{{ t('common.save') }}</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>{{ t('settings.board') }}</h2>
+        <form class="form" @submit.prevent="saveBoard">
+          <p class="muted small">{{ t('settings.boardHint') }}</p>
+          <label class="field">
+            <span>{{ t('settings.defaultScope') }}</span>
+            <select v-model="defaultScope">
+              <option v-for="s in BOARD_SCOPES" :key="s" :value="s">{{ t(`todos.${s}`) }}</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>{{ t('settings.defaultView') }}</span>
+            <select v-model="defaultView">
+              <option v-for="v in VIEW_MODES" :key="v" :value="v">{{ t(`board.view.${v}`) }}</option>
+            </select>
+          </label>
+          <p v-if="boardError" class="alert alert-error" role="alert">{{ boardError }}</p>
+          <p v-if="boardMessage" class="alert alert-success" role="status">{{ boardMessage }}</p>
           <button class="button primary" type="submit">{{ t('common.save') }}</button>
         </form>
       </section>
