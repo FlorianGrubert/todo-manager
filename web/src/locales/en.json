@@ -338,6 +338,7 @@
     "view": {
       "status": "By status",
       "person": "By person",
+      "priority": "By priority",
       "tag": "By tag",
       "grid": "Grid"
     },

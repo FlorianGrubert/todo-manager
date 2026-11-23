@@ -27,6 +27,7 @@ Mehrere umschaltbare Ansichten, besonders für komplexe Themen und größere Tea
 
 - **Swimlanes nach Status:** z. B. offen, in Arbeit, erledigt
 - **Swimlanes nach Personen:** je zuständiger Person eine Lane
+- **Swimlanes nach Prioritäten:** je Priorität eine Lane (in der Rangfolge, höchste zuerst) sowie „Keine Priorität“
 - **Tags:** To-Dos lassen sich mit frei definierbaren Themen-Tags versehen
 - **Ansichten nach Tags:** Swimlanes bzw. Ansichten je Themenbereich (Tag) erzeugen
 - **Filter:** Schnelles Filtern und Suchen von To-Dos nach Tags/Themen
@@ -55,13 +56,14 @@ Kacheln lassen sich per Drag and Drop zwischen Swimlanes verschieben; die Wirkun
 
 - **Ansicht nach Personen:** Verschieben in eine andere Lane weist das To-Do der betreffenden Person zu
 - **Ansicht nach Status:** Verschieben in eine andere Lane setzt den entsprechenden Status
+- **Ansicht nach Prioritäten:** Verschieben in eine andere Lane setzt die entsprechende Priorität (bzw. entfernt sie in „Keine Priorität“)
 - Verschieben ist nur möglich, wenn die Rolle des Benutzers die Änderung erlaubt
 
 ### Startansicht
 
 - Nach dem Anmelden sieht der Benutzer standardmäßig seine eigenen To-Dos
 - Er kann in eine globale Ansicht umschalten, die auch die To-Dos anderer Benutzer zeigt (im Rahmen seiner Rechte)
-- Jeder Benutzer kann in seinen Einstellungen festlegen, ob das Board standardmäßig „Meine“ oder „Alle“ zeigt und welche Ansicht (nach Status, nach Personen, nach Tags oder Raster) voreingestellt ist
+- Jeder Benutzer kann in seinen Einstellungen festlegen, ob das Board standardmäßig „Meine“ oder „Alle“ zeigt und welche Ansicht (nach Status, nach Personen, nach Prioritäten, nach Tags oder Raster) voreingestellt ist
 
 ### Eigene Filter und Projektnavigation
 
@@ -257,7 +259,7 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 
 ### Drag and Drop
 
-- Ansicht nach Status setzt den Status, Ansicht nach Personen setzt die Zuweisung, die Raster-Ansicht setzt beides
+- Ansicht nach Status setzt den Status, Ansicht nach Personen setzt die Zuweisung, Ansicht nach Prioritäten setzt die Priorität, die Raster-Ansicht setzt Status und Zuweisung
 - In der Ansicht nach Tags ist kein Drag and Drop möglich
 - Auf Touch-Geräten startet das Ziehen nach kurzem Gedrückthalten einer Kachel, damit normales Scrollen möglich bleibt
 
@@ -265,7 +267,7 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 
 - „Meine“ zeigt die dem Benutzer zugewiesenen To-Dos, „Alle“ alle To-Dos, die er sehen darf
 - Standardanzeige („Meine“/„Alle“) und Standardansicht sind persönliche Einstellungen des Benutzers und gelten für alle seine Mandanten; ohne Einstellung gelten „Meine“ und „Nach Status“. Sie greifen, wenn das Board ohne Angabe von Anzeige bzw. Ansicht in der Adresse geöffnet wird; sobald auf dem Board etwas umgeschaltet wird, stehen Anzeige und Ansicht ausdrücklich in der Adresse, damit Lesezeichen und geteilte Links unabhängig von den persönlichen Einstellungen sind
-- Ansicht nach Personen und Raster-Ansicht zeigen eine Zeile bzw. Lane je Person mit To-Dos (bzw. je gefilterter Person) sowie „Nicht zugewiesen“; in der Ansicht nach Tags erscheint ein To-Do mit mehreren Tags in mehreren Lanes, To-Dos ohne Tag in „Ohne Tag“
+- Ansicht nach Personen und Raster-Ansicht zeigen eine Zeile bzw. Lane je Person mit To-Dos (bzw. je gefilterter Person) sowie „Nicht zugewiesen“; in der Ansicht nach Prioritäten gibt es eine Lane je Priorität in der Rangfolge (bzw. je gefilterter Priorität) sowie „Keine Priorität“; in der Ansicht nach Tags erscheint ein To-Do mit mehreren Tags in mehreren Lanes, To-Dos ohne Tag in „Ohne Tag“
 - Filter bieten je Kriterium auch „ohne“ (ohne Tag, nicht zugewiesen, ohne Priorität, ohne Projekt)
 - Gespeicherte Filter speichern die Filterkriterien (Tag, Person, Priorität, Projekt), nicht Ansicht, Suche oder Sortierung
 - Sortierung „aufsteigend“ nach Priorität bedeutet: höchste Priorität (Rang 1) zuerst. Leere Werte (keine Priorität, kein Fälligkeitsdatum) stehen immer am Ende

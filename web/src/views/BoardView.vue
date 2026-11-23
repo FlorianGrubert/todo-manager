@@ -141,6 +141,18 @@ const lanes = computed<Lane[]>(() => {
   if (view.value === 'person') {
     return personRows.value.map((row) => ({ ...row, todos: todos.value.filter((t) => personKeyOf(t) === row.key) }));
   }
+  if (view.value === 'priority') {
+    // One lane per priority (highest first; only the filtered ones if filtered), then "no priority".
+    const filtered = query.value.priorityIds;
+    const result: Lane[] = [...reference.priorities]
+      .filter((p) => !filtered.length || filtered.includes(p.id))
+      .sort((a, b) => a.rank - b.rank)
+      .map((p) => ({ key: p.id, title: refLabel('priority', p), todos: todos.value.filter((t) => t.priorityId === p.id) }));
+    if (!filtered.length || filtered.includes(NONE)) {
+      result.push({ key: NONE, title: t('todo.noPriority'), todos: todos.value.filter((t) => !t.priorityId) });
+    }
+    return result;
+  }
   // Tag view: a To-Do with several tags appears in several lanes.
   const tagIds = query.value.tagIds.length
     ? query.value.tagIds.filter((id) => id !== NONE)
@@ -168,6 +180,7 @@ async function move(todoId: string, _from: string, to: string): Promise<void> {
   let changes: TodoInput;
   if (view.value === 'status') changes = { statusId: to };
   else if (view.value === 'person') changes = { assigneeId: to === NONE ? null : to };
+  else if (view.value === 'priority') changes = { priorityId: to === NONE ? null : to };
   else if (view.value === 'grid') {
     const [person, statusId] = to.split('|');
     changes = { statusId, assigneeId: person === NONE ? null : (person ?? null) };

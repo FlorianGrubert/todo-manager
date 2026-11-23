@@ -338,6 +338,7 @@
     "view": {
       "status": "Nach Status",
       "person": "Nach Personen",
+      "priority": "Nach Prioritäten",
       "tag": "Nach Tags",
       "grid": "Raster"
     },

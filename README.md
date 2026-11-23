@@ -4,7 +4,7 @@ Mandantenfähige To-Do-Verwaltung mit Kanban-Oberfläche für Einzelpersonen und
 
 Version 1.0.1. Funktionsumfang:
 
-- Kanban-Board nach Status, Personen oder Tags sowie Raster-Ansicht (Status × Personen), Drag and Drop, Filter, gespeicherte Filter und Sortierung
+- Kanban-Board nach Status, Personen, Prioritäten oder Tags sowie Raster-Ansicht (Status × Personen), Drag and Drop, Filter, gespeicherte Filter und Sortierung
 - Projekte mit Projektrollen (Bearbeiter, eingeschränkter Bearbeiter, Leser), Archivieren und Wiederherstellen
 - To-Dos mit Priorität, Fälligkeit, Tags, Links, Kommentaren und vollständigem Änderungsverlauf
 - Live-Aktualisierung, E-Mail-Benachrichtigungen und Fälligkeitserinnerungen
@@ -68,7 +68,7 @@ Der Mandanten-Administrator lädt unter **Administration → Benutzer** weitere 
 
 Jeder Benutzer legt unter **Einstellungen → Benachrichtigungen** fest, ob er E-Mails bei neuen Zuweisungen, Erinnerungen vor Fälligkeit (Anzahl Tage) und Meldungen bei Überfälligkeit erhalten möchte; die Einstellungen gelten für alle seine Mandanten. Für den Versand muss `MAIL_TRANSPORT=smtp` konfiguriert sein.
 
-Unter **Einstellungen → Board** legt jeder Benutzer fest, mit welcher Anzeige („Meine“ oder „Alle“) und welcher Ansicht (nach Status, nach Personen, nach Tags oder Raster) sich das Board öffnet. Ohne Einstellung gelten „Meine“ und „Nach Status“.
+Unter **Einstellungen → Board** legt jeder Benutzer fest, mit welcher Anzeige („Meine“ oder „Alle“) und welcher Ansicht (nach Status, nach Personen, nach Prioritäten, nach Tags oder Raster) sich das Board öffnet. Ohne Einstellung gelten „Meine“ und „Nach Status“.
 
 **Smartphone:** Die Anwendung lässt sich im Browser des Smartphones „zum Startbildschirm hinzufügen“ und startet dann wie eine App in der **Schnellerfassung**. Neue To-Dos können auch ohne Netzverbindung erfasst werden; sie werden auf dem Gerät gespeichert und automatisch übertragen, sobald wieder eine Verbindung besteht. Offline ist der zuletzt geladene Stand des Boards schreibgeschützt sichtbar. Installation und Offline-Betrieb erfordern HTTPS (siehe Reverse Proxy).
 

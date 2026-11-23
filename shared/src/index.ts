@@ -288,7 +288,7 @@ export interface HistoryResponse {
 // Board views, filters and sorting (§5)
 // ---------------------------------------------------------------------------
 
-export const VIEW_MODES = ['status', 'person', 'tag', 'grid'] as const;
+export const VIEW_MODES = ['status', 'person', 'priority', 'tag', 'grid'] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 
 /** "Meine" (assigned to me) or "Alle" (everything I may see). */
