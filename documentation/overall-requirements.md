@@ -61,6 +61,7 @@ Kacheln lassen sich per Drag and Drop zwischen Swimlanes verschieben; die Wirkun
 
 - Nach dem Anmelden sieht der Benutzer standardmäßig seine eigenen To-Dos
 - Er kann in eine globale Ansicht umschalten, die auch die To-Dos anderer Benutzer zeigt (im Rahmen seiner Rechte)
+- Jeder Benutzer kann in seinen Einstellungen festlegen, ob das Board standardmäßig „Meine“ oder „Alle“ zeigt und welche Ansicht (nach Status, nach Personen, nach Tags oder Raster) voreingestellt ist
 
 ### Eigene Filter und Projektnavigation
 
@@ -262,7 +263,8 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 
 ### Board, Filter und Sortierung
 
-- „Meine“ zeigt die dem Benutzer zugewiesenen To-Dos (Startansicht), „Alle“ alle To-Dos, die er sehen darf
+- „Meine“ zeigt die dem Benutzer zugewiesenen To-Dos, „Alle“ alle To-Dos, die er sehen darf
+- Standardanzeige („Meine“/„Alle“) und Standardansicht sind persönliche Einstellungen des Benutzers und gelten für alle seine Mandanten; ohne Einstellung gelten „Meine“ und „Nach Status“. Sie greifen, wenn das Board ohne Angabe von Anzeige bzw. Ansicht in der Adresse geöffnet wird; sobald auf dem Board etwas umgeschaltet wird, stehen Anzeige und Ansicht ausdrücklich in der Adresse, damit Lesezeichen und geteilte Links unabhängig von den persönlichen Einstellungen sind
 - Ansicht nach Personen und Raster-Ansicht zeigen eine Zeile bzw. Lane je Person mit To-Dos (bzw. je gefilterter Person) sowie „Nicht zugewiesen“; in der Ansicht nach Tags erscheint ein To-Do mit mehreren Tags in mehreren Lanes, To-Dos ohne Tag in „Ohne Tag“
 - Filter bieten je Kriterium auch „ohne“ (ohne Tag, nicht zugewiesen, ohne Priorität, ohne Projekt)
 - Gespeicherte Filter speichern die Filterkriterien (Tag, Person, Priorität, Projekt), nicht Ansicht, Suche oder Sortierung

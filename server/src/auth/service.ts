@@ -1,4 +1,4 @@
-import type { ActiveTenant, Locale, MeResponse, TenantSummary } from '@fg/shared';
+import { BOARD_SCOPES, VIEW_MODES, type ActiveTenant, type BoardScope, type Locale, type MeResponse, type TenantSummary, type ViewMode } from '@fg/shared';
 import type { Db } from '../db/knex.js';
 import { now } from '../db/knex.js';
 import { toBool } from '../lib/flags.js';
@@ -17,6 +17,8 @@ export interface UserRow {
   notify_assign: number;
   remind_days_before: number | null;
   notify_overdue: number;
+  default_scope: string;
+  default_view: string;
 }
 
 export const normalizeEmail = (email: string) => email.trim().toLowerCase();
@@ -77,6 +79,8 @@ export async function buildMe(deps: AppDeps, auth: Pick<AuthInfo, 'userId' | 'cs
       notifyAssign: toBool(user.notify_assign),
       remindDaysBefore: user.remind_days_before,
       notifyOverdue: toBool(user.notify_overdue),
+      defaultScope: (BOARD_SCOPES as readonly string[]).includes(user.default_scope) ? (user.default_scope as BoardScope) : 'mine',
+      defaultView: (VIEW_MODES as readonly string[]).includes(user.default_view) ? (user.default_view as ViewMode) : 'status',
     },
     tenants,
     activeTenant,

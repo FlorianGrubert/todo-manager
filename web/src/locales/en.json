@@ -115,7 +115,11 @@
     "notifyAssign": "E-mail when a to-do is assigned to me",
     "remind": "Remind me of due to-dos",
     "remindDays": "Days before the due date (0 = on the due date)",
-    "notifyOverdue": "E-mail when a to-do becomes overdue"
+    "notifyOverdue": "E-mail when a to-do becomes overdue",
+    "board": "Board",
+    "boardHint": "The board opens with this view. It applies to all your tenants and can be switched on the board at any time.",
+    "defaultScope": "Default scope",
+    "defaultView": "Default view"
   },
   "role": {
     "admin": "Administrator",

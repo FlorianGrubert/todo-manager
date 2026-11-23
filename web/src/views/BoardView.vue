@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import {
+  BOARD_SCOPES,
   NONE,
   VIEW_MODES,
   paramsToTodoQuery,
@@ -39,15 +40,25 @@ const error = ref('');
 const creating = ref(false);
 
 // Board state lives in the URL (bookmarkable, shareable, survives reloads).
-const query = computed<TodoQuery>(() => paramsToTodoQuery(route.query));
+// Without scope/view in the URL the personal defaults from the settings apply.
+const query = computed<TodoQuery>(() => {
+  const parsed = paramsToTodoQuery(route.query);
+  const explicitScope = (BOARD_SCOPES as readonly string[]).includes(String(route.query.scope));
+  return explicitScope ? parsed : { ...parsed, scope: session.user?.defaultScope ?? 'mine' };
+});
 const view = computed<ViewMode>(() =>
-  (VIEW_MODES as readonly string[]).includes(String(route.query.view)) ? (route.query.view as ViewMode) : 'status',
+  (VIEW_MODES as readonly string[]).includes(String(route.query.view))
+    ? (route.query.view as ViewMode)
+    : (session.user?.defaultView ?? 'status'),
 );
 const openTodoId = computed(() => (typeof route.params.id === 'string' ? route.params.id : null));
 
 function navigate(changes: Partial<TodoQuery>, nextView: ViewMode = view.value, todoId: string | null = openTodoId.value): void {
-  const params = Object.fromEntries(todoQueryToParams({ ...query.value, ...changes }));
-  if (nextView !== 'status') params.view = nextView;
+  const next = { ...query.value, ...changes };
+  const params = Object.fromEntries(todoQueryToParams(next));
+  // Always explicit, so that bookmarks and shared links do not depend on personal defaults.
+  params.scope = next.scope;
+  params.view = nextView;
   void router.replace(todoId ? { name: 'todo', params: { id: todoId }, query: params } : { name: 'todos', query: params });
 }
 

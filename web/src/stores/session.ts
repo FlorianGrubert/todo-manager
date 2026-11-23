@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import type { Locale, MeResponse } from '@fg/shared';
+import type { BoardScope, Locale, MeResponse, ViewMode } from '@fg/shared';
 import { ApiError, get, patch, post, setCsrfToken } from '../api/client';
 import { applyLocale } from '../i18n';
 import { connectLive } from '../live';
@@ -63,6 +63,8 @@ export const useSessionStore = defineStore('session', () => {
     notifyAssign?: boolean;
     remindDaysBefore?: number | null;
     notifyOverdue?: boolean;
+    defaultScope?: BoardScope;
+    defaultView?: ViewMode;
   }): Promise<void> {
     if (!me.value) {
       if (changes.locale) applyLocale(changes.locale);

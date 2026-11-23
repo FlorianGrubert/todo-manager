@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { CONTACT_ROLE, LOCALES, PASSWORD_MIN_LENGTH } from '@fg/shared';
+import { BOARD_SCOPES, CONTACT_ROLE, LOCALES, PASSWORD_MIN_LENGTH, VIEW_MODES } from '@fg/shared';
 import { now } from '../db/knex.js';
 import { ApiError, notFound } from '../lib/errors.js';
 import { toBool } from '../lib/flags.js';
@@ -68,6 +68,9 @@ export function authRoutes(app: FastifyInstance): void {
         notifyAssign: z.boolean().optional(),
         remindDaysBefore: z.number().int().min(0).max(60).nullable().optional(),
         notifyOverdue: z.boolean().optional(),
+        // Personal board defaults, also user-level (§5).
+        defaultScope: z.enum(BOARD_SCOPES).optional(),
+        defaultView: z.enum(VIEW_MODES).optional(),
       }),
       req.body,
     );
@@ -77,6 +80,8 @@ export function authRoutes(app: FastifyInstance): void {
     if (body.notifyAssign !== undefined) update.notify_assign = body.notifyAssign ? 1 : 0;
     if (body.remindDaysBefore !== undefined) update.remind_days_before = body.remindDaysBefore;
     if (body.notifyOverdue !== undefined) update.notify_overdue = body.notifyOverdue ? 1 : 0;
+    if (body.defaultScope) update.default_scope = body.defaultScope;
+    if (body.defaultView) update.default_view = body.defaultView;
     await deps().db('users').where({ id: auth.userId }).update(update);
     return buildMe(deps(), auth);
   });

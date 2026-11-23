@@ -80,6 +80,18 @@ describe('authentication', () => {
     expect(res.json().user.locale).toBe('en');
   });
 
+  it('stores the personal board defaults and rejects unknown values', async () => {
+    const client = new TestClient(env.app);
+    await client.login('anna@example.com');
+    const before = (await client.get('/api/auth/me')).json();
+    expect(before.user).toMatchObject({ defaultScope: 'mine', defaultView: 'status' });
+    const res = await client.patch('/api/auth/me', { defaultScope: 'all', defaultView: 'grid' });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().user).toMatchObject({ defaultScope: 'all', defaultView: 'grid' });
+    expect((await client.patch('/api/auth/me', { defaultView: 'calendar' })).statusCode).toBe(400);
+    expect((await client.patch('/api/auth/me', { defaultScope: 'others' })).statusCode).toBe(400);
+  });
+
   it('resets the password via e-mail link (single use) without revealing accounts', async () => {
     const client = new TestClient(env.app);
     expect((await client.post('/api/auth/forgot', { email: 'nobody@example.com' })).statusCode).toBe(204);
