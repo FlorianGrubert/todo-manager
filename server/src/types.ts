@@ -34,6 +34,13 @@ export interface TenantContext {
   tenantRole: TenantRole;
   defaultRole: DefaultRole;
   displayName: string;
+  /**
+   * Set when the request comes from an access token (MCP): the token's name.
+   * Changes and comments are marked with it ("über MCP").
+   */
+  via?: string | null;
+  /** Access token restricted to own To-Dos: may only change To-Dos assigned to or created by the member. */
+  ownOnly?: boolean;
 }
 
 declare module 'fastify' {

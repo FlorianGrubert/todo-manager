@@ -1342,3 +1342,28 @@ a.button {
   align-items: center;
   text-decoration: none;
 }
+
+/* Access tokens (MCP) */
+.access-tokens {
+  grid-column: 1 / -1;
+}
+
+.inline-copy {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.inline-copy input {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.token-created p {
+  margin: 0 0 0.5rem;
+}
+
+.via {
+  font-style: italic;
+}

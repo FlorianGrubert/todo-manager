@@ -23,11 +23,12 @@ Das System ist mehrmandantenfähig: Alles in der Anforderungsdefinition gilt jew
 - Pseudonymisieren ersetzt den Anzeigenamen durch ein Pseudonym, blendet die E-Mail-Adresse im Mandanten aus und deaktiviert die Mitgliedschaft; das ist endgültig. Gehört die Person keinem anderen Mandanten an (und ist kein Systemadministrator), werden auch Name und E-Mail des Kontos anonymisiert und die Anmeldung gesperrt
 - Noch nicht angenommene Einladungen können erneut versendet werden; der alte Link wird dabei ungültig
 - Passwörter haben mindestens 10 Zeichen; Links zum Zurücksetzen des Passworts sind 1 Stunde gültig
-- Nach dem Zurücksetzen des Passworts werden alle Sitzungen des Benutzers beendet
+- Nach dem Zurücksetzen des Passworts werden alle Sitzungen des Benutzers beendet und alle seine Zugriffstokens (MCP) in allen Mandanten widerrufen
 
 ## 3. Präzisierungen: Export und Import von Mandanten
 
-- Der Mandanten-Export ist eine JSON-Datei mit allen Daten des Mandanten inkl. Kommentaren, Verlauf, gespeicherten Filtern und Personen ohne Login (ohne E-Mail-Adresse). Exporte älterer Formatversionen bleiben importierbar. Passwörter, Sitzungen und offene Einladungen sind nicht enthalten; pseudonymisierte Personen werden ohne Name und E-Mail exportiert
+- Der Mandanten-Export ist eine JSON-Datei mit allen Daten des Mandanten inkl. Kommentaren, Verlauf, gespeicherten Filtern und Personen ohne Login (ohne E-Mail-Adresse). Exporte älterer Formatversionen bleiben importierbar. Passwörter, Sitzungen, Zugriffstokens und offene Einladungen sind nicht enthalten; pseudonymisierte Personen werden ohne Name und E-Mail exportiert. Die Kennzeichnung „über MCP“ an Verlauf und Kommentaren wird mit exportiert (ab Formatversion 3)
 - Beim Import werden alle IDs neu vergeben (auch Verweise im Verlauf und in gespeicherten Filtern), sodass ein Mandant neben seinem Original oder in einer anderen Installation importiert werden kann. Personen werden über die E-Mail-Adresse einem vorhandenen Konto zugeordnet, bestehende Konten werden nicht verändert; neue Konten haben kein Passwort und werden über „Passwort vergessen“ aktiviert
 - „Passwort vergessen“ funktioniert daher für alle aktiven Konten, auch ohne bisheriges Passwort
+- Ein importierter Mandant erlaubt keine Zugriffstokens, bis sein Mandanten-Administrator sie erlaubt. Beim Ersetzen eines Mandanten werden seine Zugriffstokens entfernt
 - Ersetzen eines Mandanten erfordert die Eingabe des exakten Mandantennamens; die bisherigen Daten des Mandanten werden dabei entfernt. Ungültige oder in sich widersprüchliche Dateien werden vollständig abgelehnt, ohne etwas zu ändern

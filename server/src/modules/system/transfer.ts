@@ -20,7 +20,7 @@ import { toBool } from '../../lib/flags.js';
 import { createPlaceholderUser, PLACEHOLDER_DOMAIN } from '../contacts/service.js';
 
 export const EXPORT_FORMAT = 'fg-todo-manager/tenant';
-export const EXPORT_VERSION = 2;
+export const EXPORT_VERSION = 3;
 
 const id = z.string().min(1).max(64);
 const ts = z.string().max(30);
@@ -98,7 +98,9 @@ const todoSchema = z.object({
 });
 const linkSchema = z.object({ id, todo_id: id, url: text(2000), label: text(200).nullable(), position: num });
 const todoTagSchema = z.object({ todo_id: id, tag_id: id });
-const commentSchema = z.object({ id, todo_id: id, author_id: id, body: z.string().max(10_000), created_at: ts });
+// `via` (name of the access token, MCP) exists since version 3.
+const via = text(100).nullable().default(null);
+const commentSchema = z.object({ id, todo_id: id, author_id: id, body: z.string().max(10_000), created_at: ts, via });
 const historySchema = z.object({
   id,
   todo_id: id,
@@ -107,13 +109,14 @@ const historySchema = z.object({
   field: text(40),
   old_value: z.string().max(25_000).nullable(),
   new_value: z.string().max(25_000).nullable(),
+  via,
 });
 const filterSchema = z.object({ id, membership_id: id, name: text(100), criteria: z.string().max(20_000), created_at: ts, updated_at: ts });
 
 export const tenantExportSchema = z.object({
   format: z.literal(EXPORT_FORMAT),
-  // Version 1 (before persons without login) can still be imported.
-  version: z.union([z.literal(1), z.literal(EXPORT_VERSION)]),
+  // Version 1 (before persons without login) and 2 (before access tokens) can still be imported.
+  version: z.union([z.literal(1), z.literal(2), z.literal(EXPORT_VERSION)]),
   appVersion: z.string().max(40),
   exportedAt: ts,
   tenant: z.object({ name: text(200), createdAt: ts }),
@@ -147,6 +150,7 @@ const TENANT_TABLES = [
   'project_members',
   'projects',
   'invitations',
+  'access_tokens',
   'memberships',
 ] as const;
 

@@ -46,7 +46,7 @@ describe('tenant export and import', () => {
     const res = await sys.get(`/api/system/tenants/${s.tenantId}/export`);
     expect(res.headers['content-disposition']).toMatch(/attachment; filename="Acme-\d{4}-\d{2}-\d{2}\.json"/);
     const data = res.json() as TenantExport;
-    expect(data).toMatchObject({ format: 'fg-todo-manager/tenant', version: 2, tenant: { name: 'Acme' } });
+    expect(data).toMatchObject({ format: 'fg-todo-manager/tenant', version: 3, tenant: { name: 'Acme' } });
     expect(data.todos).toHaveLength(5);
     expect(data.members.map((m) => m.email).sort()).toContain('editor@acme.test');
     expect(data.comments).toHaveLength(1);
@@ -92,9 +92,37 @@ describe('tenant export and import', () => {
     expect(filters[0]?.criteria.projectIds).toEqual([projects.find((p) => p.name === 'P Acme')!.id]);
     expect(filters[0]?.criteria.tagIds).toContain('none');
 
+    // the "via MCP" marks of history and comments survive
+    expect(history.entries.every((h) => h.via === null)).toBe(true);
     // the original tenant is untouched
     await editor.post('/api/auth/switch-tenant', { tenantId: s.tenantId });
     expect(((await editor.get(`/api/todos/${s.todos.t1}`)).json() as TodoDto).title).toBe('renamed');
+  });
+
+  it('keeps the "via MCP" marks and drops access tokens', async () => {
+    await env.db('todo_history').where({ tenant_id: s.tenantId, todo_id: s.todos.t1 }).update({ via: 'Bot' });
+    await env.db('comments').where({ tenant_id: s.tenantId }).update({ via: 'Bot' });
+    await s.clients.admin.put('/api/admin/tokens/settings', { allowed: true });
+    const data = await exportTenant();
+    expect(JSON.stringify(data)).not.toContain('token');
+    const res = await sys.post('/api/system/tenants/import', { name: 'Acme Copy', data });
+    const { id: copyId } = res.json() as { id: string };
+    const marked = await env.db('todo_history').where({ tenant_id: copyId, via: 'Bot' }).count({ c: '*' }).first();
+    expect(Number((marked as { c: number | string }).c)).toBeGreaterThan(0);
+    expect((await env.db('comments').where({ tenant_id: copyId }).first('via')).via).toBe('Bot');
+    // Tokens are never allowed in an imported tenant until its administrator decides so.
+    expect((await env.db('tenants').where({ id: copyId }).first('allow_access_tokens')).allow_access_tokens).toBe(0);
+  });
+
+  it('accepts exports of version 2 (without "via")', async () => {
+    const data = await exportTenant();
+    const old = {
+      ...data,
+      version: 2,
+      comments: data.comments.map(({ via: _v, ...c }) => c),
+      history: data.history.map(({ via: _v, ...h }) => h),
+    };
+    expect((await sys.post('/api/system/tenants/import', { name: 'Old', data: old })).statusCode).toBe(201);
   });
 
   it('replaces an existing tenant only with the exact name as confirmation', async () => {

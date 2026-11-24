@@ -75,6 +75,58 @@ export interface MeResponse {
   activeTenant: ActiveTenant | null;
   csrfToken: string;
   version: string;
+  /** MCP server for AI assistants (access tokens). */
+  mcp: McpInfo;
+}
+
+export interface McpInfo {
+  /** The installation offers the MCP endpoint (`MCP_ENABLED`). */
+  enabled: boolean;
+  /** Access tokens are allowed in the active tenant (set by the tenant administrator). */
+  tenantAllowed: boolean;
+  /** Address of the MCP endpoint, e.g. `https://todo.example.com/mcp`. */
+  url: string;
+  /** Maximum validity of an access token in days. */
+  maxDays: number;
+}
+
+// ---------------------------------------------------------------------------
+// Access tokens (MCP)
+// ---------------------------------------------------------------------------
+
+/** `read`: only reading tools; `write`: additionally create, change, comment and cancel. */
+export const TOKEN_SCOPES = ['read', 'write'] as const;
+export type TokenScope = (typeof TOKEN_SCOPES)[number];
+
+/** Prefix of every access token, so tokens are recognizable in code and logs. */
+export const ACCESS_TOKEN_PREFIX = 'fgtm_pat_';
+export const TOKEN_DEFAULT_DAYS = 90;
+
+export interface AccessTokenDto {
+  id: string;
+  name: string;
+  tenantId: string;
+  tenantName: string;
+  scope: TokenScope;
+  ownOnly: boolean;
+  createdAt: string;
+  expiresAt: string;
+  lastUsedAt: string | null;
+  expired: boolean;
+}
+
+/** Answer when a token is created: the token itself is only shown this once. */
+export interface CreatedAccessTokenDto extends AccessTokenDto {
+  token: string;
+}
+
+/** Access token as seen by the tenant administrator (never the token itself). */
+export interface AdminAccessTokenDto extends Omit<AccessTokenDto, 'tenantId' | 'tenantName'> {
+  member: MemberDto;
+}
+
+export interface AccessTokenSettings {
+  allowed: boolean;
 }
 
 export interface InvitationInfo {
@@ -110,6 +162,7 @@ export const ERROR_CODES = [
   'invalid_assignee',
   'in_use',
   'tenant_mismatch',
+  'tokens_not_allowed',
   'internal',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -261,6 +314,8 @@ export interface HistoryEntryDto {
   newValue: string | null;
   changedAt: string;
   changedBy: MemberDto;
+  /** Name of the access token when the change was made through MCP. */
+  via: string | null;
 }
 
 export interface CommentDto {
@@ -268,6 +323,8 @@ export interface CommentDto {
   body: string;
   createdAt: string;
   author: MemberDto;
+  /** Name of the access token when the comment was written through MCP. */
+  via: string | null;
 }
 
 export const LINK_URL_PATTERN = /^(https?:\/\/|mailto:)/i;

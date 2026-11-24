@@ -13,6 +13,7 @@ import { EventBus } from './events/bus.js';
 import { ApiError } from './lib/errors.js';
 import { TaskQueue } from './lib/queue.js';
 import { createMailer, type Mailer } from './mail/mailer.js';
+import { mcpRoutes } from './mcp/routes.js';
 import { contactRoutes } from './modules/contacts/routes.js';
 import { eventRoutes, publishReferenceChanges } from './modules/events/routes.js';
 import { memberRoutes } from './modules/members/routes.js';
@@ -21,6 +22,7 @@ import { referenceRoutes } from './modules/reference/routes.js';
 import { systemRoutes } from './modules/system/routes.js';
 import { todoExtraRoutes } from './modules/todos/extra-routes.js';
 import { todoRoutes } from './modules/todos/routes.js';
+import { tokenRoutes } from './modules/tokens/routes.js';
 import { registerAuthContext } from './tenancy/context.js';
 import './types.js';
 
@@ -94,7 +96,9 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   contactRoutes(app);
   todoExtraRoutes(app);
   todoRoutes(app);
+  tokenRoutes(app);
   eventRoutes(app);
+  mcpRoutes(app);
   publishReferenceChanges(app);
 
   const webDist = resolve(config.WEB_DIST ?? defaultWebDist);
@@ -104,7 +108,7 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
   }
 
   app.setNotFoundHandler((req, reply) => {
-    if (serveWeb && req.method === 'GET' && !req.url.startsWith('/api/')) {
+    if (serveWeb && req.method === 'GET' && !req.url.startsWith('/api/') && !req.url.startsWith('/mcp')) {
       // Single page app: unknown paths are client routes (e.g. deep links to To-Dos).
       return reply.header('cache-control', 'no-cache').sendFile('index.html');
     }

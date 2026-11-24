@@ -162,7 +162,8 @@
     "archived": "The project is archived; its to-dos cannot be changed.",
     "invalid_assignee": "This person cannot be assigned to-dos in this project.",
     "in_use": "This entry is still in use (e.g. as default or cancel status).",
-    "tenant_mismatch": "The tenant has been switched in the meantime."
+    "tenant_mismatch": "The tenant has been switched in the meantime.",
+    "tokens_not_allowed": "Access tokens are not allowed in this tenant."
   },
   "todos": {
     "title": "To-dos",
@@ -225,7 +226,8 @@
       "project": "Project",
       "tags": "Tags",
       "links": "Links"
-    }
+    },
+    "via": "via MCP ({name})"
   },
   "projects": {
     "title": "Projects",
@@ -263,7 +265,8 @@
       "members": "Users",
       "statuses": "Statuses",
       "priorities": "Priorities",
-      "tags": "Tags"
+      "tags": "Tags",
+      "tokens": "Access tokens"
     },
     "members": {
       "title": "Users",
@@ -333,6 +336,15 @@
       "confirmDelete": "Delete tag “{name}”? It will be removed from all to-dos.",
       "hint": "Tags are created while editing to-dos. Here they can be renamed, colored or deleted.",
       "empty": "No tags yet."
+    },
+    "tokens": {
+      "hint": "With access tokens, AI assistants access to-dos through the MCP server with the rights of the person who created the token. Changes appear in the history as “via MCP”.",
+      "allow": "Allow access tokens in this tenant",
+      "allowHint": "Without this permission no tokens can be created and existing tokens do not work.",
+      "disabled": "The MCP server is not enabled in this installation. The system operator can enable it in the configuration.",
+      "person": "Person",
+      "empty": "No active access tokens.",
+      "confirmRevoke": "Revoke token “{name}” of {person}? The AI assistant loses access immediately."
     }
   },
   "board": {
@@ -412,5 +424,33 @@
   },
   "person": {
     "noLogin": "no login"
+  },
+  "tokens": {
+    "title": "Access tokens for AI assistants (MCP)",
+    "hint": "With an access token an AI assistant (e.g. Claude or a coding assistant) can read and, depending on the permission, edit to-dos on your behalf. A token applies only to the tenant “{tenant}” and never has more rights than you.",
+    "notAllowed": "The tenant administrator has not allowed access tokens in this tenant.",
+    "url": "Address of the MCP server",
+    "name": "Name",
+    "namePlaceholder": "e.g. Claude laptop",
+    "scope": "Permission",
+    "scopeRead": "Read",
+    "scopeWrite": "Read and write",
+    "ownOnly": "Only change own to-dos (assigned to or created by me)",
+    "days": "Validity in days (at most {max})",
+    "create": "Create token",
+    "created": "Token created. Copy it now, it is shown only this once:",
+    "copy": "Copy",
+    "copied": "Copied to the clipboard",
+    "configHint": "Add it in the AI tool as MCP server (HTTP) with this address and the header “Authorization: Bearer <token>”.",
+    "empty": "You have no access tokens yet.",
+    "tenant": "Tenant",
+    "expires": "Valid until",
+    "lastUsed": "Last used",
+    "never": "never",
+    "expired": "expired",
+    "ownOnlyShort": "own only",
+    "revoke": "Revoke",
+    "confirmRevoke": "Revoke token “{name}”? The AI assistant loses access immediately.",
+    "revoked": "Token revoked."
   }
 }

@@ -272,4 +272,4 @@ Die folgenden Dokumente im Verzeichnis `documentation` beschreiben einzelne Anfo
 | [rollen-und-rechte.md](rollen-und-rechte.md) | Benutzer, Rollen, Personen ohne Login, Einladung, Pseudonymisierung, Zuweisungsregeln (zu §8) | umgesetzt |
 | [mandanten.md](mandanten.md) | Mehrmandantenfähigkeit, Personen in mehreren Mandanten, Export und Import von Mandanten (zu §11) | umgesetzt |
 | [mobile-offline.md](mobile-offline.md) | PWA, Schnellerfassung, Offline-Betrieb und Synchronisation (zu §3, §5, §10) | umgesetzt |
-| [mcp-server.md](mcp-server.md) | MCP-Server für KI-Assistenten: Anlegen, Aktualisieren und Überwachen von To-Dos, Zugriffstokens | Konzept |
+| [mcp-server.md](mcp-server.md) | MCP-Server für KI-Assistenten: Anlegen, Aktualisieren und Überwachen von To-Dos, Zugriffstokens | umgesetzt (Phase 1) |

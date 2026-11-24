@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BOARD_SCOPES, LOCALES, VIEW_MODES, type BoardScope, type Locale, type ViewMode } from '@fg/shared';
 import { post } from '../api/client';
+import AccessTokens from '../components/AccessTokens.vue';
 import PasswordFields from '../components/PasswordFields.vue';
 import { errorKey } from '../i18n';
 import { useSessionStore } from '../stores/session';
@@ -177,6 +178,8 @@ async function changePassword(): Promise<void> {
           <button class="button primary" type="submit">{{ t('common.save') }}</button>
         </form>
       </section>
+
+      <AccessTokens />
     </div>
     <p class="muted version">{{ t('app.version', { version: session.me?.version ?? '' }) }}</p>
   </section>

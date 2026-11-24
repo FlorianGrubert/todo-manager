@@ -62,9 +62,18 @@ export function canViewTodo(ctx: TenantContext, roles: RoleMap, todo: TodoAccess
   return role === 'restricted' ? isOwnTodo(ctx, todo) : true;
 }
 
+/**
+ * Access tokens restricted to own To-Dos (MCP): only To-Dos assigned to or
+ * created by the member may be changed or commented, whatever the role allows.
+ */
+export function passesOwnOnly(ctx: TenantContext, todo: TodoAccessInfo): boolean {
+  return !ctx.ownOnly || todo.assignee_id === ctx.membershipId || todo.created_by === ctx.membershipId;
+}
+
 /** Edit rights; To-Dos of archived projects are read-only. */
 export function canEditTodo(ctx: TenantContext, roles: RoleMap, todo: TodoAccessInfo, projectArchived = false): boolean {
   if (projectArchived) return false;
+  if (!passesOwnOnly(ctx, todo)) return false;
   const role = effectiveRole(ctx, roles, todo.project_id);
   if (role === 'admin' || role === 'editor') return true;
   return role === 'restricted' && isOwnTodo(ctx, todo);
@@ -75,10 +84,10 @@ export function canCreateTodo(ctx: TenantContext, roles: RoleMap, projectId: str
   return role === 'admin' || role === 'editor' || role === 'restricted';
 }
 
-/** Restricted editors may only assign themselves or nobody. */
+/** Restricted editors (and access tokens restricted to own To-Dos) may only assign themselves or nobody. */
 export function assertMayAssign(ctx: TenantContext, roles: RoleMap, projectId: string | null, assigneeId: string | null): void {
   if (assigneeId === null || assigneeId === ctx.membershipId) return;
-  if (effectiveRole(ctx, roles, projectId) === 'restricted') throw forbidden();
+  if (ctx.ownOnly || effectiveRole(ctx, roles, projectId) === 'restricted') throw forbidden();
 }
 
 /**
