@@ -40,6 +40,13 @@ const schema = z
     WEB_DIST: z.string().optional(),
     /** Maximum size of a tenant import file in MB. */
     IMPORT_MAX_MB: z.coerce.number().int().positive().default(50),
+
+    /** Offers the MCP endpoint `/mcp` and the management of access tokens. */
+    MCP_ENABLED: bool.default(false),
+    /** Max. MCP requests per minute and access token (writing tools: a third of it). */
+    MCP_RATE_LIMIT: z.coerce.number().int().positive().default(60),
+    /** Maximum validity of an access token in days. */
+    MCP_TOKEN_MAX_DAYS: z.coerce.number().int().positive().max(3650).default(365),
   })
   .superRefine((v, ctx) => {
     if (v.DB_CLIENT === 'pg' && !v.DATABASE_URL) {

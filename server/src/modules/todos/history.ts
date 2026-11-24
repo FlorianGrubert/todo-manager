@@ -13,7 +13,7 @@ export interface HistoryChange {
 /** Writes change history entries (who changed which field from which to which value). */
 export async function recordHistory(
   trx: Knex,
-  ctx: Pick<TenantContext, 'tenantId' | 'membershipId'>,
+  ctx: Pick<TenantContext, 'tenantId' | 'membershipId' | 'via'>,
   todoId: string,
   changes: HistoryChange[],
   at: string = now(),
@@ -29,6 +29,7 @@ export async function recordHistory(
       field: c.field,
       old_value: c.oldValue,
       new_value: c.newValue,
+      via: ctx.via ?? null,
     })),
   );
 }

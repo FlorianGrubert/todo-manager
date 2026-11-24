@@ -33,7 +33,9 @@ function display(entry: HistoryEntryDto, value: string | null): string {
     <p v-else-if="history.entries.length === 0" class="muted">{{ t('history.empty') }}</p>
     <ol v-else class="history-list">
       <li v-for="e in history.entries" :key="e.id">
-        <div class="muted small">{{ d(new Date(e.changedAt), 'long') }} · {{ e.changedBy.displayName }}</div>
+        <div class="muted small">
+          {{ d(new Date(e.changedAt), 'long') }} · {{ e.changedBy.displayName }}<template v-if="e.via"> · <span class="via">{{ t('history.via', { name: e.via }) }}</span></template>
+        </div>
         <div v-if="e.field === 'created'">{{ t('history.created') }}</div>
         <div v-else>
           <strong>{{ t(`history.field.${e.field}`) }}:</strong>

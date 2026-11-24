@@ -162,7 +162,8 @@
     "archived": "Das Projekt ist archiviert; seine To-Dos können nicht geändert werden.",
     "invalid_assignee": "Diese Person kann To-Dos in diesem Projekt nicht zugewiesen bekommen.",
     "in_use": "Dieser Eintrag wird noch verwendet (z. B. als Standard- oder Abbruch-Status).",
-    "tenant_mismatch": "Der Mandant wurde inzwischen gewechselt."
+    "tenant_mismatch": "Der Mandant wurde inzwischen gewechselt.",
+    "tokens_not_allowed": "Zugriffstokens sind in diesem Mandanten nicht erlaubt."
   },
   "todos": {
     "title": "To-Dos",
@@ -225,7 +226,8 @@
       "project": "Projekt",
       "tags": "Tags",
       "links": "Links"
-    }
+    },
+    "via": "über MCP ({name})"
   },
   "projects": {
     "title": "Projekte",
@@ -263,7 +265,8 @@
       "members": "Benutzer",
       "statuses": "Status",
       "priorities": "Prioritäten",
-      "tags": "Tags"
+      "tags": "Tags",
+      "tokens": "Zugriffstokens"
     },
     "members": {
       "title": "Benutzer",
@@ -333,6 +336,15 @@
       "confirmDelete": "Tag „{name}“ löschen? Er wird von allen To-Dos entfernt.",
       "hint": "Tags entstehen beim Bearbeiten von To-Dos. Hier können sie umbenannt, eingefärbt oder gelöscht werden.",
       "empty": "Noch keine Tags vorhanden."
+    },
+    "tokens": {
+      "hint": "Mit Zugriffstokens greifen KI-Assistenten über den MCP-Server auf To-Dos zu, und zwar mit den Rechten der Person, die das Token angelegt hat. Änderungen erscheinen im Verlauf als „über MCP“.",
+      "allow": "Zugriffstokens in diesem Mandanten erlauben",
+      "allowHint": "Ohne diese Erlaubnis können keine Tokens angelegt werden, und bestehende Tokens funktionieren nicht.",
+      "disabled": "Der MCP-Server ist in dieser Installation nicht eingeschaltet. Der Systembetreiber kann ihn über die Konfiguration aktivieren.",
+      "person": "Person",
+      "empty": "Keine aktiven Zugriffstokens.",
+      "confirmRevoke": "Token „{name}“ von {person} widerrufen? Der KI-Assistent verliert sofort den Zugriff."
     }
   },
   "board": {
@@ -412,5 +424,33 @@
   },
   "person": {
     "noLogin": "ohne Login"
+  },
+  "tokens": {
+    "title": "Zugriffstokens für KI-Assistenten (MCP)",
+    "hint": "Mit einem Zugriffstoken kann ein KI-Assistent (z. B. Claude oder ein Coding-Assistent) in Ihrem Namen To-Dos lesen und je nach Berechtigung bearbeiten. Ein Token gilt nur für den Mandanten „{tenant}“ und hat nie mehr Rechte als Sie.",
+    "notAllowed": "Der Mandanten-Administrator hat Zugriffstokens in diesem Mandanten nicht erlaubt.",
+    "url": "Adresse des MCP-Servers",
+    "name": "Bezeichnung",
+    "namePlaceholder": "z. B. Claude Laptop",
+    "scope": "Berechtigung",
+    "scopeRead": "Lesen",
+    "scopeWrite": "Lesen und Schreiben",
+    "ownOnly": "Nur eigene To-Dos ändern (mir zugewiesen oder von mir angelegt)",
+    "days": "Gültigkeit in Tagen (höchstens {max})",
+    "create": "Token anlegen",
+    "created": "Token angelegt. Kopieren Sie es jetzt, es wird nur dieses eine Mal angezeigt:",
+    "copy": "Kopieren",
+    "copied": "In die Zwischenablage kopiert",
+    "configHint": "Im KI-Werkzeug als MCP-Server (HTTP) mit dieser Adresse und dem Header „Authorization: Bearer <Token>“ eintragen.",
+    "empty": "Sie haben noch keine Zugriffstokens.",
+    "tenant": "Mandant",
+    "expires": "Gültig bis",
+    "lastUsed": "Zuletzt genutzt",
+    "never": "nie",
+    "expired": "abgelaufen",
+    "ownOnlyShort": "nur eigene",
+    "revoke": "Widerrufen",
+    "confirmRevoke": "Token „{name}“ widerrufen? Der KI-Assistent verliert sofort den Zugriff.",
+    "revoked": "Token widerrufen."
   }
 }

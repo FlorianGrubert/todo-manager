@@ -353,6 +353,7 @@ async function addComment(): Promise<void> {
           <header>
             <strong>{{ c.author.displayName }}</strong>
             <span class="muted">{{ d(new Date(c.createdAt), 'long') }}</span>
+            <span v-if="c.via" class="muted via">{{ t('history.via', { name: c.via }) }}</span>
           </header>
           <p>{{ c.body }}</p>
         </article>

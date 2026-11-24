@@ -30,6 +30,7 @@ export const router = createRouter({
         { path: 'statuses', name: 'admin-statuses', component: () => import('../views/admin/AdminStatuses.vue') },
         { path: 'priorities', name: 'admin-priorities', component: () => import('../views/admin/AdminPriorities.vue') },
         { path: 'tags', name: 'admin-tags', component: () => import('../views/admin/AdminTags.vue') },
+        { path: 'tokens', name: 'admin-tokens', component: () => import('../views/admin/AdminTokens.vue') },
       ],
     },
     { path: '/settings', name: 'settings', component: () => import('../views/SettingsView.vue') },

@@ -19,6 +19,7 @@ import {
   pickTenant,
   type UserRow,
 } from './service.js';
+import { revokeUserTokens } from '../modules/tokens/service.js';
 import { clearSessionCookie, createSession, destroyUserSessions, SESSION_COOKIE, setSessionCookie } from './sessions.js';
 
 const RESET_VALID_MS = 3600_000;
@@ -152,6 +153,8 @@ export function authRoutes(app: FastifyInstance): void {
         .update({ password_hash: await hashPassword(body.password), updated_at: ts });
     });
     await destroyUserSessions(db, reset.user_id);
+    // Access tokens end like sessions: whoever reset the password gets a clean slate.
+    await revokeUserTokens(db, reset.user_id);
     clearSessionCookie(reply, deps().config);
     return reply.code(204).send();
   });

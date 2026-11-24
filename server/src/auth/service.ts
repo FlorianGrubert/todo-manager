@@ -69,6 +69,10 @@ export async function buildMe(deps: AppDeps, auth: Pick<AuthInfo, 'userId' | 'cs
       };
     }
   }
+  const tenantRow = activeTenant
+    ? ((await db('tenants').where({ id: activeTenant.id }).first('allow_access_tokens')) as { allow_access_tokens: number } | undefined)
+    : undefined;
+  const tenantAllowed = toBool(tenantRow?.allow_access_tokens ?? 0);
   return {
     user: {
       id: user.id,
@@ -86,5 +90,11 @@ export async function buildMe(deps: AppDeps, auth: Pick<AuthInfo, 'userId' | 'cs
     activeTenant,
     csrfToken: auth.csrfToken,
     version: config.version,
+    mcp: {
+      enabled: config.MCP_ENABLED,
+      tenantAllowed,
+      url: `${config.BASE_URL.replace(/\/$/, '')}/mcp`,
+      maxDays: config.MCP_TOKEN_MAX_DAYS,
+    },
   };
 }

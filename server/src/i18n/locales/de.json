@@ -64,5 +64,30 @@
     "high": "Hoch",
     "medium": "Mittel",
     "low": "Niedrig"
+  },
+  "mcp": {
+    "kinds": {
+      "status": "Status",
+      "priority": "Priorität",
+      "project": "Projekt",
+      "person": "Person",
+      "tag": "Tag"
+    },
+    "errors": {
+      "unknown": "Unbekannter Wert für {kind}: „{value}“. Gültige Werte: {valid}",
+      "ambiguous": "Der Wert „{value}“ für {kind} ist mehrdeutig. Bitte eine der IDs angeben: {ids}",
+      "invalidTimestamp": "Ungültiger Zeitpunkt. Erwartet wird ein ISO-Zeitstempel, z. B. 2026-11-23T08:00:00Z.",
+      "tooOld": "Änderungen können höchstens {days} Tage zurück abgefragt werden.",
+      "bad_request": "Ungültige Eingabe.",
+      "not_found": "Nicht gefunden (oder kein Zugriff).",
+      "forbidden": "Keine Berechtigung für diese Aktion.",
+      "archived": "Das Projekt ist archiviert; seine To-Dos sind schreibgeschützt.",
+      "invalid_assignee": "Diese Person kann dem To-Do nicht zugewiesen werden (keine passende Rolle im Projekt).",
+      "conflict": "Die Aktion steht im Widerspruch zum aktuellen Stand.",
+      "rate_limited": "Zu viele Anfragen. Bitte kurz warten und erneut versuchen.",
+      "internal": "Interner Fehler. Bitte später erneut versuchen."
+    },
+    "hiddenProject": "(nicht sichtbares Projekt)",
+    "assignHint": "Zuweisbar ist nur, wer im Projekt des To-Dos mindestens eingeschränkter Bearbeiter ist; Personen ohne Login nur in ihren Projekten und nicht bei To-Dos ohne Projekt."
   }
 }

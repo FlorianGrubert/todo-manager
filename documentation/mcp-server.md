@@ -1,6 +1,6 @@
 # Anforderungsdefinition: MCP-Server
 
-**Status:** Konzept, noch nicht umgesetzt. Dieses Dokument ergänzt die [Anforderungsdefinition](overall-requirements.md); deren Festlegungen (insbesondere Zero Trust §11 und Präzisierungen §14) sowie die Regeln aus [rollen-und-rechte.md](rollen-und-rechte.md) und [mandanten.md](mandanten.md) gelten hier unverändert. Abschnittsverweise der Form „§n“ beziehen sich auf die Anforderungsdefinition.
+**Status:** Phase 1 umgesetzt in Version 1.3.0 (Zugriffstokens, alle Tools); Phase 2 (OAuth) ist nicht umgesetzt. Dieses Dokument ergänzt die [Anforderungsdefinition](overall-requirements.md); deren Festlegungen (insbesondere Zero Trust §11 und Präzisierungen §14) sowie die Regeln aus [rollen-und-rechte.md](rollen-und-rechte.md) und [mandanten.md](mandanten.md) gelten hier unverändert. Abschnittsverweise der Form „§n“ beziehen sich auf die Anforderungsdefinition.
 
 ## 1. Ziel und Abgrenzung
 
@@ -21,7 +21,8 @@ Der To-Do-Manager stellt einen Server nach dem Model Context Protocol (MCP) bere
 
 - **Endpunkt im bestehenden Server:** Der MCP-Server läuft im selben Node.js-Prozess unter `/mcp` (Transport „Streamable HTTP“). Er arbeitet **zustandslos**: Jede Anfrage trägt ihre Anmeldung selbst, es gibt keine serverseitige MCP-Sitzung. Das passt zum Betrieb als ein Prozess (§10) und funktioniert hinter dem Reverse Proxy ohne Zusatzkonfiguration
 - **Gemeinsame Service-Schicht:** Die Fachlogik (Rechteprüfung, Standardstatus, Tags, Links, Verlauf, Ereignisse, E-Mails) liegt in Service-Funktionen, die REST-API und MCP-Server gleichermaßen aufrufen. Der MCP-Server enthält keine eigene Datenbanklogik. Voraussetzung für die Umsetzung ist daher, die heute in den HTTP-Routen liegende Logik in diese Service-Schicht zu verschieben, ohne das Verhalten der REST-API zu ändern
-- **Implementierung:** offizielles MCP-SDK für TypeScript; Eingaben werden wie in der REST-API mit Zod geprüft
+- **Implementierung:** offizielles MCP-SDK für TypeScript (Version 2, Paket `@modelcontextprotocol/server`); Eingaben werden wie in der REST-API mit Zod geprüft. Der Endpunkt bedient sowohl Clients nach der MCP-Spezifikation 2026-07-28 als auch ältere Clients (Spezifikation 2025, zustandslos ohne Sitzungs-ID); GET und DELETE auf `/mcp` werden mit 405 beantwortet
+- **Herkunft der Anfrage:** Sendet ein Client einen `Origin`-Header (Browser), muss er der Adresse der Anwendung (`BASE_URL`) entsprechen; sonst wird die Anfrage abgelehnt
 - **Live-Aktualisierung:** Änderungen über MCP lösen dieselben Ereignisse aus wie Änderungen in der Oberfläche; geöffnete Boards aktualisieren sich sofort (§9)
 
 **Bewusst verworfene Alternativen:**
@@ -38,7 +39,7 @@ Der To-Do-Manager stellt einen Server nach dem Model Context Protocol (MCP) bere
 
 Die KI meldet sich mit einem persönlichen Zugriffstoken an, das im Header `Authorization: Bearer <Token>` übertragen wird. Das unterstützen u. a. Claude Code, Claude Desktop, VS Code und Cursor.
 
-- **Anlegen:** Jeder Benutzer legt unter **Einstellungen → Zugriffstokens** eigene Tokens an. Ein Token gilt für **genau einen Mandanten**, nämlich den beim Anlegen aktiven; ein Mandantenwechsel über MCP ist nicht möglich
+- **Anlegen:** Jeder Benutzer legt unter **Einstellungen → Zugriffstokens für KI-Assistenten** eigene Tokens an (höchstens 20 gültige Tokens je Mitgliedschaft). Personen ohne Login haben keine Tokens. Ein Token gilt für **genau einen Mandanten**, nämlich den beim Anlegen aktiven; ein Mandantenwechsel über MCP ist nicht möglich
 - **Angaben je Token:** Bezeichnung (z. B. „Claude Laptop“), Berechtigung, Ablaufdatum, optional „nur eigene To-Dos“
 - **Berechtigungen:**
   - **Lesen:** nur lesende Tools
@@ -46,9 +47,9 @@ Die KI meldet sich mit einem persönlichen Zugriffstoken an, das im Header `Auth
   - **Nur eigene To-Dos** (zusätzlich wählbar): Schreiben ist auf To-Dos beschränkt, die dem Benutzer zugewiesen sind oder die er selbst angelegt hat, auch wenn seine Projektrolle mehr erlaubt
 - **Ablauf:** Standard 90 Tage, höchstens `MCP_TOKEN_MAX_DAYS` Tage; unbefristete Tokens gibt es nicht
 - **Anzeige:** Das Token wird nur einmal beim Anlegen angezeigt. Es beginnt mit dem Präfix `fgtm_pat_`, damit es in Quellcode und Logs erkennbar ist. Gespeichert wird nur ein Hash (wie bei Sitzungen)
-- **Übersicht:** Der Benutzer sieht seine Tokens mit Bezeichnung, Mandant, Berechtigung, Ablaufdatum und letzter Nutzung und kann sie jederzeit widerrufen
+- **Übersicht:** Der Benutzer sieht seine Tokens aller Mandanten mit Bezeichnung, Mandant, Berechtigung, Ablaufdatum und letzter Nutzung (auf die Minute genau) und kann sie jederzeit widerrufen. Widerrufene Tokens werden nicht mehr angezeigt
 - **Ungültig werden Tokens** bei Ablauf, Widerruf, Deaktivierung oder Pseudonymisierung der Mitgliedschaft, Deaktivierung des Kontos oder des Mandanten sowie beim Zurücksetzen des Passworts (analog zu den Sitzungen, siehe [mandanten.md](mandanten.md))
-- **Mandanten-Administrator:** Er legt fest, ob in seinem Mandanten Zugriffstokens erlaubt sind (Standard: nicht erlaubt), sieht alle Tokens des Mandanten (Person, Bezeichnung, Berechtigung, letzte Nutzung, nicht das Token selbst) und kann sie widerrufen
+- **Mandanten-Administrator:** Er legt unter **Administration → Zugriffstokens** fest, ob in seinem Mandanten Zugriffstokens erlaubt sind (Standard: nicht erlaubt), sieht alle Tokens des Mandanten (Person, Bezeichnung, Berechtigung, letzte Nutzung, nicht das Token selbst) und kann sie widerrufen. Nimmt er die Erlaubnis zurück, funktionieren die bestehenden Tokens nicht mehr, bis er sie wieder erteilt
 - Anfragen mit Token benötigen keinen CSRF-Schutz, da kein Cookie verwendet wird. Ein Token berechtigt **nur** für `/mcp`, nicht für die übrige REST-API
 
 ### Phase 2: OAuth
@@ -79,13 +80,14 @@ Für Web-basierte Connectors (z. B. in claude.ai oder ChatGPT), die eine Anmeldu
 
 Die Kennzeichnung wird über die Tool-Annotationen des MCP-Protokolls (`readOnlyHint`, `destructiveHint`) mitgeteilt, damit KI-Clients vor destruktiven Aktionen nachfragen können.
 
-**Filter von `search_todos`:** „Meine“ oder „Alle“ (§14), Text in Titel und Beschreibung, Status, Statuskategorie (offen, erledigt, abgebrochen), Projekt bzw. „ohne Projekt“, Tag, Person bzw. „nicht zugewiesen“, Priorität, Fälligkeit von/bis, „überfällig“. Wie auf dem Board sind erledigte und abgebrochene To-Dos ohne ausdrückliche Angabe ausgeblendet. Sortierung wie auf dem Board (§5, §14).
+**Filter von `search_todos`:** „Meine“ oder „Alle“ (§14; Standard bei der Suche: „Alle“, bei `get_overview`: „Meine“), Text in Titel und Beschreibung, Status, Statuskategorie (offen, erledigt, abgebrochen), Projekt bzw. „ohne Projekt“, Tag, Person bzw. „nicht zugewiesen“, Priorität, Fälligkeit von/bis, „überfällig“. Wie auf dem Board sind erledigte und abgebrochene To-Dos ohne ausdrückliche Angabe ausgeblendet. Sortierung wie auf dem Board (§5, §14).
 
 **Regeln für alle Tools:**
 
 - **Namen statt IDs:** Status, Prioritäten, Projekte, Tags und Personen können mit ihrem Namen angegeben werden (ohne Unterscheidung von Groß- und Kleinschreibung). Ist ein Name unbekannt oder mehrdeutig, antwortet das Tool mit einer Fehlermeldung, die die gültigen Werte nennt. IDs werden ebenfalls akzeptiert
 - **Kompakte Antworten:** Listen enthalten je To-Do nur ID, Titel, Status, Priorität, Projekt, Zuständig, Fälligkeit, Tags und den Deep Link (`<BASE_URL>/todos/<ID>`). Beschreibung, Kommentare und Verlauf liefert `get_todo`
-- **Begrenzung:** Listen liefern standardmäßig 25, höchstens 100 Einträge und einen Hinweis, ob weitere vorhanden sind (Fortsetzung über einen Cursor). `get_changes_since` reicht höchstens 30 Tage zurück
+- **Begrenzung:** Listen liefern standardmäßig 25, höchstens 100 Einträge und einen Hinweis, ob weitere vorhanden sind (Fortsetzung über einen Cursor). `get_changes_since` reicht höchstens 30 Tage zurück, liefert die neuesten Einträge zuerst und blättert über den Parameter `until` weiter zurück
+- **IDs und Links:** Wo ein To-Do erwartet wird, akzeptieren die Tools seine ID oder seinen Deep Link
 - **Idempotenz:** `create_todo` akzeptiert einen Idempotenzschlüssel; derselbe Schlüssel liefert das bereits angelegte To-Do zurück, statt ein neues anzulegen (gleicher Mechanismus wie die Geräte-ID der Schnellerfassung, siehe [mobile-offline.md](mobile-offline.md))
 - **Standardwerte beim Anlegen:** Ohne Status gilt der Standardstatus für neue To-Dos; ohne Zuweisung bleibt das To-Do unzugewiesen. Zuweisungsregeln gelten wie in der Oberfläche ([rollen-und-rechte.md](rollen-und-rechte.md))
 - **Sprache:** Namen von Standard-Status und -Prioritäten sowie Fehlermeldungen erscheinen in der Sprache des Benutzers
@@ -103,11 +105,11 @@ MCP arbeitet nur auf Abruf: Die KI fragt Daten ab, wenn sie gerade eingesetzt wi
 
 ## 8. Sicherheit und Nachvollziehbarkeit
 
-- **Herkunft im Verlauf:** Jede Änderung über MCP wird im Verlauf wie gewohnt dem Benutzer zugeordnet und zusätzlich als „über MCP“ mit der Bezeichnung des Tokens gekennzeichnet; die Kennzeichnung ist im Verlauf des To-Dos sichtbar. Dasselbe gilt für Kommentare
+- **Herkunft im Verlauf:** Jede Änderung über MCP wird im Verlauf wie gewohnt dem Benutzer zugeordnet und zusätzlich als „über MCP (Bezeichnung des Tokens)“ gekennzeichnet; die Kennzeichnung ist im Verlauf des To-Dos sichtbar. Dasselbe gilt für Kommentare. Kachel und Listen-Export zeigen keine Kennzeichnung. Die Kennzeichnung bleibt beim Export und Import eines Mandanten erhalten (siehe [mandanten.md](mandanten.md))
 - **Prompt-Injection:** Titel, Beschreibungen und Kommentare stammen von anderen Personen und können Anweisungen an die KI enthalten. Gegenmaßnahmen: Tokens sind standardmäßig nur lesend, „nur eigene To-Dos“ ist wählbar, destruktive Tools sind gekennzeichnet, es gibt keine Massenänderungen, und Inhalte werden als Datenfelder getrennt von Status- und Fehlermeldungen zurückgegeben
 - **Frequenzbegrenzung:** höchstens `MCP_RATE_LIMIT` Anfragen pro Minute und Token; schreibende Tools zusätzlich höchstens ein Drittel davon. Überschreitungen werden mit einer Fehlermeldung abgewiesen
 - **E-Mails:** Zuweisungen über MCP lösen die üblichen Zuweisungs-E-Mails aus (§9, §14); die Frequenzbegrenzung verhindert eine E-Mail-Flut
-- **Protokollierung:** Fehlgeschlagene Anmeldungen mit Token werden protokolliert und unterliegen der Begrenzung von Anmeldeversuchen (`AUTH_RATE_LIMIT`). Token-Werte erscheinen nie im Log
+- **Protokollierung:** Fehlgeschlagene Anmeldungen mit Token werden protokolliert und unterliegen je IP-Adresse der Begrenzung von Anmeldeversuchen (`AUTH_RATE_LIMIT`). Token-Werte erscheinen nie im Log
 - **Transport:** Im Produktivbetrieb nur über HTTPS (Reverse Proxy)
 
 ## 9. Nicht im Umfang
@@ -146,8 +148,11 @@ Zusätzlich muss der Mandanten-Administrator Zugriffstokens für seinen Mandante
 - Verlauf und Live-Ereignisse bei Änderungen über MCP
 - Alle Tests laufen gegen SQLite und PostgreSQL (§10)
 
-## 13. Offene Fragen
+## 13. Entscheidungen
 
-- Sollen Zugriffstokens je Mandant standardmäßig erlaubt oder (wie hier vorgeschlagen) nicht erlaubt sein?
-- Ist die Herkunftskennzeichnung „über MCP“ auch in der Kachel bzw. im Export sichtbar oder nur im Verlauf?
-- Soll ein Leser (Projektrolle) über MCP kommentieren dürfen, wie in der Oberfläche (§9)? Vorschlag: ja, sofern das Token „Lesen und Schreiben“ hat
+Mit dem Auftraggeber abgestimmt (ursprünglich offene Fragen des Konzepts):
+
+- Zugriffstokens sind je Mandant standardmäßig **nicht erlaubt**; der Mandanten-Administrator schaltet sie ein. Auch ein importierter Mandant startet ohne Erlaubnis
+- Die Kennzeichnung „über MCP“ erscheint **im Verlauf und an Kommentaren**, nicht auf der Kachel und nicht im Listen-Export
+- Ein **Leser** darf über MCP kommentieren, wenn sein Token „Lesen und Schreiben“ hat (wie in der Oberfläche, §9); alle anderen schreibenden Tools scheitern an seiner Rolle
+- „Nur eigene To-Dos“ bedeutet: dem Benutzer zugewiesen **oder** von ihm angelegt (unabhängig von der Zuweisung). Zuweisen darf ein solches Token nur sich selbst oder niemanden; Kommentare sind ebenfalls auf eigene To-Dos beschränkt. Lesen ist nicht eingeschränkt

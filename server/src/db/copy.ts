@@ -6,6 +6,7 @@ export const ALL_TABLES = [
   'tenants',
   'users',
   'memberships',
+  'access_tokens',
   'invitations',
   'password_resets',
   'sessions',

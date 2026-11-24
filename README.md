@@ -12,6 +12,7 @@ Version 1.0.1. Funktionsumfang:
 - Installierbare Smartphone-App (PWA) mit Offline-Schnellerfassung
 - Mehrere Mandanten mit strikter Datentrennung, Systemverwaltung mit Export/Import je Mandant
 - SQLite oder PostgreSQL, Migrationsskript von SQLite nach PostgreSQL
+- MCP-Server für KI-Assistenten (z. B. Claude): To-Dos per KI anlegen, aktualisieren und überwachen, mit persönlichen Zugriffstokens
 
 ## Voraussetzungen
 
@@ -101,6 +102,28 @@ Die Konfiguration erfolgt über Umgebungsvariablen oder die Datei `.env` im Prog
 | `APP_TIMEZONE` | `Europe/Berlin` | Zeitzone für Fälligkeitsdaten und Erinnerungen |
 | `REMINDER_INTERVAL_MINUTES` | `60` | Wie oft Fälligkeitserinnerungen geprüft werden (Minuten); `0` schaltet sie ab |
 | `IMPORT_MAX_MB` | `50` | Maximale Größe einer Mandanten-Importdatei in MB |
+| `MCP_ENABLED` | `false` | `true` bietet den MCP-Server für KI-Assistenten unter `/mcp` und die Verwaltung von Zugriffstokens an (siehe [KI-Assistenten anbinden](#ki-assistenten-anbinden-mcp-server)) |
+| `MCP_RATE_LIMIT` | `60` | Max. MCP-Anfragen pro Minute und Zugriffstoken; schreibende Aktionen höchstens ein Drittel davon |
+| `MCP_TOKEN_MAX_DAYS` | `365` | Höchste Gültigkeit eines Zugriffstokens in Tagen |
+
+## KI-Assistenten anbinden (MCP-Server)
+
+Über den MCP-Server (Model Context Protocol) können KI-Assistenten wie Claude, Claude Code, VS Code oder Cursor im Auftrag eines Benutzers To-Dos suchen, anlegen, ändern, kommentieren, canceln und Übersichten über fällige To-Dos abrufen. Die KI hat dabei nie mehr Rechte als der Benutzer selbst; jede Änderung erscheint im Verlauf des To-Dos als „über MCP“ mit der Bezeichnung des Tokens.
+
+Einrichtung:
+
+1. **Betreiber:** In `.env` `MCP_ENABLED=true` setzen und die Anwendung neu starten. Der Endpunkt lautet `<BASE_URL>/mcp`; im Produktivbetrieb nur über HTTPS.
+2. **Mandanten-Administrator:** Unter **Administration → Zugriffstokens** „Zugriffstokens in diesem Mandanten erlauben“ einschalten. Dort sieht er alle Tokens des Mandanten und kann sie widerrufen.
+3. **Benutzer:** Unter **Einstellungen → Zugriffstokens für KI-Assistenten** ein Token anlegen: Bezeichnung, Berechtigung („Lesen“ oder „Lesen und Schreiben“, optional nur eigene To-Dos) und Gültigkeit. Das Token gilt nur für den gerade aktiven Mandanten und wird nur einmal angezeigt.
+4. Im KI-Werkzeug einen MCP-Server vom Typ HTTP mit der Adresse `<BASE_URL>/mcp` und dem Header `Authorization: Bearer <Token>` eintragen, z. B. in Claude Code:
+
+   ```bash
+   claude mcp add --transport http todo-manager https://todo.example.com/mcp --header "Authorization: Bearer fgtm_pat_…"
+   ```
+
+   Werkzeuge mit JSON-Konfiguration (z. B. VS Code, Cursor) erwarten in der Regel `"url": "https://todo.example.com/mcp"` und `"headers": { "Authorization": "Bearer fgtm_pat_…" }`.
+
+Tokens werden ungültig, wenn sie ablaufen oder widerrufen werden, der Mandanten-Administrator die Erlaubnis zurücknimmt, die Person deaktiviert oder pseudonymisiert wird oder ihr Passwort über „Passwort vergessen“ zurücksetzt. Web-basierte Connectors, die eine Anmeldung per OAuth verlangen (z. B. in claude.ai), werden derzeit nicht unterstützt.
 
 ## Datenbank
 
@@ -202,5 +225,6 @@ Die regelmäßige Datensicherung erfolgt außerhalb der Anwendung:
 - Passwörter werden mit Argon2id gehasht gespeichert.
 - Sitzungen liegen serverseitig; das Sitzungs-Cookie ist `HttpOnly`, bei HTTPS zusätzlich `Secure`.
 - Anmeldung, Passwort-vergessen und Einladungen sind gegen Massenversuche begrenzt.
+- Zugriffstokens für den MCP-Server werden nur als Hash gespeichert, laufen ab, sind widerrufbar und gelten nur für `/mcp`, nicht für die übrige Anwendung. Anfragen je Token und fehlgeschlagene Anmeldungen je IP-Adresse sind begrenzt.
 - Benutzer und To-Dos werden nie physisch gelöscht, sondern nur deaktiviert bzw. pseudonymisiert (Ausnahme: „Mandant ersetzen“ in der Systemverwaltung).
 - Jede Anfrage wird serverseitig auf Anmeldung, Mandant, Rolle und Objektzugriff geprüft; Mandanten sind vollständig voneinander getrennt.

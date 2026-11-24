@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
-const tabs = ['members', 'statuses', 'priorities', 'tags'] as const;
+const tabs = ['members', 'statuses', 'priorities', 'tags', 'tokens'] as const;
 </script>
 
 <template>

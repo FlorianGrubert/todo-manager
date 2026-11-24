@@ -64,5 +64,30 @@
     "high": "High",
     "medium": "Medium",
     "low": "Low"
+  },
+  "mcp": {
+    "kinds": {
+      "status": "status",
+      "priority": "priority",
+      "project": "project",
+      "person": "person",
+      "tag": "tag"
+    },
+    "errors": {
+      "unknown": "Unknown {kind}: “{value}”. Valid values: {valid}",
+      "ambiguous": "The {kind} “{value}” is ambiguous. Please give one of these IDs: {ids}",
+      "invalidTimestamp": "Invalid point in time. Expected an ISO timestamp, e.g. 2026-11-23T08:00:00Z.",
+      "tooOld": "Changes can be requested at most {days} days back.",
+      "bad_request": "Invalid input.",
+      "not_found": "Not found (or no access).",
+      "forbidden": "Not allowed to do this.",
+      "archived": "The project is archived; its To-Dos are read-only.",
+      "invalid_assignee": "This person cannot be assigned to the To-Do (no suitable role in the project).",
+      "conflict": "The action conflicts with the current state.",
+      "rate_limited": "Too many requests. Please wait a moment and try again.",
+      "internal": "Internal error. Please try again later."
+    },
+    "hiddenProject": "(project not visible)",
+    "assignHint": "Only persons who are at least restricted editors in the To-Do's project can be assigned; persons without login only in their projects and never to To-Dos without project."
   }
 }
