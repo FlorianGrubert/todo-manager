@@ -1,5 +1,7 @@
 # Anforderungsdefinition: To-Do-Manager-App
 
+Größere Anforderungsbereiche sind in eigene Dokumente ausgelagert; sie sind in Abschnitt 15 aufgeführt und gelten ergänzend zu diesem Dokument.
+
 ## 1. Produktvision
 
 Eine To-Do-Manager-App zur Verwaltung von Aufgaben für Einzelpersonen und/oder Teams. Leitprinzip: Einfachheit.
@@ -34,11 +36,7 @@ Mehrere umschaltbare Ansichten, besonders für komplexe Themen und größere Tea
 
 ### Offline-Fähigkeit (Mobil)
 
-- Die mobile Schnellerfassung funktioniert auch ohne Netzverbindung
-- Offline erfasste To-Dos werden lokal gespeichert und automatisch synchronisiert, sobald wieder eine Verbindung besteht
-
-* Bestehende To-Dos sind offline aus dem lokalen Zwischenspeicher sichtbar, aber schreibgeschützt; offline sind nur neue To-Dos erfassbar
-* Die App zeigt deutlich an, dass sie offline ist
+Die mobile Schnellerfassung funktioniert auch ohne Netzverbindung; offline erfasste To-Dos werden automatisch übertragen, sobald wieder eine Verbindung besteht. Die vollständigen Anforderungen an Schnellerfassung, Offline-Betrieb und Synchronisation stehen in [mobile-offline.md](mobile-offline.md).
 
 ### Responsive Design
 
@@ -144,26 +142,7 @@ Das System hat eine eigene Benutzerverwaltung mit vier Projektrollen sowie den m
 | Eingeschränkter Bearbeiter | Sieht und bearbeitet nur eigene To-Dos, keine fremden |
 | Leser | Darf To-Dos nur lesen |
 
-**Projektadministrator (fünfte Rolle):** Gilt für den gesamten Mandanten, nicht pro Projekt. Darf neue Projekte anlegen, Projekte archivieren und wiederherstellen sowie Benutzer Projekten zuordnen und ihre Projektrolle festlegen. Darf keine Benutzer einladen und keine Status, Prioritäten oder Mandanteneinstellungen ändern. Der Mandanten-Administrator hat alle Rechte des Projektadministrators.
-
-**„Eigene“ To-Dos beim eingeschränkten Bearbeiter:** alle To-Dos, die der Person zugewiesen sind, plus selbst angelegte To-Dos, solange ihnen noch niemand zugewiesen ist.
-
-**Geltungsbereich der Rollen:** Der Administrator ist eine globale, projektunabhängige Rolle. Bearbeiter, eingeschränkter Bearbeiter und Leser werden pro Projekt vergeben; eine Person kann in verschiedenen Projekten verschiedene Rollen haben. Für To-Dos ohne Projekt gilt eine Standardrolle, die der Administrator pro Benutzer festlegt.
-
-**Personen ohne Login:** To-Dos können auch Personen zugewiesen werden, die kein Benutzerkonto haben (z. B. externe Ansprechpartner). Eine solche Person besteht nur aus einem Namen, gilt für den ganzen Mandanten und wird einem oder mehreren Projekten zugeordnet. Sie kann sich nicht anmelden, hat keine Rechte und erhält keine E-Mails. Anlegen, umbenennen, deaktivieren und Projekten zuordnen dürfen Mandanten-Administrator und Projektadministrator. Wird eine Person später Benutzer, behält sie alle ihr zugewiesenen To-Dos.
-
-**Benutzer einladen:** Nur der Administrator kann neue Benutzer hinzufügen, und zwar ausschließlich per Einladung (kein direktes Anlegen). Die eingeladene Person erhält eine E-Mail mit Link und legt darüber ihr Passwort selbst fest.
-
-**Letzter Login:** Datum und Uhrzeit des letzten Logins werden je Benutzer automatisch gespeichert. Administratoren sehen den Wert in der Benutzerübersicht; Benutzer, die sich noch nie angemeldet haben, sind als „nie angemeldet“ erkennbar.
-
-**Kein endgültiges Löschen:** Benutzerdatensätze und To-Dos werden nie physisch gelöscht, damit die vollständige Historie erhalten bleibt. Benutzer werden nur deaktiviert; deaktivierte Benutzer können sich nicht mehr anmelden. Zusätzlich kann ein Benutzer pseudonymisiert werden: Seine persönlichen Daten (Name, E-Mail) werden durch ein Pseudonym ersetzt, Verweise in To-Dos, Kommentaren und Verlauf bleiben erhalten. Der Status „Gelöscht“ bei To-Dos ist ebenfalls nur ein Status.
-
-**Pseudonymisierung und Einladung bei mehreren Mandanten:**
-
-- Pseudonymisieren darf der Mandanten-Administrator; es betrifft immer nur die Mitgliedschaft im eigenen Mandanten
-- Es wird nie etwas mandantenübergreifend geändert
-- Der Mandanten-Administrator darf nicht erkennen können, ob eine Person schon in anderen Mandanten existiert. Einladungsablauf und Rückmeldungen sind für ihn in beiden Fällen identisch
-- Intern erkennt das System eine bereits bekannte E-Mail-Adresse und legt keinen neuen Benutzer an, sondern nur eine weitere Mandantenmitgliedschaft; die Person nimmt die Einladung mit ihrem bestehenden Login an
+Dazu kommt der **Projektadministrator** als mandantenweite Rolle für die Verwaltung von Projekten. Benutzer werden nur per Einladung hinzugefügt und nie physisch gelöscht, sondern nur deaktiviert oder pseudonymisiert. Die vollständigen Anforderungen an Rollen, „eigene“ To-Dos, Personen ohne Login, Einladungen, Pseudonymisierung und Zuweisungsregeln stehen in [rollen-und-rechte.md](rollen-und-rechte.md).
 
 ## 9. Zusammenarbeit und Benachrichtigungen
 
@@ -194,20 +173,11 @@ Die Anwendung wird als Node.js-Web-App umgesetzt, nicht als WordPress-Plugin.
 
 ## 11. Mehrmandantenfähigkeit
 
-Das System ist mehrmandantenfähig: Alles in diesem Dokument gilt jeweils innerhalb eines einzelnen Mandanten.
+Das System ist mehrmandantenfähig: Alles in diesem Dokument gilt jeweils innerhalb eines einzelnen Mandanten. Jeder Mandant hat komplett eigenständige Datenbestände; kein Mandant sieht Daten eines anderen. Ein Systemadministrator verwaltet die Mandanten, eine Person kann mehreren Mandanten angehören, und einzelne Mandanten lassen sich exportieren und importieren. Die vollständigen Anforderungen stehen in [mandanten.md](mandanten.md).
 
-- **Vollständige Trennung:** Jeder Mandant hat komplett eigenständige Datenbestände: Benutzer, Projekte, To-Dos, Tags, Status, Prioritäten, Filter und Einstellungen. Kein Mandant sieht Daten eines anderen
-- **Systemadministrator:** Eigene, mandantenübergreifende Rolle oberhalb aller Mandanten. Legt neue Mandanten an und verwaltet sie
-- **Mandanten-Administrator:** Die bisher beschriebene Rolle „Administrator“ ist der Administrator eines Mandanten
-- **Begriffe:** „Systemweit“, „global“ und „Systemeinstellung“ in den Abschnitten oben bedeuten „für den gesamten Mandanten“
-- **Neuer Mandant:** Jeder neue Mandant startet mit den Standard-Status und Standard-Prioritäten. Beim Anlegen lädt der Systemadministrator automatisch den ersten Mandanten-Administrator ein
-  - **Mindestens ein Admin:** Das System stellt sicher, dass jeder Mandant immer mindestens einen aktiven Administrator hat; der letzte aktive Admin kann weder entfernt, deaktiviert noch herabgestuft werden
-
-**Personen in mehreren Mandanten:** Eine Person (E-Mail-Adresse) kann mehreren Mandanten angehören. Sie hat ein Login (E-Mail + Passwort); Rollen, Standardrolle, Filter und Einstellungen gelten je Mandant. Nach der Anmeldung sieht sie nur einen Mandanten, standardmäßig den zuletzt genutzten, und kann über einen Umschalter in der Oberfläche zwischen ihren Mandanten wechseln. Alle anderen Daten bleiben strikt pro Mandant getrennt.
+- **Begriffe:** „Systemweit“, „global“ und „Systemeinstellung“ in den Abschnitten oben bedeuten „für den gesamten Mandanten“; der „Administrator“ ist der Administrator eines Mandanten
 
 **Sicherheit nach Zero-Trust-Prinzip:** Keiner Anfrage wird vertraut, auch nicht von angemeldeten Benutzern. Jede Anfrage wird serverseitig auf Anmeldung, Mandantenzugehörigkeit, Projektrolle und Objektzugriff geprüft. Mandanten-IDs und Objekt-IDs aus der Anfrage werden nie ungeprüft übernommen. Ein Zugriff auf Daten eines fremden Mandanten darf unter keinen Umständen möglich sein.
-
-**Export und Import pro Mandant:** Der Systemadministrator kann einen einzelnen Mandanten vollständig exportieren (alle Daten inkl. Verlauf, maschinenlesbares Format wie JSON) und wieder importieren, ohne andere Mandanten zu beeinflussen. Der Import kann in einen neuen Mandanten erfolgen oder einen bestehenden Mandanten nach Warnung und Bestätigung ersetzen. Die regelmäßige Datensicherung erfolgt außerhalb der Anwendung auf Ebene der Datenbank bzw. des Hostings.
 
 ## 12. Annahmen und Standardwerte
 
@@ -231,7 +201,7 @@ Setze die Anwendung vollständig nach diesem Dokument um; bei Unklarheiten gelte
 
 ## 14. Präzisierungen und Entscheidungen
 
-Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgestimmte Festlegungen.
+Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgestimmte Festlegungen. Präzisierungen zu Rollen und Zuweisung stehen in [rollen-und-rechte.md](rollen-und-rechte.md), zu Mandanten, Benutzern und Export/Import von Mandanten in [mandanten.md](mandanten.md), zu Mobil und Offline in [mobile-offline.md](mobile-offline.md).
 
 ### Statusmodell
 
@@ -243,16 +213,8 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - Entfernte Status und Prioritäten werden nur ausgeblendet; betroffene To-Dos erhalten beim Entfernen einen Ersatzwert
 - Das Prioritäts-Icon wird über eine einzige Auswahlliste gewählt, die alle Icons als Tabelle zeigt: Zeilen = Anzahl und Richtung der Pfeile (3, 2, 1 nach oben, 1, 2, 3 nach unten), Spalten = Farbe (Grün, Gelb, Rot), dazu eine eigene Zeile für das rote Ausrufezeichen
 
-### Rollen und Zuweisung
+### Tags, Links und Beschreibung
 
-- Der eingeschränkte Bearbeiter darf To-Dos anlegen und nur sich selbst oder niemanden zuweisen
-- Zugewiesen werden kann nur, wer im Projekt des To-Dos mindestens eingeschränkter Bearbeiter ist (bei To-Dos ohne Projekt: entsprechende Standardrolle), sowie Personen ohne Login, die dem Projekt des To-Dos zugeordnet sind. To-Dos ohne Projekt können Personen ohne Login nicht zugewiesen werden
-- Personen ohne Login sind technisch Mandantenmitgliedschaften ohne Login; die Zuordnung zu einem Projekt gewährt keine Rechte. Deaktivierte Personen sind nicht mehr zuweisbar, bestehende Zuweisungen bleiben erhalten
-- Eine Person ohne Login wird Benutzer, indem der Mandanten-Administrator sie mit ihrer E-Mail-Adresse einlädt (gleicher Ablauf wie beim Einladen, auch bei bereits in anderen Mandanten bekannter Adresse). Die Mitgliedschaft bleibt dieselbe, daher bleiben Zuweisungen, Verlauf und Filter erhalten. Bis zum Annehmen bleibt sie zuweisbar; mit dem Annehmen wird sie in allen zugeordneten Projekten eingeschränkter Bearbeiter. Gehört die E-Mail-Adresse bereits einem Mitglied des Mandanten, wird die Einladung abgelehnt
-- Der Projektadministrator hat keine automatischen Rechte an To-Dos; dafür gelten nur seine Projektrollen. Der Mandanten-Administrator hat überall alle Rechte
-- Benutzer sehen nur Projekte, in denen sie eine Rolle haben; Projektadministratoren und Mandanten-Administratoren sehen alle Projekte
-- Projekte und To-Dos, auf die ein Benutzer keinen Zugriff hat, werden wie nicht vorhanden behandelt (Antwort „nicht gefunden“)
-- To-Dos archivierter Projekte sind schreibgeschützt, bis das Projekt wiederhergestellt ist
 - Tags entstehen beim Bearbeiten eines To-Dos (jeder mit Bearbeitungsrecht); umbenennen, einfärben und löschen darf nur der Administrator. Ein gelöschter Tag wird von allen To-Dos entfernt
 - Links in To-Dos sind auf `http://`, `https://` und `mailto:` beschränkt
 - Links lassen sich direkt von der Kachel aus öffnen, ohne das To-Do zu öffnen: Ein Link-Symbol zeigt die Anzahl der Links; bei einem Link öffnet es ihn sofort, bei mehreren erscheint eine Auswahl. Im Dialog hat jeder Link eine Schaltfläche zum Öffnen; wer nur lesen darf, sieht die Links als anklickbare Verweise. Web-Links öffnen sich in einem neuen Tab ohne Zugriff auf das Board, `mailto:`-Links im E-Mail-Programm
@@ -280,15 +242,6 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - Export-Spalten: Titel, Beschreibung, Projekt, Status, Priorität, Zuständig, Fällig am, Tags, Links, Erfasst am/von, Geändert am/von, Link zum To-Do; Spaltenüberschriften in der Sprache des Benutzers
 - CSV wird als UTF-8 mit BOM erzeugt, mit Semikolon als Trennzeichen bei deutscher und Komma bei englischer Oberfläche. Zellen, die mit `=`, `+`, `-` oder `@` beginnen, werden in CSV mit einem Apostroph geschützt (Formel-Injection)
 
-### Mandanten und Benutzer
-
-- Letzter Login, Deaktivierung und Pseudonymisierung gelten je Mandantenmitgliedschaft; dadurch ist für einen Mandanten-Administrator nicht erkennbar, ob eine Person anderen Mandanten angehört
-- Der Anzeigename einer Person wird je Mandant geführt (beim Einladen vom Administrator vergeben)
-- Pseudonymisieren ersetzt den Anzeigenamen durch ein Pseudonym, blendet die E-Mail-Adresse im Mandanten aus und deaktiviert die Mitgliedschaft; das ist endgültig. Gehört die Person keinem anderen Mandanten an (und ist kein Systemadministrator), werden auch Name und E-Mail des Kontos anonymisiert und die Anmeldung gesperrt
-- Noch nicht angenommene Einladungen können erneut versendet werden; der alte Link wird dabei ungültig
-- Passwörter haben mindestens 10 Zeichen; Links zum Zurücksetzen des Passworts sind 1 Stunde gültig
-- Nach dem Zurücksetzen des Passworts werden alle Sitzungen des Benutzers beendet
-
 ### Live-Aktualisierung und Benachrichtigungen
 
 - Ereignisse an Clients enthalten nur IDs. Eine To-Do-ID erhält nur, wer das To-Do sehen darf; alle anderen Mitglieder des Mandanten erfahren nur, dass sich To-Dos geändert haben, und laden ihre Ansicht neu. Nach Abmelden oder Deaktivieren werden keine Ereignisse mehr zugestellt
@@ -298,22 +251,8 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - Berücksichtigt werden nur offene To-Dos mit aktiver Zuweisung außerhalb archivierter Projekte. „0 Tage vorher“ bedeutet Erinnerung am Fälligkeitstag
 - Die Prüfung läuft periodisch (Standard: stündlich) in der Zeitzone der Installation (Standard: Europe/Berlin)
 
-### Mobil und Offline
+### Datenbankwechsel
 
-- Die installierte App (PWA) startet in der Schnellerfassung; von dort ist das Board einen Tipp entfernt. Auf dem Smartphone öffnet ein „+“-Button auf dem Board die Schnellerfassung
-- Schnellerfassung: nur der Titel ist Pflicht; Beschreibung, Projekt, Priorität und Fälligkeit sind optional aufklappbar. Schnell erfasste To-Dos werden der erfassenden Person zugewiesen, damit sie in „Meine“ erscheinen
-- Jedes schnell erfasste To-Do wird zuerst auf dem Gerät gespeichert und dann übertragen (online sofort, sonst automatisch bei Verbindung). Eine Geräte-ID verhindert doppelte Anlage bei Wiederholungen
-- Offline erfasste To-Dos werden nur in den Mandanten übertragen, in dem sie erfasst wurden; der Server lehnt eine Übertragung in einen anderen Mandanten ab. Lehnt der Server ein To-Do ab (z. B. fehlende Rechte), bleibt es mit Hinweis in der Liste „Noch nicht übertragen“ und kann erneut gesendet oder verworfen werden
-- Offline zeigt das Board den zuletzt geladenen Stand der jeweiligen Ansicht (schreibgeschützt, mit Zeitstempel); liegt für die Ansicht kein Stand vor, wird der zuletzt geladene Stand auf dem Gerät gefiltert. Kommentare und Verlauf sind offline nicht verfügbar
-- Beim Abmelden werden alle auf dem Gerät gespeicherten Daten gelöscht (das Gerät kann geteilt sein); nicht übertragene To-Dos werden vorher mit Rückfrage angezeigt
-- Installation und Offline-Betrieb setzen HTTPS voraus (Service Worker)
-
-### Export/Import von Mandanten und Datenbankwechsel
-
-- Der Mandanten-Export ist eine JSON-Datei mit allen Daten des Mandanten inkl. Kommentaren, Verlauf, gespeicherten Filtern und Personen ohne Login (ohne E-Mail-Adresse). Exporte älterer Formatversionen bleiben importierbar. Passwörter, Sitzungen und offene Einladungen sind nicht enthalten; pseudonymisierte Personen werden ohne Name und E-Mail exportiert
-- Beim Import werden alle IDs neu vergeben (auch Verweise im Verlauf und in gespeicherten Filtern), sodass ein Mandant neben seinem Original oder in einer anderen Installation importiert werden kann. Personen werden über die E-Mail-Adresse einem vorhandenen Konto zugeordnet, bestehende Konten werden nicht verändert; neue Konten haben kein Passwort und werden über „Passwort vergessen“ aktiviert
-- „Passwort vergessen“ funktioniert daher für alle aktiven Konten, auch ohne bisheriges Passwort
-- Ersetzen eines Mandanten erfordert die Eingabe des exakten Mandantennamens; die bisherigen Daten des Mandanten werden dabei entfernt. Ungültige oder in sich widersprüchliche Dateien werden vollständig abgelehnt, ohne etwas zu ändern
 - Die Migration SQLite → PostgreSQL kopiert alle Tabellen in einer Transaktion in eine leere Zieldatenbank und prüft die Anzahl der Datensätze je Tabelle; Sitzungen bleiben erhalten
 
 ### Technik
@@ -323,3 +262,14 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - Live-Aktualisierung über Server-Sent Events; Ereignisse enthalten nur IDs, Inhalte werden über die rechtegeprüfte API nachgeladen
 - E-Mail-Versand über SMTP; für Tests kann der Versand ins Server-Log umgeleitet werden
 - Zeitstempel werden in UTC gespeichert, Fälligkeitsdaten als Kalenderdatum; Erinnerungen werden stündlich geprüft
+
+## 15. Ergänzende Anforderungsdokumente
+
+Die folgenden Dokumente im Verzeichnis `documentation` beschreiben einzelne Anforderungsbereiche ausführlich. Die Festlegungen dieses Dokuments gelten dort weiter; Abweichungen werden im jeweiligen Dokument ausdrücklich genannt.
+
+| Dokument | Inhalt | Status |
+| --- | --- | --- |
+| [rollen-und-rechte.md](rollen-und-rechte.md) | Benutzer, Rollen, Personen ohne Login, Einladung, Pseudonymisierung, Zuweisungsregeln (zu §8) | umgesetzt |
+| [mandanten.md](mandanten.md) | Mehrmandantenfähigkeit, Personen in mehreren Mandanten, Export und Import von Mandanten (zu §11) | umgesetzt |
+| [mobile-offline.md](mobile-offline.md) | PWA, Schnellerfassung, Offline-Betrieb und Synchronisation (zu §3, §5, §10) | umgesetzt |
+| [mcp-server.md](mcp-server.md) | MCP-Server für KI-Assistenten: Anlegen, Aktualisieren und Überwachen von To-Dos, Zugriffstokens | Konzept |

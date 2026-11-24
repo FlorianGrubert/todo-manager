@@ -9,6 +9,10 @@
 
 # Documentation
 - Requirements documentation is written in "documentation/overall-requirements.md".
+- Larger requirement areas are split into separate files in "documentation/",
+  listed in section 15 of "overall-requirements.md". They are part of the
+  requirements; read the relevant ones and keep them up to date. New large
+  areas get their own file and an entry in that list.
 - Read all documentation carefully and follow the architecture given there.
 - If your change is against the definition in the documentation, you have to
   change or extend the documentation accordingly.
