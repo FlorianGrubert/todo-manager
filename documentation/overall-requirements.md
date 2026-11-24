@@ -255,6 +255,7 @@ Ergänzend zu den Abschnitten oben gelten folgende, mit dem Auftraggeber abgesti
 - To-Dos archivierter Projekte sind schreibgeschützt, bis das Projekt wiederhergestellt ist
 - Tags entstehen beim Bearbeiten eines To-Dos (jeder mit Bearbeitungsrecht); umbenennen, einfärben und löschen darf nur der Administrator. Ein gelöschter Tag wird von allen To-Dos entfernt
 - Links in To-Dos sind auf `http://`, `https://` und `mailto:` beschränkt
+- Links lassen sich direkt von der Kachel aus öffnen, ohne das To-Do zu öffnen: Ein Link-Symbol zeigt die Anzahl der Links; bei einem Link öffnet es ihn sofort, bei mehreren erscheint eine Auswahl. Im Dialog hat jeder Link eine Schaltfläche zum Öffnen; wer nur lesen darf, sieht die Links als anklickbare Verweise. Web-Links öffnen sich in einem neuen Tab ohne Zugriff auf das Board, `mailto:`-Links im E-Mail-Programm
 - Die Beschreibung eines To-Dos ist reiner Text
 
 ### Drag and Drop
