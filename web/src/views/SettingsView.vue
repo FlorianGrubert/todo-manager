@@ -181,6 +181,5 @@ async function changePassword(): Promise<void> {
 
       <AccessTokens />
     </div>
-    <p class="muted version">{{ t('app.version', { version: session.me?.version ?? '' }) }}</p>
   </section>
 </template>

@@ -150,11 +150,6 @@ h2 {
   padding: 1rem;
 }
 
-.page .version {
-  margin-top: 2rem;
-  font-size: 0.85rem;
-}
-
 /* ---------- components ---------- */
 .card {
   background: var(--surface);
