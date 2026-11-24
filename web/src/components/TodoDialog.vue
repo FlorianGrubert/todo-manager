@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { CommentDto, HistoryResponse, MemberDto, TagDto, TodoDto, TodoInput, TodoLinkDto } from '@fg/shared';
+import {
+  LINK_URL_PATTERN,
+  type CommentDto,
+  type HistoryResponse,
+  type MemberDto,
+  type TagDto,
+  type TodoDto,
+  type TodoInput,
+  type TodoLinkDto,
+} from '@fg/shared';
 import { ApiError, get, patch, post } from '../api/client';
 import { errorKey } from '../i18n';
+import { linkTarget, linkText, safeLinks } from '../links';
 import { onLive } from '../live';
 import { memberLabel, refLabel, useReferenceStore } from '../stores/reference';
 import { useSessionStore } from '../stores/session';
@@ -298,11 +308,32 @@ async function addComment(): Promise<void> {
 
           <div class="field">
             <span>{{ t('todo.links') }}</span>
-            <div v-for="(link, i) in form.links" :key="i" class="link-row">
-              <input v-model="link.url" type="url" :placeholder="t('todo.linkUrl')" :aria-label="t('todo.linkUrl')" />
-              <input v-model="link.label" type="text" :placeholder="t('todo.linkLabel')" :aria-label="t('todo.linkLabel')" />
-              <button type="button" class="icon-button" :aria-label="t('todo.removeLink')" @click="form.links.splice(i, 1)">×</button>
-            </div>
+            <template v-if="editable">
+              <div v-for="(link, i) in form.links" :key="i" class="link-row">
+                <input v-model="link.url" type="url" :placeholder="t('todo.linkUrl')" :aria-label="t('todo.linkUrl')" />
+                <input v-model="link.label" type="text" :placeholder="t('todo.linkLabel')" :aria-label="t('todo.linkLabel')" />
+                <span class="link-row-actions">
+                  <a
+                    v-if="LINK_URL_PATTERN.test(link.url.trim())"
+                    class="icon-button"
+                    :href="link.url.trim()"
+                    v-bind="linkTarget(link.url)"
+                    :title="t('todo.openLink', { name: linkText(link) })"
+                    :aria-label="t('todo.openLink', { name: linkText(link) })"
+                  >
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  </a>
+                  <button type="button" class="icon-button" :aria-label="t('todo.removeLink')" @click="form.links.splice(i, 1)">×</button>
+                </span>
+              </div>
+            </template>
+            <!-- Read only: plain clickable links. -->
+            <ul v-else-if="safeLinks(form.links).length" class="link-list">
+              <li v-for="(link, i) in safeLinks(form.links)" :key="i">
+                <a :href="link.url.trim()" v-bind="linkTarget(link.url)" :title="link.url"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>{{ linkText(link) }}</a>
+              </li>
+            </ul>
+            <p v-else class="muted small">{{ t('todo.noLinks') }}</p>
             <button v-if="editable" type="button" class="button small" @click="form.links.push({ url: '', label: '' })">
               {{ t('todo.addLink') }}
             </button>

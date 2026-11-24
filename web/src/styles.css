@@ -959,6 +959,68 @@ input[type='color'] {
   margin-left: auto;
 }
 
+/* Links on the card (open without opening the To-Do). */
+.todo-card-extras {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-link-button {
+  min-width: 26px;
+  min-height: 26px;
+  padding: 0 0.15rem;
+  font-size: 0.85rem;
+  text-decoration: none;
+  gap: 0.15rem;
+  grid-auto-flow: column;
+}
+
+.link-count {
+  font-size: 0.8rem;
+}
+
+.link-menu {
+  z-index: 60;
+}
+
+.link-menu > a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link-row-actions {
+  display: inline-flex;
+  align-items: center;
+}
+
+.link-row-actions .icon-button {
+  text-decoration: none;
+  display: inline-grid;
+  place-items: center;
+}
+
+.link-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link-list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+.link-list svg {
+  flex: none;
+}
+
 .filter-panel {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
